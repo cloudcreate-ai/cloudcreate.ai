@@ -1,16 +1,15 @@
 <script>
   import { link } from 'svelte-spa-router';
   import { t } from '../lib/i18n.js';
+  import { formatFileSize, ENCODE_FORMATS } from '../lib/imageProcessor.js';
+  import { convertImage } from '../lib/workflows/convert.js';
   import {
-    fileToImageData,
-    encodeImage,
-    getFormatFromFile,
-    getImageDimensions,
-    formatFileSize,
-    ENCODE_FORMATS,
-  } from '../lib/imageProcessor.js';
-
-  const ACCEPT = 'image/jpeg,image/png,image/webp,image/avif';
+    ACCEPT_IMAGES,
+    buildFileItem,
+    downloadBlob,
+    computeTotalStats,
+    filterImageFiles,
+  } from '../lib/batchHelpers.js';
 
   let items = $state([]);
   let quality = $state(75);
@@ -22,32 +21,12 @@
   let idCounter = 0;
 
   async function addFiles(fileList) {
-    const files = Array.from(fileList || []).filter((f) => f.type?.startsWith('image/'));
+    const files = filterImageFiles(fileList);
     if (files.length === 0) return;
     error = '';
     for (const file of files) {
-      const previewUrl = URL.createObjectURL(file);
-      let width = 0,
-        height = 0;
-      try {
-        const dim = await getImageDimensions(file);
-        width = dim.width;
-        height = dim.height;
-      } catch (_) {}
-      items = [
-        ...items,
-        {
-          id: ++idCounter,
-          file,
-          previewUrl,
-          name: file.name,
-          format: getFormatFromFile(file).toUpperCase(),
-          size: file.size,
-          width,
-          height,
-          status: 'pending',
-        },
-      ];
+      const item = await buildFileItem(file, ++idCounter);
+      items = [...items, item];
     }
     if (inputRef) inputRef.value = '';
   }
@@ -78,28 +57,19 @@
     }
     error = '';
     processing = true;
-
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      items = items.map((x, j) =>
-        j === i ? { ...x, status: 'processing' } : x
-      );
+      items = items.map((x, j) => (j === i ? { ...x, status: 'processing' } : x));
       try {
-        const imageData = await fileToImageData(item.file);
-        const { buffer, mime, ext } = await encodeImage(imageData, targetFormat, quality);
-        const blob = new Blob([buffer], { type: mime });
-        const newSize = blob.size;
-        const ratio = item.size > 0 ? (1 - newSize / item.size) * 100 : 0;
-        const outputName = item.name.replace(/\.[^.]+$/, '') + '.' + ext;
+        const { blob, outputName, newSize, ratio } = await convertImage(item.file, {
+          targetFormat,
+          quality,
+        });
         items = items.map((x, j) =>
-          j === i
-            ? { ...x, status: 'done', blob, newSize, ratio, outputName }
-            : x
+          j === i ? { ...x, status: 'done', blob, newSize, ratio, outputName } : x
         );
       } catch (e) {
-        items = items.map((x, j) =>
-          j === i ? { ...x, status: 'error', error: e.message } : x
-        );
+        items = items.map((x, j) => (j === i ? { ...x, status: 'error', error: e.message } : x));
       }
     }
     processing = false;
@@ -107,11 +77,7 @@
 
   function download(item) {
     if (item.status !== 'done' || !item.blob) return;
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(item.blob);
-    a.download = item.outputName || item.name;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadBlob(item.blob, item.outputName || item.name);
   }
 
   function downloadAll() {
@@ -146,14 +112,7 @@
     previewBlobUrl = null;
   }
 
-  const totalStats = $derived.by(() => {
-    const done = items.filter((x) => x.status === 'done');
-    if (done.length === 0) return null;
-    const totalOriginal = done.reduce((s, x) => s + x.size, 0);
-    const totalNew = done.reduce((s, x) => s + (x.newSize ?? 0), 0);
-    const ratio = totalOriginal > 0 ? (1 - totalNew / totalOriginal) * 100 : 0;
-    return { totalOriginal, totalNew, ratio };
-  });
+  const totalStats = $derived.by(() => computeTotalStats(items));
 </script>
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
@@ -203,7 +162,7 @@
     >
       <input
         type="file"
-        {ACCEPT}
+        {ACCEPT_IMAGES}
         multiple
         onchange={handleInput}
         bind:this={inputRef}

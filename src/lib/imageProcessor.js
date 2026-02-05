@@ -83,6 +83,7 @@ export function formatFileSize(bytes) {
 export function encodePngQuantized(imageData, quality = 75) {
   const colors = Math.max(32, Math.min(256, Math.round(32 + (quality / 100) * 224)));
   const d = imageData.data;
+  // 恢复重构前实现：slice 保证精确长度，与 b8a23bc 一致
   const buf = d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength);
   const png = UPNG.encode([buf], imageData.width, imageData.height, colors);
   return { buffer: png, mime: 'image/png', ext: 'png' };

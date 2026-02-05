@@ -4,13 +4,9 @@
   import { t } from '../lib/i18n.js';
   import Cropper from 'cropperjs';
   import 'cropperjs/src/css/cropper.css';
-  import {
-    getFormatFromFile,
-    formatFileSize,
-    getImageDimensions,
-  } from '../lib/imageProcessor.js';
-
-  const ACCEPT = 'image/jpeg,image/png,image/webp,image/avif';
+  import { formatFileSize, getImageDimensions } from '../lib/imageProcessor.js';
+  import { cropToBlob } from '../lib/workflows/crop.js';
+  import { downloadBlob, ACCEPT_IMAGES } from '../lib/batchHelpers.js';
 
   const ASPECT_OPTIONS = [
     { labelKey: 'crop.free', value: 0 },
@@ -153,19 +149,12 @@
     error = '';
     processing = true;
     try {
-      const format = getFormatFromFile(file);
-      const mime = format === 'jpeg' || format === 'jpg' ? 'image/jpeg' : `image/${format}`;
-      const quality = ['jpeg', 'jpg', 'webp'].includes(format) ? 0.92 : undefined;
-
       const canvas = cropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
-      const blob = await new Promise((resolve) => {
-        canvas.toBlob(resolve, mime, quality);
-      });
-      if (!blob) throw new Error('Failed to generate output');
+      const { blob, outputName, width: w, height: h } = await cropToBlob(canvas, file, { quality: 0.92 });
       resultBlob = blob;
-      resultWidth = canvas.width;
-      resultHeight = canvas.height;
-      resultName = file.name.replace(/\.[^.]+$/, '') + '-cropped.' + (format === 'jpeg' ? 'jpg' : format);
+      resultName = outputName;
+      resultWidth = w;
+      resultHeight = h;
     } catch (e) {
       error = e.message || t('crop.cropFailed');
     } finally {
@@ -175,11 +164,7 @@
 
   function downloadResult() {
     if (!resultBlob || !resultName) return;
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(resultBlob);
-    a.download = resultName;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadBlob(resultBlob, resultName);
   }
 
   function clearAll() {
@@ -243,7 +228,7 @@
       onclick={() => inputRef?.click()}
       onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
     >
-      <input type="file" {ACCEPT} onchange={handleInput} bind:this={inputRef} class="hidden" />
+      <input type="file" accept={ACCEPT_IMAGES} onchange={handleInput} bind:this={inputRef} class="hidden" />
       <p class="text-surface-600-400 m-0">{t('common.addImage')}</p>
       <p class="text-sm text-surface-600-400 mt-1 m-0">{t('common.formats')}</p>
     </div>
