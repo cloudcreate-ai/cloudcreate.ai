@@ -1,11 +1,13 @@
 /**
  * 图片处理工具 - 基于 jSquash 实现解码/编码
  * 支持格式: JPEG, PNG, WebP, AVIF
+ * PNG 压缩使用 UPNG.js 输出 8 位索引 PNG (cnum > 0)
  */
 import { decode as jpegDecode, encode as jpegEncode } from '@jsquash/jpeg';
 import { decode as pngDecode, encode as pngEncode } from '@jsquash/png';
 import { decode as webpDecode, encode as webpEncode } from '@jsquash/webp';
 import { decode as avifDecode, encode as avifEncode } from '@jsquash/avif';
+import UPNG from 'upng-js';
 
 const CODECS = {
   jpeg: { decode: jpegDecode, encode: jpegEncode, mime: 'image/jpeg', ext: 'jpg' },
@@ -43,6 +45,47 @@ export async function encodeImage(imageData, targetFormat, quality = 75) {
 
   const buffer = await codec.encode(imageData, opts);
   return { buffer, mime: codec.mime, ext: codec.ext };
+}
+
+/** 从 File 推断格式 */
+export function getFormatFromFile(file) {
+  const mime = (file.type || '').toLowerCase();
+  const ext = (file.name?.split('.').pop() || '').toLowerCase();
+  if (mime.includes('jpeg') || mime.includes('jpg') || ext === 'jpg' || ext === 'jpeg') return 'jpeg';
+  if (mime.includes('png') || ext === 'png') return 'png';
+  if (mime.includes('webp') || ext === 'webp') return 'webp';
+  if (mime.includes('avif') || ext === 'avif') return 'avif';
+  return 'png';
+}
+
+/** 从 File 获取图片宽高 */
+export async function getImageDimensions(file) {
+  const bitmap = await createImageBitmap(file);
+  const w = bitmap.width;
+  const h = bitmap.height;
+  bitmap.close();
+  return { width: w, height: h };
+}
+
+/** 格式化文件大小显示 */
+export function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+}
+
+/**
+ * PNG 有损压缩 - 使用 UPNG 输出 8 位索引 PNG (类似 TinyPNG)
+ * @param {ImageData} imageData
+ * @param {number} quality 1-100，越低颜色越少压缩率越高
+ * @returns {{ buffer: ArrayBuffer, mime: string, ext: string }}
+ */
+export function encodePngQuantized(imageData, quality = 75) {
+  const colors = Math.max(32, Math.min(256, Math.round(32 + (quality / 100) * 224)));
+  const d = imageData.data;
+  const buf = d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength);
+  const png = UPNG.encode([buf], imageData.width, imageData.height, colors);
+  return { buffer: png, mime: 'image/png', ext: 'png' };
 }
 
 /** 从 File 解码为 ImageData */

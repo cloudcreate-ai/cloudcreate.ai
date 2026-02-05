@@ -1,11 +1,13 @@
 <script>
   import Router from 'svelte-spa-router';
   import Workspace from './routes/Workspace.svelte';
-  import ImageTool from './routes/ImageTool.svelte';
+  import ImageCompress from './routes/ImageCompress.svelte';
+  import ImageConvert from './routes/ImageConvert.svelte';
 
   const routes = {
     '/': Workspace,
-    '/image': ImageTool,
+    '/image/compress': ImageCompress,
+    '/image/convert': ImageConvert,
   };
 </script>
 
