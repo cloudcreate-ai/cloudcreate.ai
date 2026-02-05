@@ -11,9 +11,14 @@
     computeTotalStats,
     filterImageFiles,
   } from '../lib/batchHelpers.js';
+  import { loadToolConfig, saveToolConfig } from '../lib/toolConfig.js';
 
+  const compressDefaults = { quality: 75 };
+  const saved = loadToolConfig('compress', compressDefaults);
   let items = $state([]);
-  let quality = $state(75);
+  let quality = $state(Math.min(100, Math.max(1, saved.quality ?? 75)));
+
+  $effect(() => saveToolConfig('compress', { quality }));
   let processing = $state(false);
   let error = $state('');
   let inputRef;

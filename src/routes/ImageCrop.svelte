@@ -7,6 +7,7 @@
   import { formatFileSize, getImageDimensions } from '../lib/imageProcessor.js';
   import { cropToBlob } from '../lib/workflows/crop.js';
   import { downloadBlob, ACCEPT_IMAGES } from '../lib/batchHelpers.js';
+  import { loadToolConfig, saveToolConfig } from '../lib/toolConfig.js';
 
   const ASPECT_OPTIONS = [
     { labelKey: 'crop.free', value: 0 },
@@ -25,7 +26,14 @@
   let cropper = $state(null);
   let file = $state(null);
   let previewUrl = $state(null);
-  let aspectRatio = $state(0);
+  const cropDefaults = { aspectRatio: 0 };
+  const savedCrop = loadToolConfig('crop', cropDefaults);
+  const validAspect = ASPECT_OPTIONS.some((o) => Math.abs(o.value - (savedCrop.aspectRatio ?? 0)) < 1e-6)
+    ? savedCrop.aspectRatio
+    : 0;
+  let aspectRatio = $state(validAspect);
+
+  $effect(() => saveToolConfig('crop', { aspectRatio }));
   let cropW = $state(0);
   let cropH = $state(0);
   let origWidth = $state(0);

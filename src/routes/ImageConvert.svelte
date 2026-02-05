@@ -11,10 +11,16 @@
     computeTotalStats,
     filterImageFiles,
   } from '../lib/batchHelpers.js';
+  import { loadToolConfig, saveToolConfig } from '../lib/toolConfig.js';
 
+  const convertDefaults = { quality: 75, targetFormat: 'webp' };
+  const saved = loadToolConfig('convert', convertDefaults);
+  const validFormat = ENCODE_FORMATS.includes(saved.targetFormat) ? saved.targetFormat : 'webp';
   let items = $state([]);
-  let quality = $state(75);
-  let targetFormat = $state('jpeg');
+  let quality = $state(Math.min(100, Math.max(1, saved.quality ?? 75)));
+  let targetFormat = $state(validFormat);
+
+  $effect(() => saveToolConfig('convert', { quality, targetFormat }));
   let processing = $state(false);
   let error = $state('');
   let inputRef;
