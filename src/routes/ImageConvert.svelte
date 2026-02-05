@@ -7,6 +7,7 @@
     ACCEPT_IMAGES,
     buildFileItem,
     downloadBlob,
+    downloadAsZip,
     computeTotalStats,
     filterImageFiles,
   } from '../lib/batchHelpers.js';
@@ -80,8 +81,9 @@
     downloadBlob(item.blob, item.outputName || item.name);
   }
 
-  function downloadAll() {
-    items.filter((x) => x.status === 'done' && x.blob).forEach(download);
+  async function downloadAll() {
+    const done = items.filter((x) => x.status === 'done' && x.blob);
+    await downloadAsZip(done, 'converted-images.zip');
   }
 
   function clear() {

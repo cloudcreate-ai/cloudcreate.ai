@@ -2,6 +2,7 @@
  * 批量工具共享逻辑 - 文件项构建、下载、统计等
  * 供 Compress、Convert 等批量工具复用
  */
+import JSZip from 'jszip';
 import { getFormatFromFile, getImageDimensions } from './imageProcessor.js';
 
 export const ACCEPT_IMAGES = 'image/jpeg,image/png,image/webp,image/avif';
@@ -45,6 +46,43 @@ export function downloadBlob(blob, filename) {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+/** 生成人工可读时间戳，如 2025-02-05_23-50-32 */
+function readableTimestamp() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+}
+
+/**
+ * 将多个文件打包为 zip 并下载，文件名自动加时间戳后缀
+ * @param {Array<{ blob: Blob, outputName?: string, name?: string }>} items
+ * @param {string} [zipName='images.zip']
+ */
+export async function downloadAsZip(items, zipName = 'images.zip') {
+  const list = items.filter((x) => x.blob);
+  if (list.length === 0) return;
+  if (list.length === 1) {
+    downloadBlob(list[0].blob, list[0].outputName || list[0].name || 'image');
+    return;
+  }
+  const zip = new JSZip();
+  const used = new Set();
+  for (const item of list) {
+    let name = item.outputName || item.name || 'image';
+    if (used.has(name)) {
+      const [base, ext] = name.includes('.') ? [name.replace(/\.[^.]+$/, ''), name.match(/\.[^.]+$/)?.[0] || ''] : [name, ''];
+      let n = 1;
+      while (used.has(`${base}_${n}${ext}`)) n++;
+      name = `${base}_${n}${ext}`;
+    }
+    used.add(name);
+    zip.file(name, item.blob);
+  }
+  const blob = await zip.generateAsync({ type: 'blob' });
+  const base = zipName.replace(/\.zip$/i, '');
+  downloadBlob(blob, `${base}-${readableTimestamp()}.zip`);
 }
 
 /**
