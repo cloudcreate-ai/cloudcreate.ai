@@ -1,5 +1,6 @@
 <script>
   import { link } from 'svelte-spa-router';
+  import { t } from '../lib/i18n.js';
   import {
     fileToImageData,
     encodeImage,
@@ -72,7 +73,7 @@
 
   async function processFiles() {
     if (items.length === 0) {
-      error = 'Please add at least one image.';
+      error = t('common.errAddOne');
       return;
     }
     error = '';
@@ -160,20 +161,20 @@
 <main class="p-8 max-w-4xl mx-auto">
   <header class="mb-6">
     <a href="/" use:link class="text-primary-500 text-sm no-underline hover:underline block mb-3"
-      >← Workspace</a
+      >{t('common.backWorkspace')}</a
     >
-    <h1 class="text-2xl font-semibold mb-1">Image Format Convert</h1>
-    <p class="text-surface-600-400 text-sm m-0">Convert between JPEG, PNG, WebP, AVIF.</p>
+    <h1 class="text-2xl font-semibold mb-1">{t('convert.title')}</h1>
+    <p class="text-surface-600-400 text-sm m-0">{t('convert.desc')}</p>
   </header>
 
   <details class="card preset-outlined-surface-200-800 p-4 mb-4">
     <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
-      <span class="font-medium">Options</span>
-      <span class="text-surface-600-400 text-sm">{targetFormat.toUpperCase()}, Quality: {quality}</span>
+      <span class="font-medium">{t('common.options')}</span>
+      <span class="text-surface-600-400 text-sm">{targetFormat.toUpperCase()}, {t('common.quality')}: {quality}</span>
     </summary>
     <div class="mt-4 pt-4 border-t border-surface-200-800 flex gap-8">
       <div class="flex flex-col gap-1">
-        <label for="format" class="text-sm text-surface-600-400">Output format</label>
+        <label for="format" class="text-sm text-surface-600-400">{t('convert.outputFormat')}</label>
         <select id="format" bind:value={targetFormat} class="select w-28">
           {#each ENCODE_FORMATS as fmt}
             <option value={fmt}>{fmt.toUpperCase()}</option>
@@ -181,7 +182,7 @@
         </select>
       </div>
       <div class="flex flex-col gap-1">
-        <label for="quality" class="text-sm text-surface-600-400">Quality {quality}</label>
+        <label for="quality" class="text-sm text-surface-600-400">{t('common.quality')} {quality}</label>
         <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-32" />
       </div>
     </div>
@@ -208,8 +209,8 @@
         bind:this={inputRef}
         class="hidden"
       />
-      <p class="text-surface-600-400 m-0">Click to select or drag and drop images here</p>
-      <p class="text-sm text-surface-600-400 mt-1 m-0">JPEG, PNG, WebP, AVIF</p>
+      <p class="text-surface-600-400 m-0">{t('common.addImages')}</p>
+      <p class="text-sm text-surface-600-400 mt-1 m-0">{t('common.formats')}</p>
     </div>
     {#if error}
       <p class="text-sm text-error-500 mt-2">{error}</p>
@@ -222,27 +223,27 @@
       disabled={processing || items.length === 0}
       class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {processing ? 'Processing...' : 'Convert'}
+      {processing ? t('common.processing') : t('common.convert')}
     </button>
-    <button onclick={clear} class="btn preset-outlined-surface-200-800">Clear All</button>
+    <button onclick={clear} class="btn preset-outlined-surface-200-800">{t('common.clearAll')}</button>
   </section>
 
   {#if items.length > 0}
     <section class="card preset-outlined-surface-200-800 overflow-hidden">
       <div class="flex justify-between items-center p-4 border-b border-surface-200-800 flex-wrap gap-2">
         <div class="flex items-center gap-4">
-          <h2 class="text-base font-medium m-0">File List</h2>
+          <h2 class="text-base font-medium m-0">{t('common.fileList')}</h2>
           {#if totalStats}
             <span class="text-sm text-surface-600-400">
-              Total: {formatFileSize(totalStats.totalOriginal)} → {formatFileSize(totalStats.totalNew)}
+              {t('common.total')}: {formatFileSize(totalStats.totalOriginal)} → {formatFileSize(totalStats.totalNew)}
               <span class={totalStats.ratio > 0 ? 'text-success-500' : totalStats.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}>
-                ({totalStats.ratio > 0 ? totalStats.ratio.toFixed(1) + '% smaller' : totalStats.ratio < 0 ? Math.abs(totalStats.ratio).toFixed(1) + '% larger' : 'Same'})
+                ({totalStats.ratio > 0 ? totalStats.ratio.toFixed(1) + '% ' + t('common.smaller') : totalStats.ratio < 0 ? Math.abs(totalStats.ratio).toFixed(1) + '% ' + t('common.larger') : t('common.same')})
               </span>
             </span>
           {/if}
         </div>
         <button onclick={downloadAll} class="btn preset-outlined-surface-200-800 btn-sm">
-          Download All
+          {t('common.downloadAll')}
         </button>
       </div>
       <div class="overflow-x-auto">
@@ -250,12 +251,12 @@
           <thead>
             <tr class="border-b border-surface-200-800 text-surface-600-400 text-left">
               <th class="p-3 w-12">#</th>
-              <th class="p-3 w-16">Preview</th>
-              <th class="p-3 min-w-[140px]">Filename</th>
-              <th class="p-3 w-16">Format</th>
-              <th class="p-3 w-20">Size</th>
-              <th class="p-3 w-24">Dimensions</th>
-              <th class="p-3 min-w-[180px] text-right">Result</th>
+              <th class="p-3 w-16">{t('common.preview')}</th>
+              <th class="p-3 min-w-[140px]">{t('common.filename')}</th>
+              <th class="p-3 w-16">{t('common.format')}</th>
+              <th class="p-3 w-20">{t('common.size')}</th>
+              <th class="p-3 w-24">{t('common.dimensions')}</th>
+              <th class="p-3 min-w-[180px] text-right">{t('common.result')}</th>
             </tr>
           </thead>
           <tbody>
@@ -275,7 +276,7 @@
                 <td class="p-3">{item.width}×{item.height}</td>
                 <td class="p-3 text-right">
                   {#if item.status === 'processing'}
-                    <span class="text-surface-600-400">Processing...</span>
+                    <span class="text-surface-600-400">{t('common.processing')}</span>
                   {:else if item.status === 'error'}
                     <span class="text-error-500">{item.error}</span>
                   {:else if item.status === 'done'}
@@ -284,20 +285,20 @@
                         {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
                       </div>
                       <div class={item.ratio > 0 ? 'text-success-500' : item.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}>
-                        {item.ratio > 0 ? item.ratio.toFixed(1) + '% smaller' : item.ratio < 0 ? Math.abs(item.ratio).toFixed(1) + '% larger' : 'Same size'}
+                        {item.ratio > 0 ? item.ratio.toFixed(1) + '% ' + t('common.smaller') : item.ratio < 0 ? Math.abs(item.ratio).toFixed(1) + '% ' + t('common.larger') : t('common.sameSize')}
                       </div>
                       <div class="flex gap-1 mt-1">
                         <button
                           onclick={() => openPreview(item)}
                           class="btn preset-outlined-surface-200-800 btn-sm"
                         >
-                          Preview
+                          {t('common.preview')}
                         </button>
                         <button
                           onclick={() => download(item)}
                           class="btn preset-outlined-surface-200-800 btn-sm"
                         >
-                          Download
+                          {t('common.download')}
                         </button>
                       </div>
                     </div>
@@ -327,14 +328,14 @@
       <div class="card preset-filled-surface-50-950 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div class="flex justify-between items-center p-4 border-b border-surface-200-800">
           <h3 class="font-medium m-0">{previewItem.name}</h3>
-          <button onclick={closePreview} class="btn preset-outlined-surface-200-800 btn-sm" aria-label="Close">
-            Close
+          <button onclick={closePreview} class="btn preset-outlined-surface-200-800 btn-sm" aria-label={t('common.close')}>
+            {t('common.close')}
           </button>
         </div>
         <div class="flex-1 overflow-auto p-4">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="flex flex-col items-center">
-              <p class="text-sm text-surface-600-400 mb-2">Original · {formatFileSize(previewItem.size)}</p>
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.original')} · {formatFileSize(previewItem.size)}</p>
               <img
                 src={previewItem.previewUrl}
                 alt="Original"
@@ -342,7 +343,7 @@
               />
             </div>
             <div class="flex flex-col items-center">
-              <p class="text-sm text-surface-600-400 mb-2">Result · {formatFileSize(previewItem.newSize)}</p>
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.result')} · {formatFileSize(previewItem.newSize)}</p>
               <img
                 src={previewBlobUrl}
                 alt="Result"
@@ -351,7 +352,7 @@
             </div>
           </div>
           <div class="flex items-center gap-4">
-            <span class="text-sm text-surface-600-400">Slider: compare in one view</span>
+            <span class="text-sm text-surface-600-400">{t('common.sliderCompare')}</span>
             <input
               type="range"
               min="0"
