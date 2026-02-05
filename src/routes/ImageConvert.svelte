@@ -144,6 +144,15 @@
     previewItem = null;
     previewBlobUrl = null;
   }
+
+  const totalStats = $derived.by(() => {
+    const done = items.filter((x) => x.status === 'done');
+    if (done.length === 0) return null;
+    const totalOriginal = done.reduce((s, x) => s + x.size, 0);
+    const totalNew = done.reduce((s, x) => s + (x.newSize ?? 0), 0);
+    const ratio = totalOriginal > 0 ? (1 - totalNew / totalOriginal) * 100 : 0;
+    return { totalOriginal, totalNew, ratio };
+  });
 </script>
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
@@ -220,8 +229,18 @@
 
   {#if items.length > 0}
     <section class="card preset-outlined-surface-200-800 overflow-hidden">
-      <div class="flex justify-between items-center p-4 border-b border-surface-200-800">
-        <h2 class="text-base font-medium m-0">File List</h2>
+      <div class="flex justify-between items-center p-4 border-b border-surface-200-800 flex-wrap gap-2">
+        <div class="flex items-center gap-4">
+          <h2 class="text-base font-medium m-0">File List</h2>
+          {#if totalStats}
+            <span class="text-sm text-surface-600-400">
+              Total: {formatFileSize(totalStats.totalOriginal)} → {formatFileSize(totalStats.totalNew)}
+              <span class={totalStats.ratio > 0 ? 'text-success-500' : totalStats.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}>
+                ({totalStats.ratio > 0 ? totalStats.ratio.toFixed(1) + '% smaller' : totalStats.ratio < 0 ? Math.abs(totalStats.ratio).toFixed(1) + '% larger' : 'Same'})
+              </span>
+            </span>
+          {/if}
+        </div>
         <button onclick={downloadAll} class="btn preset-outlined-surface-200-800 btn-sm">
           Download All
         </button>
