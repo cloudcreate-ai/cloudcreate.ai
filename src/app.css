@@ -3,6 +3,13 @@
 html, body { height: 100%; margin: 0; }
 #app { min-height: 100%; }
 
+/* 统一输入组件字体 */
+input, select, textarea {
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton-svelte';
 @import '@skeletonlabs/skeleton/themes/cerberus';

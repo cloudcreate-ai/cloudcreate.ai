@@ -191,25 +191,23 @@
       <span class="font-medium">{t('common.options')}</span>
       <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {t('common.quality')}: {quality}</span>
     </summary>
-    <div class="mt-4 pt-4 border-t border-surface-200-800 space-y-4">
-      <div class="flex gap-6 flex-wrap">
-        <div>
-          <label for="outFormat" class="text-sm text-surface-600-400 block mb-1">{t('compress.outputFormat')}</label>
-          <select id="outFormat" bind:value={targetFormat} class="select w-28">
-            <option value="">{t('common.sameAsOriginal')}</option>
-            {#each ENCODE_FORMATS as fmt}
-              <option value={fmt}>{fmt.toUpperCase()}</option>
-            {/each}
-          </select>
-        </div>
-        <div>
-          <label for="quality" class="text-sm text-surface-600-400 block mb-1">{t('common.quality')} {quality}</label>
-          <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-32" />
-        </div>
+    <div class="mt-3 pt-3 border-t border-surface-200-800 flex flex-wrap items-end gap-4">
+      <div class="flex flex-col gap-0.5">
+        <label for="outFormat" class="text-xs text-surface-600-400">{t('compress.outputFormat')}</label>
+        <select id="outFormat" bind:value={targetFormat} class="select w-24">
+          <option value="">{t('common.sameAsOriginal')}</option>
+          {#each ENCODE_FORMATS as fmt}
+            <option value={fmt}>{fmt.toUpperCase()}</option>
+          {/each}
+        </select>
       </div>
-      <div>
-        <label for="aspect" class="text-sm text-surface-600-400 block mb-1">{t('crop.aspectRatio')}</label>
-        <select id="aspect" bind:value={aspectRatio} class="select preset-outlined-surface-200-800">
+      <div class="flex flex-col gap-0.5">
+        <label for="quality" class="text-xs text-surface-600-400">{t('common.quality')} {quality}</label>
+        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-28" />
+      </div>
+      <div class="flex flex-col gap-0.5">
+        <label for="aspect" class="text-xs text-surface-600-400">{t('crop.aspectRatio')}</label>
+        <select id="aspect" bind:value={aspectRatio} class="select preset-outlined-surface-200-800 w-24">
           {#each ASPECT_OPTIONS as opt}
             <option value={opt.value}>{opt.labelKey ? t(opt.labelKey) : opt.label}</option>
           {/each}

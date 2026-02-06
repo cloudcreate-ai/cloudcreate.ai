@@ -125,7 +125,7 @@
 <style>
   .step-bar {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     flex-wrap: wrap;
     gap: 0;
@@ -196,9 +196,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 0.15rem;
     padding: 0.4rem 0.75rem;
     min-width: 80px;
+    min-height: 56px;
     background: var(--color-surface-100-900);
     border: 1px solid var(--color-surface-200-800);
     border-radius: 8px;

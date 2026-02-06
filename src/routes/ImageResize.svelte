@@ -217,75 +217,71 @@
       <span class="font-medium">{t('common.options')}</span>
       <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {optionsSummary}, {t('common.quality')}: {quality}</span>
     </summary>
-    <div class="mt-4 pt-4 border-t border-surface-200-800 flex flex-col gap-4">
-      <div class="flex gap-6 flex-wrap mb-4">
-        <div class="flex flex-col gap-1">
-          <label for="outFormat" class="text-sm text-surface-600-400">{t('compress.outputFormat')}</label>
-          <select id="outFormat" bind:value={targetFormat} class="select w-28">
-            <option value="">{t('common.sameAsOriginal')}</option>
-            {#each ENCODE_FORMATS as fmt}
-              <option value={fmt}>{fmt.toUpperCase()}</option>
-            {/each}
-          </select>
-        </div>
-        <div class="flex flex-wrap gap-4 items-end">
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="scaleMode" value="percent" bind:group={scaleMode} class="radio" />
-            <span>{t('resize.byPercent')}</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="scaleMode" value="max" bind:group={scaleMode} class="radio" />
-            <span>{t('resize.byMax')}</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="scaleMode" value="width" bind:group={scaleMode} class="radio" />
-            <span>{t('resize.byWidth')}</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="scaleMode" value="height" bind:group={scaleMode} class="radio" />
-            <span>{t('resize.byHeight')}</span>
-          </label>
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input type="radio" name="scaleMode" value="long" bind:group={scaleMode} class="radio" />
-            <span>{t('resize.byLong')}</span>
-          </label>
-        </div>
+    <div class="mt-3 pt-3 border-t border-surface-200-800 flex flex-wrap items-end gap-3">
+      <div class="flex flex-col gap-0.5">
+        <label for="outFormat" class="text-xs text-surface-600-400">{t('compress.outputFormat')}</label>
+        <select id="outFormat" bind:value={targetFormat} class="select w-24">
+          <option value="">{t('common.sameAsOriginal')}</option>
+          {#each ENCODE_FORMATS as fmt}
+            <option value={fmt}>{fmt.toUpperCase()}</option>
+          {/each}
+        </select>
+      </div>
+      <div class="flex flex-wrap gap-2 items-center">
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs">
+          <input type="radio" name="scaleMode" value="percent" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byPercent')}</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs">
+          <input type="radio" name="scaleMode" value="max" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byMax')}</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs">
+          <input type="radio" name="scaleMode" value="width" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byWidth')}</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs">
+          <input type="radio" name="scaleMode" value="height" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byHeight')}</span>
+        </label>
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs">
+          <input type="radio" name="scaleMode" value="long" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byLong')}</span>
+        </label>
       </div>
       {#if scaleMode === 'percent'}
-        <div class="flex flex-col gap-1">
-          <label for="scalePercent" class="text-sm text-surface-600-400">{t('resize.scalePercent')} {scalePercent}%</label>
-          <input id="scalePercent" type="range" min="1" max="200" bind:value={scalePercent} class="input w-full max-w-xs" />
+        <div class="flex flex-col gap-0.5">
+          <label for="scalePercent" class="text-xs text-surface-600-400">{t('resize.scalePercent')} {scalePercent}%</label>
+          <input id="scalePercent" type="range" min="1" max="200" bind:value={scalePercent} class="input w-28" />
         </div>
       {:else if scaleMode === 'max'}
-        <div class="flex gap-6 flex-wrap">
-          <div class="flex flex-col gap-1">
-            <label for="maxW" class="text-sm text-surface-600-400">{t('resize.maxWidth')}</label>
-            <input id="maxW" type="number" min="1" bind:value={maxWidth} class="input w-24" />
-          </div>
-          <div class="flex flex-col gap-1">
-            <label for="maxH" class="text-sm text-surface-600-400">{t('resize.maxHeight')}</label>
-            <input id="maxH" type="number" min="1" bind:value={maxHeight} class="input w-24" />
-          </div>
+        <div class="flex flex-col gap-0.5">
+          <label for="maxW" class="text-xs text-surface-600-400">{t('resize.maxWidth')}</label>
+          <input id="maxW" type="number" min="1" bind:value={maxWidth} class="input w-20" />
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <label for="maxH" class="text-xs text-surface-600-400">{t('resize.maxHeight')}</label>
+          <input id="maxH" type="number" min="1" bind:value={maxHeight} class="input w-20" />
         </div>
       {:else if scaleMode === 'width'}
-        <div class="flex flex-col gap-1">
-          <label for="targetW" class="text-sm text-surface-600-400">{t('resize.targetWidth')} (px)</label>
-          <input id="targetW" type="number" min="1" bind:value={targetWidth} class="input w-24" />
+        <div class="flex flex-col gap-0.5">
+          <label for="targetW" class="text-xs text-surface-600-400">{t('resize.targetWidth')}</label>
+          <input id="targetW" type="number" min="1" bind:value={targetWidth} class="input w-20" />
         </div>
       {:else if scaleMode === 'height'}
-        <div class="flex flex-col gap-1">
-          <label for="targetH" class="text-sm text-surface-600-400">{t('resize.targetHeight')} (px)</label>
-          <input id="targetH" type="number" min="1" bind:value={targetHeight} class="input w-24" />
+        <div class="flex flex-col gap-0.5">
+          <label for="targetH" class="text-xs text-surface-600-400">{t('resize.targetHeight')}</label>
+          <input id="targetH" type="number" min="1" bind:value={targetHeight} class="input w-20" />
         </div>
       {:else}
-        <div class="flex flex-col gap-1">
-          <label for="targetLong" class="text-sm text-surface-600-400">{t('resize.targetLong')} (px)</label>
-          <input id="targetLong" type="number" min="1" bind:value={targetLong} class="input w-24" />
+        <div class="flex flex-col gap-0.5">
+          <label for="targetLong" class="text-xs text-surface-600-400">{t('resize.targetLong')}</label>
+          <input id="targetLong" type="number" min="1" bind:value={targetLong} class="input w-20" />
         </div>
       {/if}
-      <div class="flex flex-col gap-1">
-        <label for="quality" class="text-sm text-surface-600-400">{t('common.quality')} {quality}</label>
-        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-full max-w-xs" />
+      <div class="flex flex-col gap-0.5">
+        <label for="quality" class="text-xs text-surface-600-400">{t('common.quality')} {quality}</label>
+        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-28" />
       </div>
     </div>
   </details>
