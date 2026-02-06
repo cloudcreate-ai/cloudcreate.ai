@@ -5,9 +5,11 @@
   import ImageCompress from './routes/ImageCompress.svelte';
   import ImageCrop from './routes/ImageCrop.svelte';
   import ImageResize from './routes/ImageResize.svelte';
+  import WorkflowEditor from './routes/WorkflowEditor.svelte';
 
   const routes = {
     '/': Workspace,
+    '/workflow': WorkflowEditor,
     '/image/compress': ImageCompress,
     '/image/crop': ImageCrop,
     '/image/resize': ImageResize,

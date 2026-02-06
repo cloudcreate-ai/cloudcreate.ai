@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+html, body { height: 100%; margin: 0; }
+#app { min-height: 100%; }
+
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton-svelte';
 @import '@skeletonlabs/skeleton/themes/cerberus';

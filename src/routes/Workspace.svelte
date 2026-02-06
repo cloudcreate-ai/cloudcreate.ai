@@ -3,6 +3,7 @@
   import { locale, setLocale, t } from '../lib/i18n.js';
 
   const tools = [
+    { id: 'workflow', titleKey: 'home.workflowTitle', descKey: 'home.workflowDesc', href: '/workflow', icon: '🔀' },
     { id: 'compress', titleKey: 'home.compressTitle', descKey: 'home.compressDesc', href: '/image/compress', icon: '🗜️' },
     { id: 'crop', titleKey: 'home.cropTitle', descKey: 'home.cropDesc', href: '/image/crop', icon: '✂️' },
     { id: 'resize', titleKey: 'home.resizeTitle', descKey: 'home.resizeDesc', href: '/image/resize', icon: '📐' },
