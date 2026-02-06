@@ -10,6 +10,8 @@
     downloadAsZip,
     computeTotalStats,
   } from '../lib/batchHelpers.js';
+
+  const VALID_STEP_TYPES = ['input', 'output', 'resize', 'crop'];
   import { formatFileSize, formatLabelFromFilename } from '../lib/imageProcessor.js';
   import StepBar from './workflow/StepBar.svelte';
   import StepDetailPanel from './workflow/StepDetailPanel.svelte';
@@ -22,6 +24,8 @@
 
   let steps = $state([...DEFAULT_STEPS]);
   let selectedStepIndex = $state(null);
+  let workflowName = $state('');
+  let workflowDescription = $state('');
 
   function addStep(index, type) {
     const params = { ...DEFAULT_STEP_PARAMS[type] };
@@ -48,6 +52,112 @@
 
   function getGraph() {
     return buildGraphFromSteps(steps);
+  }
+
+  /** 构建符合 workflowLoader 格式的 JSON 对象 */
+  function getWorkflowJson() {
+    return {
+      version: 1,
+      name: workflowName || 'workflow',
+      description: workflowDescription || '',
+      steps: steps.map((s) => ({ type: s.type, ...(s.params && Object.keys(s.params).length ? { params: s.params } : {}) })),
+    };
+  }
+
+  /** 下载当前工作流为 JSON 文件 */
+  function downloadJson() {
+    const json = JSON.stringify(getWorkflowJson(), null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const name = (workflowName || 'workflow').replace(/[^a-zA-Z0-9_-]/g, '_') + '.json';
+    downloadBlob(blob, name);
+  }
+
+  /** 校验并解析导入的 steps，返回 { valid, steps } 或 { valid: false, error } */
+  function parseImportedWorkflow(raw) {
+    let obj;
+    try {
+      obj = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    } catch (_) {
+      return { valid: false, error: 'Invalid JSON' };
+    }
+    const s = obj?.steps;
+    if (!Array.isArray(s) || s.length < 2) {
+      return { valid: false, error: t('workflow.importError') };
+    }
+    const hasInput = s.some((x) => x?.type === 'input');
+    const hasOutput = s.some((x) => x?.type === 'output');
+    if (!hasInput || !hasOutput) {
+      return { valid: false, error: t('workflow.importError') };
+    }
+    const filtered = s.filter((x) => x && VALID_STEP_TYPES.includes(x.type));
+    if (filtered.length !== s.length) {
+      return { valid: false, error: t('workflow.importError') };
+    }
+    const normalized = filtered.map((x) => {
+      if (x.type === 'input') return { type: 'input' };
+      const def = x.type === 'output' ? { targetFormat: '', quality: 75 } : DEFAULT_STEP_PARAMS[x.type] || {};
+      return { type: x.type, params: { ...def, ...(x.params || {}) } };
+    });
+    if (normalized[0].type !== 'input') normalized.unshift({ type: 'input' });
+    if (normalized[normalized.length - 1].type !== 'output') normalized.push({ type: 'output', params: { targetFormat: '', quality: 75 } });
+    return { valid: true, steps: normalized, name: obj.name || '', description: obj.description || '' };
+  }
+
+  let showViewJsonModal = $state(false);
+  let showImportModal = $state(false);
+  let importInputRef = $state(null);
+  let importPasteText = $state('');
+  let importErrorMsg = $state('');
+
+  function openViewJson() {
+    showViewJsonModal = true;
+  }
+
+  function closeViewJson() {
+    showViewJsonModal = false;
+  }
+
+  function openImport() {
+    importPasteText = '';
+    importErrorMsg = '';
+    showImportModal = true;
+  }
+
+  function closeImport() {
+    showImportModal = false;
+  }
+
+  function handleImportFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const result = parseImportedWorkflow(r.result);
+      if (result.valid) {
+        steps = result.steps;
+        workflowName = result.name || '';
+        workflowDescription = result.description || '';
+        selectedStepIndex = null;
+        closeImport();
+      } else {
+        importErrorMsg = result.error;
+      }
+    };
+    r.readAsText(file);
+    e.target.value = '';
+  }
+
+  function handleImportPaste() {
+    const result = parseImportedWorkflow(importPasteText);
+    if (result.valid) {
+      steps = result.steps;
+      workflowName = result.name || '';
+      workflowDescription = result.description || '';
+      selectedStepIndex = null;
+      closeImport();
+    } else {
+      importErrorMsg = result.error;
+    }
   }
 
   let files = $state([]);
@@ -174,13 +284,31 @@
 </script>
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
+<input
+  type="file"
+  accept=".json,application/json"
+  class="hidden"
+  bind:this={importInputRef}
+  onchange={handleImportFile}
+/>
 <main class="workflow-simple">
   <header class="workflow-header">
     <a href="/" use:link class="text-primary-500 text-sm no-underline hover:underline">{t('common.backWorkspace')}</a>
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
-    <a href="/workflow/advanced" use:link class="text-sm text-surface-600-400 hover:text-primary-500">
-      {t('workflow.advancedMode')}
-    </a>
+    <div class="header-actions">
+      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={openViewJson}>
+        {t('workflow.viewJson')}
+      </button>
+      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={downloadJson}>
+        {t('workflow.downloadJson')}
+      </button>
+      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={openImport}>
+        {t('workflow.importJson')}
+      </button>
+      <a href="/workflow/advanced" use:link class="text-sm text-surface-600-400 hover:text-primary-500">
+        {t('workflow.advancedMode')}
+      </a>
+    </div>
   </header>
 
   <section class="workflow-step-preview">
@@ -326,6 +454,76 @@
     <CropModal request={cropRequest} />
   {/if}
 
+  {#if showViewJsonModal}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('workflow.jsonModalTitle')}
+      tabindex="-1"
+      onclick={(e) => e.target === e.currentTarget && closeViewJson()}
+      onkeydown={(e) => e.key === 'Escape' && closeViewJson()}
+    >
+      <div class="card preset-filled-surface-50-950 max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-surface-200-800">
+          <h3 class="font-medium m-0">{t('workflow.jsonModalTitle')}</h3>
+          <div class="flex gap-2">
+            <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={() => navigator.clipboard?.writeText(JSON.stringify(getWorkflowJson(), null, 2))}>
+              Copy
+            </button>
+            <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={closeViewJson} aria-label={t('common.close')}>
+              {t('common.close')}
+            </button>
+          </div>
+        </div>
+        <pre class="flex-1 overflow-auto p-4 text-sm font-mono whitespace-pre-wrap break-all">{JSON.stringify(getWorkflowJson(), null, 2)}</pre>
+      </div>
+    </div>
+  {/if}
+
+  {#if showImportModal}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('workflow.importJson')}
+      tabindex="-1"
+      onclick={(e) => e.target === e.currentTarget && closeImport()}
+      onkeydown={(e) => e.key === 'Escape' && closeImport()}
+    >
+      <div class="card preset-filled-surface-50-950 max-w-xl w-full overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-surface-200-800">
+          <h3 class="font-medium m-0">{t('workflow.importJson')}</h3>
+          <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={closeImport} aria-label={t('common.close')}>
+            {t('common.close')}
+          </button>
+        </div>
+        <div class="p-4 flex flex-col gap-3">
+          <p class="text-sm text-surface-600-400 m-0">{t('workflow.importPasteHint')}</p>
+          <button class="btn preset-outlined-surface-200-800 btn-sm self-start" onclick={() => importInputRef?.click()}>
+            {t('workflow.load')}
+          </button>
+          <textarea
+            class="input font-mono text-sm min-h-[120px]"
+            placeholder={'{"version":1,"name":"...","steps":[...]}'}
+            bind:value={importPasteText}
+          ></textarea>
+          {#if importErrorMsg}
+            <p class="text-error-500 text-sm m-0">{importErrorMsg}</p>
+          {/if}
+          <div class="flex justify-end gap-2">
+            <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={closeImport}>Cancel</button>
+            <button class="btn preset-filled-primary-500 btn-sm" onclick={handleImportPaste} disabled={!importPasteText.trim()}>
+              {t('workflow.import')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
   {#if previewItem}
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
     <div
@@ -424,6 +622,12 @@
   }
   .workflow-header h1 {
     flex: 1;
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
   }
   .workflow-step-preview {
     flex-shrink: 0;
