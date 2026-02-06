@@ -6,6 +6,7 @@
     { id: 'compress', titleKey: 'home.compressTitle', descKey: 'home.compressDesc', href: '/image/compress', icon: '🗜️' },
     { id: 'convert', titleKey: 'home.convertTitle', descKey: 'home.convertDesc', href: '/image/convert', icon: '🔄' },
     { id: 'crop', titleKey: 'home.cropTitle', descKey: 'home.cropDesc', href: '/image/crop', icon: '✂️' },
+    { id: 'resize', titleKey: 'home.resizeTitle', descKey: 'home.resizeDesc', href: '/image/resize', icon: '📐' },
   ];
 </script>
 

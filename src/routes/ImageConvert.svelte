@@ -1,7 +1,7 @@
 <script>
   import { link } from 'svelte-spa-router';
   import { t } from '../lib/i18n.js';
-  import { formatFileSize, ENCODE_FORMATS } from '../lib/imageProcessor.js';
+  import { formatFileSize, ENCODE_FORMATS, formatLabelFromFilename } from '../lib/imageProcessor.js';
   import { convertImage } from '../lib/workflows/convert.js';
   import {
     ACCEPT_IMAGES,
@@ -249,7 +249,7 @@
                   {:else if item.status === 'done'}
                     <div class="space-y-0.5">
                       <div class="text-surface-600-400">
-                        {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
+                        {formatLabelFromFilename(item.outputName)} · {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
                       </div>
                       <div class={item.ratio > 0 ? 'text-success-500' : item.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}>
                         {item.ratio > 0 ? item.ratio.toFixed(1) + '% ' + t('common.smaller') : item.ratio < 0 ? Math.abs(item.ratio).toFixed(1) + '% ' + t('common.larger') : t('common.sameSize')}

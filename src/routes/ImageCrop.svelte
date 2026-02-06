@@ -4,7 +4,7 @@
   import { t } from '../lib/i18n.js';
   import Cropper from 'cropperjs';
   import 'cropperjs/src/css/cropper.css';
-  import { formatFileSize, getImageDimensions } from '../lib/imageProcessor.js';
+  import { formatFileSize, getImageDimensions, ENCODE_FORMATS, formatLabelFromFilename } from '../lib/imageProcessor.js';
   import { cropToBlob } from '../lib/workflows/crop.js';
   import { downloadBlob, ACCEPT_IMAGES } from '../lib/batchHelpers.js';
   import { loadToolConfig, saveToolConfig } from '../lib/toolConfig.js';
@@ -26,14 +26,19 @@
   let cropper = $state(null);
   let file = $state(null);
   let previewUrl = $state(null);
-  const cropDefaults = { aspectRatio: 0 };
+  const cropDefaults = { aspectRatio: 0, targetFormat: '', quality: 75 };
   const savedCrop = loadToolConfig('crop', cropDefaults);
   const validAspect = ASPECT_OPTIONS.some((o) => Math.abs(o.value - (savedCrop.aspectRatio ?? 0)) < 1e-6)
     ? savedCrop.aspectRatio
     : 0;
+  const validCropFormat = savedCrop.targetFormat === '' || ENCODE_FORMATS.includes(savedCrop.targetFormat)
+    ? savedCrop.targetFormat
+    : '';
   let aspectRatio = $state(validAspect);
+  let targetFormat = $state(validCropFormat);
+  let quality = $state(Math.min(100, Math.max(1, savedCrop.quality ?? 75)));
 
-  $effect(() => saveToolConfig('crop', { aspectRatio }));
+  $effect(() => saveToolConfig('crop', { aspectRatio, targetFormat, quality }));
   let cropW = $state(0);
   let cropH = $state(0);
   let origWidth = $state(0);
@@ -158,7 +163,10 @@
     processing = true;
     try {
       const canvas = cropper.getCroppedCanvas({ imageSmoothingQuality: 'high' });
-      const { blob, outputName, width: w, height: h } = await cropToBlob(canvas, file, { quality: 0.92 });
+      const { blob, outputName, width: w, height: h } = await cropToBlob(canvas, file, {
+        targetFormat: targetFormat || undefined,
+        quality,
+      });
       resultBlob = blob;
       resultName = outputName;
       resultWidth = w;
@@ -175,6 +183,24 @@
     downloadBlob(resultBlob, resultName);
   }
 
+  let previewOpen = $state(false);
+  let previewBlobUrl = $state(null);
+  let comparePos = $state(50);
+
+  function openPreview() {
+    if (!resultBlob || !file || !previewUrl) return;
+    previewBlobUrl?.startsWith('blob:') && URL.revokeObjectURL(previewBlobUrl);
+    previewBlobUrl = URL.createObjectURL(resultBlob);
+    previewOpen = true;
+    comparePos = 50;
+  }
+
+  function closePreview() {
+    if (previewBlobUrl?.startsWith('blob:')) URL.revokeObjectURL(previewBlobUrl);
+    previewBlobUrl = null;
+    previewOpen = false;
+  }
+
   function clearAll() {
     destroyCropper();
     if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -186,17 +212,11 @@
     resultName = '';
     resultWidth = 0;
     resultHeight = 0;
+    closePreview();
     cropW = 0;
     cropH = 0;
     error = '';
     if (inputRef) inputRef.value = '';
-  }
-
-  function formatAspectRatio(w, h) {
-    if (!w || !h) return '—';
-    const g = (a, b) => (b ? g(b, a % b) : a);
-    const d = g(w, h);
-    return `${w / d}:${h / d}`;
   }
 
   // 监听 aspectRatio 变化
@@ -212,7 +232,7 @@
   });
 </script>
 
-<svelte:window onkeydown={(e) => { if (e.key === 'Escape') clearAll(); }} />
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape') previewOpen ? closePreview() : null; }} />
 
 <main class="p-8 max-w-4xl mx-auto">
   <header class="mb-6">
@@ -244,8 +264,24 @@
     <details class="card preset-outlined-surface-200-800 p-4 mb-4">
       <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
         <span class="font-medium">{t('common.options')}</span>
+        <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {t('common.quality')}: {quality}</span>
       </summary>
       <div class="mt-4 pt-4 border-t border-surface-200-800 space-y-4">
+        <div class="flex gap-6 flex-wrap">
+          <div>
+            <label for="outFormat" class="text-sm text-surface-600-400 block mb-1">{t('convert.outputFormat')}</label>
+            <select id="outFormat" bind:value={targetFormat} class="select w-28">
+              <option value="">{t('common.sameAsOriginal')}</option>
+              {#each ENCODE_FORMATS as fmt}
+                <option value={fmt}>{fmt.toUpperCase()}</option>
+              {/each}
+            </select>
+          </div>
+          <div>
+            <label for="quality" class="text-sm text-surface-600-400 block mb-1">{t('common.quality')} {quality}</label>
+            <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-32" />
+          </div>
+        </div>
         <div>
           <label for="aspect" class="text-sm text-surface-600-400 block mb-1">{t('crop.aspectRatio')}</label>
           <select
@@ -293,43 +329,91 @@
       </div>
     </details>
 
-    <!-- 原始图片信息 -->
-    <section class="card preset-outlined-surface-200-800 p-4 mb-4">
-      <h3 class="text-sm font-medium text-surface-600-400 mb-3">{t('crop.originalImage')}</h3>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-        <div>
-          <span class="text-surface-600-400 block">{t('common.filename')}</span>
-          <span class="truncate block max-w-[180px]" title={file.name}>{file.name}</span>
+    <!-- 添加后立即显示文件列表 -->
+    <section class="card preset-outlined-surface-200-800 overflow-hidden mb-4">
+        <div class="flex justify-between items-center p-4 border-b border-surface-200-800 flex-wrap gap-2">
+          <h2 class="text-base font-medium m-0">{t('common.fileList')}</h2>
+          <div class="flex gap-2">
+            <button
+              onclick={doCrop}
+              disabled={processing}
+              class="btn preset-filled-primary-500 btn-sm disabled:opacity-60"
+            >
+              {processing ? t('crop.cropping') : t('crop.crop')}
+            </button>
+            {#if resultBlob}
+              <button onclick={downloadResult} class="btn preset-outlined-surface-200-800 btn-sm">
+                {t('common.download')}
+              </button>
+            {/if}
+            <button onclick={clearAll} class="btn preset-outlined-surface-200-800 btn-sm">
+              {t('common.changeImage')}
+            </button>
+          </div>
         </div>
-        <div>
-          <span class="text-surface-600-400 block">{t('common.size')}</span>
-          <span>{formatFileSize(file.size)}</span>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-surface-200-800 text-surface-600-400 text-left">
+                <th class="p-3 w-12">#</th>
+                <th class="p-3 w-16">{t('common.preview')}</th>
+                <th class="p-3 min-w-[140px]">{t('common.filename')}</th>
+                <th class="p-3 w-16">{t('common.format')}</th>
+                <th class="p-3 w-20">{t('common.size')}</th>
+                <th class="p-3 w-24">{t('common.dimensions')}</th>
+                <th class="p-3 min-w-[180px] text-right">{t('common.result')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-surface-200-800 last:border-b-0 hover:bg-surface-100-900/50">
+                <td class="p-3">1</td>
+                <td class="p-3">
+                  <img src={previewUrl} alt="" class="w-12 h-12 object-cover rounded block" />
+                </td>
+                <td class="p-3 truncate max-w-[140px]" title={file.name}>{file.name}</td>
+                <td class="p-3">{formatLabelFromFilename(file.name)}</td>
+                <td class="p-3">{formatFileSize(file.size)}</td>
+                <td class="p-3">{origWidth}×{origHeight}</td>
+                <td class="p-3 text-right">
+                  {#if processing}
+                    <span class="text-surface-600-400">{t('common.processing')}</span>
+                  {:else if resultBlob}
+                    <div class="space-y-0.5">
+                      <div class="text-surface-600-400">
+                        {formatLabelFromFilename(resultName)} · {origWidth}×{origHeight} → {resultWidth}×{resultHeight}
+                      </div>
+                      <div class="text-surface-600-400">
+                        {formatFileSize(file.size)} → {formatFileSize(resultBlob.size)}
+                      </div>
+                      <div class={file.size > 0 && (1 - resultBlob.size / file.size) * 100 > 0 ? 'text-success-500' : file.size > 0 && (1 - resultBlob.size / file.size) * 100 < 0 ? 'text-warning-500' : 'text-surface-600-400'}>
+                        {#if file.size > 0}
+                          {@const pct = (1 - resultBlob.size / file.size) * 100}
+                          {pct > 0 ? pct.toFixed(1) + '% ' + t('common.smaller') : pct < 0 ? Math.abs(pct).toFixed(1) + '% ' + t('common.larger') : t('common.sameSize')}
+                        {:else}
+                          {t('common.sameSize')}
+                        {/if}
+                      </div>
+                      <div class="flex gap-1 mt-1">
+                        <button onclick={openPreview} class="btn preset-outlined-surface-200-800 btn-sm">
+                          {t('common.preview')}
+                        </button>
+                        <button onclick={downloadResult} class="btn preset-outlined-surface-200-800 btn-sm">
+                          {t('common.download')}
+                        </button>
+                      </div>
+                    </div>
+                  {:else}
+                    <span class="text-surface-600-400">—</span>
+                  {/if}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div>
-          <span class="text-surface-600-400 block">{t('common.dimensions')}</span>
-          <span>{origWidth} × {origHeight}</span>
-        </div>
-        <div>
-          <span class="text-surface-600-400 block">{t('crop.aspectRatioLabel')}</span>
-          <span>{formatAspectRatio(origWidth, origHeight)}</span>
-        </div>
-      </div>
-    </section>
+      </section>
 
+    <!-- 裁剪区域 -->
     <div class="card preset-outlined-surface-200-800 overflow-hidden mb-4">
-      <div class="border-b border-surface-200-800 p-4 flex justify-between items-center flex-wrap gap-2">
-        <span class="text-sm truncate max-w-[200px]" title={file.name}>{file.name}</span>
-        <div class="flex gap-2">
-          <button
-            onclick={doCrop}
-            disabled={processing}
-            class="btn preset-filled-primary-500 disabled:opacity-60"
-          >
-            {processing ? t('crop.cropping') : t('crop.crop')}
-          </button>
-          <button onclick={clearAll} class="btn preset-outlined-surface-200-800">{t('common.changeImage')}</button>
-        </div>
-      </div>
       <div
         bind:this={containerRef}
         class="relative bg-surface-100-900"
@@ -347,54 +431,74 @@
       <p class="text-sm text-error-500 mb-4">{error}</p>
     {/if}
 
-    {#if resultBlob}
-      <section class="card preset-outlined-surface-200-800 p-4">
-        <h3 class="text-sm font-medium text-surface-600-400 mb-3">{t('crop.resultComparison')}</h3>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-surface-200-800 text-surface-600-400 text-left">
-                <th class="p-3 w-24"></th>
-                <th class="p-3">{t('common.original')}</th>
-                <th class="p-3">{t('common.result')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="border-b border-surface-200-800">
-                <td class="p-3 font-medium">{t('common.filename')}</td>
-                <td class="p-3 truncate max-w-[160px]" title={file.name}>{file.name}</td>
-                <td class="p-3 truncate max-w-[160px]" title={resultName}>{resultName}</td>
-              </tr>
-              <tr class="border-b border-surface-200-800">
-                <td class="p-3 font-medium">{t('common.size')}</td>
-                <td class="p-3">{formatFileSize(file.size)}</td>
-                <td class="p-3">
-                  {formatFileSize(resultBlob.size)}
-                  {#if file.size > 0}
-                    {@const pct = (1 - resultBlob.size / file.size) * 100}
-                    <span class="text-surface-600-400 ml-1">
-                      ({pct > 0 ? pct.toFixed(1) + '% ' + t('common.smaller') : pct < 0 ? Math.abs(pct).toFixed(1) + '% ' + t('common.larger') : t('common.same')})
-                    </span>
-                  {/if}
-                </td>
-              </tr>
-              <tr class="border-b border-surface-200-800">
-                <td class="p-3 font-medium">{t('common.dimensions')}</td>
-                <td class="p-3">{origWidth} × {origHeight}</td>
-                <td class="p-3">{resultWidth} × {resultHeight}</td>
-              </tr>
-              <tr class="border-b border-surface-200-800">
-                <td class="p-3 font-medium">{t('crop.aspectRatioLabel')}</td>
-                <td class="p-3">{formatAspectRatio(origWidth, origHeight)}</td>
-                <td class="p-3">{formatAspectRatio(resultWidth, resultHeight)}</td>
-              </tr>
-            </tbody>
-          </table>
+  {#if previewOpen}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Preview comparison"
+      tabindex="-1"
+      onclick={(e) => e.target === e.currentTarget && closePreview()}
+      onkeydown={(e) => e.key === 'Escape' && closePreview()}
+    >
+      <div class="card preset-filled-surface-50-950 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-surface-200-800">
+          <h3 class="font-medium m-0">{file?.name}</h3>
+          <button onclick={closePreview} class="btn preset-outlined-surface-200-800 btn-sm" aria-label={t('common.close')}>
+            {t('common.close')}
+          </button>
         </div>
-        <div class="mt-4">
-          <button onclick={downloadResult} class="btn preset-filled-primary-500">{t('common.download')}</button>
+        <div class="flex-1 overflow-auto p-4">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="flex flex-col items-center">
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.original')} · {formatFileSize(file?.size)} · {origWidth}×{origHeight}</p>
+              <img
+                src={previewUrl}
+                alt="Original"
+                class="max-w-full max-h-[60vh] object-contain rounded border border-surface-200-800"
+              />
+            </div>
+            <div class="flex flex-col items-center">
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.result')} · {formatFileSize(resultBlob?.size)} · {resultWidth}×{resultHeight}</p>
+              <img
+                src={previewBlobUrl}
+                alt="Result"
+                class="max-w-full max-h-[60vh] object-contain rounded border border-surface-200-800"
+              />
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-surface-600-400">{t('common.sliderCompare')}</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              bind:value={comparePos}
+              class="input flex-1 max-w-xs"
+            />
+          </div>
+          <div class="relative mt-2 rounded overflow-hidden border border-surface-200-800" style="aspect-ratio: 16/9; max-height: 40vh;">
+            <img
+              src={previewUrl}
+              alt="Original"
+              class="absolute inset-0 w-full h-full object-contain"
+            />
+            <div class="absolute inset-0 overflow-hidden" style="clip-path: inset(0 {100 - comparePos}% 0 0);">
+              <img
+                src={previewBlobUrl}
+                alt="Result"
+                class="absolute inset-0 w-full h-full object-contain"
+              />
+            </div>
+            <div
+              class="absolute top-0 bottom-0 w-0.5 bg-primary-500 pointer-events-none"
+              style="left: {comparePos}%;"
+            ></div>
+          </div>
         </div>
-      </section>
-    {/if}
+      </div>
+    </div>
+  {/if}
   {/if}
 </main>

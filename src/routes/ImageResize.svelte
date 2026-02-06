@@ -2,7 +2,7 @@
   import { link } from 'svelte-spa-router';
   import { t } from '../lib/i18n.js';
   import { formatFileSize, ENCODE_FORMATS, formatLabelFromFilename } from '../lib/imageProcessor.js';
-  import { compressImage } from '../lib/workflows/compress.js';
+  import { resizeImage } from '../lib/workflows/resize.js';
   import {
     ACCEPT_IMAGES,
     buildFileItem,
@@ -13,14 +13,47 @@
   } from '../lib/batchHelpers.js';
   import { loadToolConfig, saveToolConfig } from '../lib/toolConfig.js';
 
-  const compressDefaults = { targetFormat: '', quality: 75 };
-  const saved = loadToolConfig('compress', compressDefaults);
-  const validFormat = saved.targetFormat === '' || ENCODE_FORMATS.includes(saved.targetFormat) ? saved.targetFormat : '';
+  const VALID_MODES = ['percent', 'max', 'width', 'height', 'long'];
+  const resizeDefaults = {
+    scaleMode: 'percent',
+    scalePercent: 50,
+    maxWidth: 1920,
+    maxHeight: 1080,
+    targetWidth: 1920,
+    targetHeight: 1080,
+    targetLong: 1920,
+    targetFormat: '',
+    quality: 75,
+  };
+  const saved = loadToolConfig('resize', resizeDefaults);
+  const validResizeFormat = saved.targetFormat === '' || ENCODE_FORMATS.includes(saved.targetFormat)
+    ? saved.targetFormat
+    : '';
   let items = $state([]);
-  let targetFormat = $state(validFormat);
+  let scaleMode = $state(VALID_MODES.includes(saved.scaleMode) ? saved.scaleMode : 'percent');
+  let scalePercent = $state(Math.min(200, Math.max(1, saved.scalePercent ?? 50)));
+  let maxWidth = $state(Math.max(1, saved.maxWidth ?? 1920));
+  let maxHeight = $state(Math.max(1, saved.maxHeight ?? 1080));
+  let targetWidth = $state(Math.max(1, saved.targetWidth ?? 1920));
+  let targetHeight = $state(Math.max(1, saved.targetHeight ?? 1080));
+  let targetLong = $state(Math.max(1, saved.targetLong ?? 1920));
+  let targetFormat = $state(validResizeFormat);
   let quality = $state(Math.min(100, Math.max(1, saved.quality ?? 75)));
 
-  $effect(() => saveToolConfig('compress', { targetFormat, quality }));
+  $effect(() =>
+    saveToolConfig('resize', {
+      scaleMode,
+      scalePercent,
+      maxWidth,
+      maxHeight,
+      targetWidth,
+      targetHeight,
+      targetLong,
+      targetFormat,
+      quality,
+    })
+  );
+
   let processing = $state(false);
   let error = $state('');
   let inputRef;
@@ -68,12 +101,19 @@
       const item = items[i];
       items = items.map((x, j) => (j === i ? { ...x, status: 'processing' } : x));
       try {
-        const { blob, outputName, newSize, ratio } = await compressImage(item.file, {
+        const { blob, outputName, newSize, ratio, width, height } = await resizeImage(item.file, {
+          scaleMode,
+          scalePercent,
+          maxWidth,
+          maxHeight,
+          targetWidth,
+          targetHeight,
+          targetLong,
           targetFormat: targetFormat || undefined,
           quality,
         });
         items = items.map((x, j) =>
-          j === i ? { ...x, status: 'done', blob, newSize, ratio, outputName } : x
+          j === i ? { ...x, status: 'done', blob, newSize, ratio, outputName, newWidth: width, newHeight: height } : x
         );
       } catch (e) {
         items = items.map((x, j) => (j === i ? { ...x, status: 'error', error: e.message } : x));
@@ -89,7 +129,7 @@
 
   async function downloadAll() {
     const done = items.filter((x) => x.status === 'done' && x.blob);
-    await downloadAsZip(done, 'compressed-images.zip');
+    await downloadAsZip(done, 'resized-images.zip');
   }
 
   function removeItem(id) {
@@ -127,6 +167,18 @@
   }
 
   const totalStats = $derived.by(() => computeTotalStats(items));
+
+  const optionsSummary = $derived(
+    scaleMode === 'percent'
+      ? `${scalePercent}%`
+      : scaleMode === 'max'
+        ? `${t('resize.maxLabel')} ${maxWidth}×${maxHeight}`
+        : scaleMode === 'width'
+          ? `${t('resize.byWidth')} ${targetWidth}px`
+          : scaleMode === 'height'
+            ? `${t('resize.byHeight')} ${targetHeight}px`
+            : `${t('resize.byLong')} ${targetLong}px`
+  );
 </script>
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
@@ -136,28 +188,84 @@
     <a href="/" use:link class="text-primary-500 text-sm no-underline hover:underline block mb-3"
       >{t('common.backWorkspace')}</a
     >
-    <h1 class="text-2xl font-semibold mb-1">{t('compress.title')}</h1>
-    <p class="text-surface-600-400 text-sm m-0">{t('compress.desc')}</p>
+    <h1 class="text-2xl font-semibold mb-1">{t('resize.title')}</h1>
+    <p class="text-surface-600-400 text-sm m-0">{t('resize.desc')}</p>
   </header>
 
   <details class="card preset-outlined-surface-200-800 p-4 mb-4">
     <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
       <span class="font-medium">{t('common.options')}</span>
-      <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {t('common.quality')}: {quality}</span>
+      <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {optionsSummary}, {t('common.quality')}: {quality}</span>
     </summary>
-    <div class="mt-4 pt-4 border-t border-surface-200-800 flex gap-8 flex-wrap">
+    <div class="mt-4 pt-4 border-t border-surface-200-800 flex flex-col gap-4">
+      <div class="flex gap-6 flex-wrap mb-4">
       <div class="flex flex-col gap-1">
-        <label for="format" class="text-sm text-surface-600-400">{t('convert.outputFormat')}</label>
-        <select id="format" bind:value={targetFormat} class="select w-28">
+        <label for="outFormat" class="text-sm text-surface-600-400">{t('convert.outputFormat')}</label>
+        <select id="outFormat" bind:value={targetFormat} class="select w-28">
           <option value="">{t('common.sameAsOriginal')}</option>
           {#each ENCODE_FORMATS as fmt}
             <option value={fmt}>{fmt.toUpperCase()}</option>
           {/each}
         </select>
       </div>
+      <div class="flex flex-wrap gap-4 items-end">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="radio" name="scaleMode" value="percent" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byPercent')}</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="radio" name="scaleMode" value="max" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byMax')}</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="radio" name="scaleMode" value="width" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byWidth')}</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="radio" name="scaleMode" value="height" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byHeight')}</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          <input type="radio" name="scaleMode" value="long" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byLong')}</span>
+        </label>
+      </div>
+    </div>
+      {#if scaleMode === 'percent'}
+        <div class="flex flex-col gap-1">
+          <label for="scalePercent" class="text-sm text-surface-600-400">{t('resize.scalePercent')} {scalePercent}%</label>
+          <input id="scalePercent" type="range" min="1" max="200" bind:value={scalePercent} class="input w-full max-w-xs" />
+        </div>
+      {:else if scaleMode === 'max'}
+        <div class="flex gap-6 flex-wrap">
+          <div class="flex flex-col gap-1">
+            <label for="maxW" class="text-sm text-surface-600-400">{t('resize.maxWidth')}</label>
+            <input id="maxW" type="number" min="1" bind:value={maxWidth} class="input w-24" />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label for="maxH" class="text-sm text-surface-600-400">{t('resize.maxHeight')}</label>
+            <input id="maxH" type="number" min="1" bind:value={maxHeight} class="input w-24" />
+          </div>
+        </div>
+      {:else if scaleMode === 'width'}
+        <div class="flex flex-col gap-1">
+          <label for="targetW" class="text-sm text-surface-600-400">{t('resize.targetWidth')} (px)</label>
+          <input id="targetW" type="number" min="1" bind:value={targetWidth} class="input w-24" />
+        </div>
+      {:else if scaleMode === 'height'}
+        <div class="flex flex-col gap-1">
+          <label for="targetH" class="text-sm text-surface-600-400">{t('resize.targetHeight')} (px)</label>
+          <input id="targetH" type="number" min="1" bind:value={targetHeight} class="input w-24" />
+        </div>
+      {:else}
+        <div class="flex flex-col gap-1">
+          <label for="targetLong" class="text-sm text-surface-600-400">{t('resize.targetLong')} (px)</label>
+          <input id="targetLong" type="number" min="1" bind:value={targetLong} class="input w-24" />
+        </div>
+      {/if}
       <div class="flex flex-col gap-1">
         <label for="quality" class="text-sm text-surface-600-400">{t('common.quality')} {quality}</label>
-        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-32" />
+        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-full max-w-xs" />
       </div>
     </div>
   </details>
@@ -197,7 +305,7 @@
       disabled={processing || items.length === 0}
       class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {processing ? t('common.processing') : t('common.compress')}
+      {processing ? t('common.processing') : t('resize.resize')}
     </button>
     <button onclick={clear} class="btn preset-outlined-surface-200-800">{t('common.clearAll')}</button>
   </section>
@@ -256,7 +364,10 @@
                   {:else if item.status === 'done'}
                     <div class="space-y-0.5">
                       <div class="text-surface-600-400">
-                        {formatLabelFromFilename(item.outputName)} · {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
+                        {formatLabelFromFilename(item.outputName)} · {item.width}×{item.height} → {item.newWidth}×{item.newHeight}
+                      </div>
+                      <div class="text-surface-600-400">
+                        {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
                       </div>
                       <div class={item.ratio > 0 ? 'text-success-500' : item.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}>
                         {item.ratio > 0 ? item.ratio.toFixed(1) + '% ' + t('common.smaller') : item.ratio < 0 ? Math.abs(item.ratio).toFixed(1) + '% ' + t('common.larger') : t('common.sameSize')}
@@ -309,7 +420,7 @@
         <div class="flex-1 overflow-auto p-4">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="flex flex-col items-center">
-              <p class="text-sm text-surface-600-400 mb-2">{t('common.original')} · {formatFileSize(previewItem.size)}</p>
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.original')} · {previewItem.width}×{previewItem.height}</p>
               <img
                 src={previewItem.previewUrl}
                 alt="Original"
@@ -317,7 +428,7 @@
               />
             </div>
             <div class="flex flex-col items-center">
-              <p class="text-sm text-surface-600-400 mb-2">{t('common.result')} · {formatFileSize(previewItem.newSize)}</p>
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.result')} · {previewItem.newWidth}×{previewItem.newHeight}</p>
               <img
                 src={previewBlobUrl}
                 alt="Result"

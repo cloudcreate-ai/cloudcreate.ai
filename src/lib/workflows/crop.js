@@ -3,26 +3,35 @@
  * 接收裁剪后的 canvas，输出 blob
  * Cropper.js 的 canvas 由视图层传入
  */
-import { getFormatFromFile } from '../imageProcessor.js';
+import {
+  encodeImage,
+  encodePngQuantized,
+  getFormatFromFile,
+} from '../imageProcessor.js';
 
 /**
  * 从裁剪后的 canvas 生成输出文件
  * @param {HTMLCanvasElement} canvas - Cropper.getCroppedCanvas() 返回值
  * @param {File} file - 原文件（用于推断格式和输出名）
- * @param {{ quality?: number }} options
+ * @param {{ quality?: number, targetFormat?: string }} options - targetFormat 为空时使用原图格式
  * @returns {Promise<{ blob: Blob, outputName: string, width: number, height: number }>}
  */
-export async function cropToBlob(canvas, file, { quality = 0.92 } = {}) {
-  const format = getFormatFromFile(file);
-  const mime = format === 'jpeg' || format === 'jpg' ? 'image/jpeg' : `image/${format}`;
-  const q = ['jpeg', 'jpg', 'webp'].includes(format) ? quality : undefined;
+export async function cropToBlob(canvas, file, { quality = 75, targetFormat } = {}) {
+  const format = (targetFormat || getFormatFromFile(file) || 'png').toLowerCase().replace('jpg', 'jpeg');
+  const q = Math.min(100, Math.max(0, Number(quality) || 75));
 
-  const blob = await new Promise((resolve) => {
-    canvas.toBlob(resolve, mime, q);
-  });
-  if (!blob) throw new Error('Failed to generate output');
+  const ctx = canvas.getContext('2d');
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  const ext = format === 'jpeg' ? 'jpg' : format;
+  let result;
+  if (format === 'png') {
+    result = encodePngQuantized(imageData, q);
+  } else {
+    result = await encodeImage(imageData, format, q);
+  }
+  const { buffer, mime, ext } = result;
+  const blob = new Blob([buffer], { type: mime });
+
   const outputName = file.name.replace(/\.[^.]+$/, '') + '-cropped.' + ext;
   return {
     blob,

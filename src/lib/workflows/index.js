@@ -4,3 +4,4 @@
 export { compressImage } from './compress.js';
 export { convertImage } from './convert.js';
 export { cropToBlob } from './crop.js';
+export { resizeImage } from './resize.js';

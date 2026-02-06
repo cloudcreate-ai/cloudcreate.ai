@@ -12,12 +12,12 @@ import {
 /**
  * 压缩单张图片
  * @param {File} file - 源图片
- * @param {{ quality: number }} options
+ * @param {{ quality: number, targetFormat?: string }} options - targetFormat 为空时使用原图格式
  * @returns {Promise<{ blob: Blob, outputName: string, newSize: number, ratio: number }>}
  */
-export async function compressImage(file, { quality = 75 } = {}) {
+export async function compressImage(file, { quality = 75, targetFormat } = {}) {
   const imageData = await fileToImageData(file);
-  const format = (getFormatFromFile(file) || '').toLowerCase();
+  const format = (targetFormat || getFormatFromFile(file) || 'png').toLowerCase().replace('jpg', 'jpeg');
   const q = Math.min(100, Math.max(0, Number(quality) || 75));
   let result;
   if (format === 'png') {

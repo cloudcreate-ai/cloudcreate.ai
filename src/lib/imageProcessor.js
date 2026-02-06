@@ -96,6 +96,13 @@ export async function fileToImageData(file) {
   return decodeImage(buffer, mime);
 }
 
+/** 从文件名获取格式标签（如 JPEG、PNG） */
+export function formatLabelFromFilename(filename) {
+  const ext = (filename || '').split('.').pop()?.toLowerCase() || '';
+  if (ext === 'jpg' || ext === 'jpeg') return 'JPEG';
+  return ext ? ext.toUpperCase() : '';
+}
+
 /** 支持的解码格式列表 */
 export const DECODE_FORMATS = ['jpeg', 'jpg', 'png', 'webp', 'avif'];
 /** 支持的编码格式列表 */

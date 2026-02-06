@@ -5,12 +5,14 @@
   import ImageCompress from './routes/ImageCompress.svelte';
   import ImageConvert from './routes/ImageConvert.svelte';
   import ImageCrop from './routes/ImageCrop.svelte';
+  import ImageResize from './routes/ImageResize.svelte';
 
   const routes = {
     '/': Workspace,
     '/image/compress': ImageCompress,
     '/image/convert': ImageConvert,
     '/image/crop': ImageCrop,
+    '/image/resize': ImageResize,
   };
 </script>
 
