@@ -12,6 +12,7 @@
   import StepBar from './workflow/StepBar.svelte';
   import CropModal from './workflow/CropModal.svelte';
   import ToolPageHeader from '../components/ToolPageHeader.svelte';
+  import PresetJsonActions from '../components/PresetJsonActions.svelte';
   import FileDropZone from '../components/FileDropZone.svelte';
   import BatchResultsTable from '../components/BatchResultsTable.svelte';
   import SliderComparePreview from '../components/SliderComparePreview.svelte';
@@ -176,8 +177,12 @@
   <ToolPageHeader titleKey="crop.title" descKey="crop.desc" />
 
   {#if steps.length > 0}
-    <div class="mb-4">
+    <div class="mb-4 flex flex-wrap items-center gap-3">
       <StepBar steps={steps} readonly={true} />
+      <PresetJsonActions
+        effectiveWorkflow={workflow ? { ...workflow, steps } : null}
+        presetName="crop"
+      />
     </div>
   {/if}
 
