@@ -47,9 +47,9 @@ const translations = {
       compressTitle: 'Image Compress & Convert',
       compressDesc: 'Reduce file size, convert format (JPEG, PNG, WebP, AVIF). Quality adjustable. Batch supported.',
       cropTitle: 'Image Crop',
-      cropDesc: 'Crop by drag or exact size. Free/fixed ratio. Same format output.',
+      cropDesc: 'Crop by drag or exact size. Free/fixed ratio. Output format selectable.',
       resizeTitle: 'Image Resize',
-      resizeDesc: 'Scale by percentage or max dimension. Same format output. Batch supported.',
+      resizeDesc: 'Scale by percentage or max dimension. Output format selectable. Batch supported.',
     },
     compress: {
       title: 'Image Compress & Convert',
@@ -58,7 +58,7 @@ const translations = {
     },
     crop: {
       title: 'Image Crop',
-      desc: 'Crop image by drag or enter exact size. Free ratio and fixed ratios supported. Same format output.',
+      desc: 'Crop image by drag or enter exact size. Free ratio and fixed ratios supported. Output format selectable.',
       aspectRatio: 'Aspect Ratio',
       widthPx: 'Width (px)',
       heightPx: 'Height (px)',
@@ -74,7 +74,7 @@ const translations = {
     },
     resize: {
       title: 'Image Resize',
-      desc: 'Scale images by percentage or max dimension. Same format output.',
+      desc: 'Scale images by percentage or max dimension. Output format selectable.',
       byPercent: 'By percentage',
       byMax: 'Limit width and height',
       byWidth: 'By width',
@@ -131,9 +131,9 @@ const translations = {
       compressTitle: '图片压缩与格式转换',
       compressDesc: '减小体积、转换格式（JPEG、PNG、WebP、AVIF），支持调节质量，支持批量。',
       cropTitle: '图片裁剪',
-      cropDesc: '拖拽或输入精确尺寸裁剪，支持自由/固定比例，输出同格式。',
+      cropDesc: '拖拽或输入精确尺寸裁剪，支持自由/固定比例，可选输出格式。',
       resizeTitle: '图片缩放',
-      resizeDesc: '按比例或最大边缩放，输出同格式，支持批量。',
+      resizeDesc: '按比例或最大边缩放，可选输出格式，支持批量。',
     },
     compress: {
       title: '图片压缩与格式转换',
@@ -142,7 +142,7 @@ const translations = {
     },
     crop: {
       title: '图片裁剪',
-      desc: '拖拽框选或输入精确尺寸裁剪，支持自由/固定比例，输出同格式。',
+      desc: '拖拽框选或输入精确尺寸裁剪，支持自由/固定比例，可选输出格式。',
       aspectRatio: '宽高比',
       widthPx: '宽 (px)',
       heightPx: '高 (px)',
@@ -158,7 +158,7 @@ const translations = {
     },
     resize: {
       title: '图片缩放',
-      desc: '按比例或最大边缩放，输出同格式。',
+      desc: '按比例或最大边缩放，可选输出格式。',
       byPercent: '按比例',
       byMax: '限制宽高',
       byWidth: '按宽',
