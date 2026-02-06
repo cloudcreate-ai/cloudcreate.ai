@@ -10,6 +10,7 @@
     selectedIndex = null,
     executingStepIndex = null,
     waitingStepIndex = null,
+    readonly = false,
     onSelect = () => {},
     onAddStep = () => {},
     onRemoveStep = () => {},
@@ -52,7 +53,7 @@
   }}
 >
   {#each steps as step, i}
-    {#if i > 0}
+    {#if !readonly && i > 0}
       <div class="step-gap">
         <button
           class="add-step-btn"
@@ -85,25 +86,28 @@
           </div>
         {/if}
       </div>
+    {:else if readonly && i > 0}
+      <div class="step-gap step-gap-readonly" aria-hidden="true">→</div>
     {/if}
 
     <div
       class="step-card"
-      class:selected={selectedIndex === i}
-      class:executing={executingStepIndex === i}
-      class:waiting={waitingStepIndex === i}
-      class:clickable={isMiddleStep(step.type) || step.type === 'output'}
-      role="button"
-      tabindex={isMiddleStep(step.type) || step.type === 'output' ? 0 : -1}
-      onclick={() => (isMiddleStep(step.type) || step.type === 'output') && onSelect(i)}
-      onkeydown={(e) => (e.key === 'Enter' || e.key === ' ') && (isMiddleStep(step.type) || step.type === 'output') && (e.preventDefault(), onSelect(i))}
+      class:selected={!readonly && selectedIndex === i}
+      class:executing={!readonly && executingStepIndex === i}
+      class:waiting={!readonly && waitingStepIndex === i}
+      class:clickable={!readonly && (isMiddleStep(step.type) || step.type === 'output')}
+      class:readonly={readonly}
+      role={readonly ? 'presentation' : 'button'}
+      tabindex={readonly ? -1 : (isMiddleStep(step.type) || step.type === 'output' ? 0 : -1)}
+      onclick={() => !readonly && (isMiddleStep(step.type) || step.type === 'output') && onSelect(i)}
+      onkeydown={(e) => !readonly && (e.key === 'Enter' || e.key === ' ') && (isMiddleStep(step.type) || step.type === 'output') && (e.preventDefault(), onSelect(i))}
     >
       <span class="step-ordinal" aria-hidden="true">{getStepOrdinal(i)}</span>
       <span class="step-label">{t(stepNameKeys[step.type] ?? 'workflow.stepExport')}</span>
       {#if formatStepBrief(step.type, step.params)}
         <span class="step-brief">{formatStepBrief(step.type, step.params)}</span>
       {/if}
-      {#if isMiddleStep(step.type)}
+      {#if !readonly && isMiddleStep(step.type)}
         <button
           class="step-remove"
           onclick={(e) => { e.stopPropagation(); onRemoveStep(i); }}
@@ -138,6 +142,10 @@
     display: flex;
     align-items: center;
     padding: 0 0.25rem;
+  }
+  .step-gap-readonly {
+    color: var(--color-surface-500-500);
+    font-size: 0.8rem;
   }
   .add-step-btn {
     width: 24px;
@@ -200,6 +208,9 @@
   }
   .step-card.clickable:hover {
     border-color: var(--color-primary-500);
+  }
+  .step-card.readonly {
+    cursor: default;
   }
   .step-card.selected {
     border-color: var(--color-primary-500);

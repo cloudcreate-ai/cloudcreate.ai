@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "name": "resize",
+  "description": "Image resize",
+  "steps": [
+    { "type": "input" },
+    {
+      "type": "resize",
+      "params": {
+        "scaleMode": "percent",
+        "scalePercent": 50,
+        "maxWidth": 1920,
+        "maxHeight": 1080,
+        "targetWidth": 1920,
+        "targetHeight": 1080,
+        "targetLong": 1920
+      }
+    },
+    { "type": "output", "params": { "targetFormat": "", "quality": 75 } }
+  ]
+}

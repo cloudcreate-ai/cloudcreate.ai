@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "name": "crop",
+  "description": "Image crop",
+  "steps": [
+    { "type": "input" },
+    { "type": "crop", "params": { "aspectRatio": 0 } },
+    { "type": "output", "params": { "targetFormat": "", "quality": 75 } }
+  ]
+}

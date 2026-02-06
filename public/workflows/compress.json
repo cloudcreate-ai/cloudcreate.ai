@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "name": "compress",
+  "description": "Image compress & convert",
+  "steps": [
+    { "type": "input" },
+    { "type": "output", "params": { "targetFormat": "webp", "quality": 75 } }
+  ]
+}
