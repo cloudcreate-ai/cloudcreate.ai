@@ -1,188 +1,65 @@
 <script>
-  import { get } from 'svelte/store';
-  import { SvelteFlow, Controls, Background, BackgroundVariant } from '@xyflow/svelte';
-  import '@xyflow/svelte/dist/style.css';
-  import { onMount } from 'svelte';
-  import { link, querystring } from 'svelte-spa-router';
+  import { link } from 'svelte-spa-router';
   import { t } from '../lib/i18n.js';
-  import { getNodeDef, getAllNodeDefs } from '../lib/workflow/registry.js';
   import { validateWorkflow, runWorkflow } from '../lib/workflow/runner.js';
-  import { PRESETS, getPreset } from '../lib/workflow/presets.js';
+  import { buildGraphFromSteps } from '../lib/workflow/buildGraph.js';
+  import { DEFAULT_STEP_PARAMS } from '../lib/workflow/stepUtils.js';
   import {
-    listWorkflows,
-    saveWorkflow,
-    loadWorkflow,
-    getCurrentWorkflowId,
-    setCurrentWorkflowId,
-    exportWorkflow,
-    importWorkflow,
-  } from '../lib/workflowStorage.js';
-  import { ACCEPT_IMAGES, filterImageFiles, buildFileItem, downloadBlob, downloadAsZip } from '../lib/batchHelpers.js';
-  import { formatFileSize } from '../lib/imageProcessor.js';
-  import InputNode from './workflow/nodes/InputNode.svelte';
-  import DecodeNode from './workflow/nodes/DecodeNode.svelte';
-  import CropNode from './workflow/nodes/CropNode.svelte';
-  import ResizeNode from './workflow/nodes/ResizeNode.svelte';
-  import EncodeNode from './workflow/nodes/EncodeNode.svelte';
-  import OutputNode from './workflow/nodes/OutputNode.svelte';
+    buildFileItem,
+    downloadBlob,
+    downloadAsZip,
+    computeTotalStats,
+  } from '../lib/batchHelpers.js';
+  import { formatFileSize, formatLabelFromFilename } from '../lib/imageProcessor.js';
+  import StepBar from './workflow/StepBar.svelte';
+  import StepDetailPanel from './workflow/StepDetailPanel.svelte';
   import CropModal from './workflow/CropModal.svelte';
 
-  const nodeTypes = {
-    input: InputNode,
-    decode: DecodeNode,
-    crop: CropNode,
-    resize: ResizeNode,
-    encode: EncodeNode,
-    output: OutputNode,
-  };
+  const DEFAULT_STEPS = [
+    { type: 'input' },
+    { type: 'output', params: { targetFormat: '', quality: 75 } },
+  ];
 
-  function toSvelteFlowNodes(nodes) {
-    return (nodes || []).map((n) => ({
-      id: n.id,
-      type: n.type,
-      position: n.position || { x: 0, y: 0 },
-      data: { params: n.params || {} },
-    }));
+  let steps = $state([...DEFAULT_STEPS]);
+  let selectedStepIndex = $state(null);
+
+  function addStep(index, type) {
+    const params = { ...DEFAULT_STEP_PARAMS[type] };
+    const next = [...steps];
+    next.splice(index, 0, { type, params });
+    steps = next;
+    selectedStepIndex = index;
   }
 
-  function toWorkflowNodes(sfNodes) {
-    return (sfNodes || []).map((n) => ({
-      id: n.id,
-      type: n.type,
-      position: n.position,
-      params: n.data?.params || {},
-    }));
+  function removeStep(index) {
+    const s = steps[index];
+    if (s?.type !== 'resize' && s?.type !== 'crop') return;
+    const next = steps.filter((_, i) => i !== index);
+    steps = next;
+    if (selectedStepIndex === index) selectedStepIndex = null;
+    else if (selectedStepIndex != null && selectedStepIndex > index) selectedStepIndex--;
   }
 
-  function loadPreset(presetId) {
-    const preset = getPreset(presetId);
-    if (!preset) return;
-    nodes = toSvelteFlowNodes(preset.nodes);
-    edges = preset.edges || [];
+  function updateStepParams(index, params) {
+    steps = steps.map((s, i) =>
+      i === index ? { ...s, params: { ...s.params, ...params } } : s
+    );
   }
 
-  function initFromPresetOrStorage() {
-    try {
-      const qs = typeof querystring !== 'undefined' ? get(querystring) : '';
-      const params = qs ? Object.fromEntries(new URLSearchParams(String(qs))) : {};
-      const presetId = params.preset;
-      if (presetId && getPreset(presetId)) {
-        loadPreset(presetId);
-        return;
-      }
-      const currentId = getCurrentWorkflowId();
-      const loaded = currentId ? loadWorkflow(currentId) : null;
-      if (loaded?.nodes?.length) {
-        nodes = toSvelteFlowNodes(loaded.nodes);
-        edges = loaded.edges || [];
-      } else {
-        loadPreset('compress');
-      }
-    } catch (e) {
-      loadPreset('compress');
-    }
+  function getGraph() {
+    return buildGraphFromSteps(steps);
   }
 
-  let nodes = $state.raw(toSvelteFlowNodes(getPreset('compress').nodes));
-  let edges = $state.raw(getPreset('compress').edges || []);
-
-  onMount(() => {
-    initFromPresetOrStorage();
-    return typeof querystring?.subscribe === 'function'
-      ? querystring.subscribe(() => initFromPresetOrStorage())
-      : undefined;
-  });
-  let selectedNodeId = $state(null);
-  let selectedNode = $derived.by(() => {
-    const id = selectedNodeId;
-    if (!id) return null;
-    return nodes.find((n) => n.id === id) || null;
-  });
   let files = $state([]);
   let processing = $state(false);
   let runResults = $state([]);
   let error = $state('');
-  let inputRef = $state(null);
   let cropRequest = $state(null);
-  let workflowName = $state('');
-  let savedWorkflows = $state(listWorkflows());
-  let importInputRef = $state(null);
 
-  function getGraph() {
-    return {
-      nodes: toWorkflowNodes(nodes),
-      edges: [...edges],
-    };
-  }
-
-  function doSave() {
-    const graph = getGraph();
-    const id = workflowName || `workflow-${Date.now()}`;
-    if (saveWorkflow(id, graph, workflowName || id)) {
-      setCurrentWorkflowId(id);
-      savedWorkflows = listWorkflows();
-    }
-  }
-
-  function doLoad(id) {
-    const g = loadWorkflow(id);
-    if (g?.nodes?.length) {
-      nodes = toSvelteFlowNodes(g.nodes);
-      edges = g.edges || [];
-      setCurrentWorkflowId(id);
-    }
-  }
-
-  function doExport() {
-    const json = exportWorkflow(getGraph());
-    const blob = new Blob([json], { type: 'application/json' });
-    downloadBlob(blob, `workflow-${Date.now()}.json`);
-  }
-
-  function doImport() {
-    importInputRef?.click();
-  }
-
-  function handleImportFile(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const g = importWorkflow(reader.result);
-      if (g?.nodes?.length) {
-        nodes = toSvelteFlowNodes(g.nodes);
-        edges = g.edges || [];
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-  }
-
-  function addNode(type) {
-    const def = getNodeDef(type);
-    if (!def) return;
-    const id = `${type}-${Date.now()}`;
-    const last = nodes[nodes.length - 1];
-    const x = last?.position?.x ?? 0;
-    const y = (last?.position?.y ?? 0) + 120;
-    const params = {};
-    for (const [k, v] of Object.entries(def.params || {})) {
-      if (v.default !== undefined) params[k] = v.default;
-    }
-    nodes = [...nodes, { id, type, position: { x, y }, data: { params } }];
-  }
-
-  function updateNodeParams(nodeId, params) {
-    nodes = nodes.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, params } } : n));
-  }
-
-  function handleNodeClick(ev) {
-    selectedNodeId = ev?.node?.id ?? ev?.detail?.node?.id ?? null;
-  }
-
-  function handlePaneClick() {
-    selectedNodeId = null;
-  }
+  const waitingStepIndex = $derived(
+    processing && cropRequest ? steps.findIndex((s) => s.type === 'crop') : null
+  );
+  const executingStepIndex = $derived(waitingStepIndex != null ? waitingStepIndex : null);
 
   function createRequestCropRegion() {
     return (imageData, params) =>
@@ -220,10 +97,7 @@
       const results = await runWorkflow(
         graph,
         files.map((f) => f.file),
-        {
-          requestCropRegion: createRequestCropRegion(),
-          onProgress() {},
-        }
+        { requestCropRegion: createRequestCropRegion(), onProgress() {} }
       );
       runResults = results;
     } catch (e) {
@@ -233,28 +107,11 @@
     }
   }
 
-  function handleFileInput(e) {
-    const list = filterImageFiles(e.target.files);
-    if (list.length === 0) return;
-    addFiles(list);
-    if (inputRef) inputRef.value = '';
-  }
-
   async function addFiles(fileList) {
     for (const f of fileList) {
       const item = await buildFileItem(f, Date.now() + Math.random());
       files = [...files, item];
     }
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    const list = filterImageFiles(e.dataTransfer?.files);
-    if (list.length) addFiles(list);
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
   }
 
   function clearFiles() {
@@ -274,206 +131,193 @@
       'workflow-output.zip'
     );
   }
+
+  const mergedItems = $derived(
+    files.map((f, i) => {
+      const r = runResults[i];
+      const status = r?.error ? 'error' : r?.blob ? 'done' : processing ? 'processing' : 'pending';
+      const newSize = r?.blob?.size;
+      const ratio =
+        f.size > 0 && newSize != null ? (1 - newSize / f.size) * 100 : null;
+      return {
+        ...f,
+        status,
+        error: r?.error,
+        blob: r?.blob,
+        outputName: r?.outputName,
+        newSize,
+        ratio,
+      };
+    })
+  );
+
+  const totalStats = $derived(computeTotalStats(mergedItems));
+
+  let previewItem = $state(null);
+  let previewBlobUrl = $state(null);
+  let comparePos = $state(50);
+
+  function openPreview(item) {
+    if (item.status !== 'done' || !item.blob) return;
+    previewBlobUrl?.startsWith('blob:') && URL.revokeObjectURL(previewBlobUrl);
+    previewItem = item;
+    previewBlobUrl = URL.createObjectURL(item.blob);
+    comparePos = 50;
+  }
+
+  function closePreview() {
+    if (previewBlobUrl?.startsWith('blob:')) URL.revokeObjectURL(previewBlobUrl);
+    previewItem = null;
+    previewBlobUrl = null;
+  }
+
 </script>
 
-<main class="workflow-editor">
+<svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
+<main class="workflow-simple">
   <header class="workflow-header">
     <a href="/" use:link class="text-primary-500 text-sm no-underline hover:underline">{t('common.backWorkspace')}</a>
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
-    <div class="header-actions">
-      <input
-        type="text"
-        class="input text-sm w-32"
-        placeholder={t('workflow.workflowName')}
-        bind:value={workflowName}
-      />
-      <select
-        class="select preset-outlined-surface-200-800 text-sm"
-        onchange={(e) => loadPreset(e.target.value)}
-        aria-label="Preset"
-      >
-        <option value="compress">{t('workflow.presetCompress')}</option>
-        <option value="resize">{t('workflow.presetResize')}</option>
-        <option value="crop">{t('workflow.presetCrop')}</option>
-      </select>
-      <select
-        class="select preset-outlined-surface-200-800 text-sm"
-        onchange={(e) => { const v = e.target.value; if (v) doLoad(v); }}
-        aria-label="Load"
-      >
-        <option value="">{t('workflow.load')}</option>
-        {#each savedWorkflows as w}
-          <option value={w.id}>{w.name}</option>
-        {/each}
-      </select>
-      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={doSave}>{t('workflow.save')}</button>
-      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={doExport}>{t('workflow.export')}</button>
-      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={doImport}>{t('workflow.import')}</button>
-      <input
-        type="file"
-        accept=".json"
-        class="hidden"
-        bind:this={importInputRef}
-        onchange={handleImportFile}
-      />
-      <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={run} disabled={processing}>
-        {processing ? t('common.processing') : t('workflow.run')}
-      </button>
-    </div>
+    <a href="/workflow/advanced" use:link class="text-sm text-surface-600-400 hover:text-primary-500">
+      {t('workflow.advancedMode')}
+    </a>
   </header>
 
-  <div class="workflow-layout">
-    <aside class="workflow-sidebar workflow-sidebar-left">
-      <h3 class="sidebar-title">{t('workflow.addNode')}</h3>
-      {#each getAllNodeDefs() as def}
-        <button
-          class="sidebar-node-btn"
-          onclick={() => addNode(def.type)}
-        >
-          {def.label}
+  <section class="workflow-step-preview">
+    <div class="step-bar-row">
+      <StepBar
+        steps={steps}
+        selectedIndex={selectedStepIndex}
+        executingStepIndex={executingStepIndex}
+        waitingStepIndex={waitingStepIndex}
+        onSelect={(i) => (selectedStepIndex = i)}
+        onAddStep={addStep}
+        onRemoveStep={removeStep}
+      />
+      <div class="run-controls">
+        <button class="btn preset-filled-primary-500" onclick={run} disabled={processing}>
+          {processing ? t('common.processing') : t('workflow.run')}
         </button>
-      {/each}
-    </aside>
-
-    <div class="workflow-canvas-wrap">
-      <SvelteFlow
-        {nodes}
-        {edges}
-        {nodeTypes}
-        fitView
-        class="workflow-canvas"
-        onnodeclick={handleNodeClick}
-        onpaneclick={handlePaneClick}
-        connectionMode="loose"
-      >
-        <Controls />
-        <Background variant={BackgroundVariant.Dots} />
-      </SvelteFlow>
-    </div>
-
-    <aside class="workflow-sidebar workflow-sidebar-right">
-      {#if selectedNode}
-        <h3 class="sidebar-title">{getNodeDef(selectedNode.type)?.label ?? selectedNode.type}</h3>
-        {#if selectedNode.type === 'encode'}
-          <div class="param-group">
-            <label for="param-format">{t('compress.outputFormat')}</label>
-            <select
-              id="param-format"
-              class="select preset-outlined-surface-200-800 w-full"
-              value={selectedNode.data?.params?.targetFormat ?? ''}
-              onchange={(e) => updateNodeParams(selectedNode.id, { ...selectedNode.data?.params, targetFormat: e.target.value })}
-            >
-              <option value="">{t('common.sameAsOriginal')}</option>
-              <option value="jpeg">JPEG</option>
-              <option value="png">PNG</option>
-              <option value="webp">WebP</option>
-              <option value="avif">AVIF</option>
-            </select>
-          </div>
-          <div class="param-group">
-            <label for="param-quality">{t('common.quality')}</label>
-            <input
-              id="param-quality"
-              type="number"
-              min="1"
-              max="100"
-              class="input w-full"
-              value={selectedNode.data?.params?.quality ?? 75}
-              oninput={(e) => updateNodeParams(selectedNode.id, { ...selectedNode.data?.params, quality: Number(e.target.value) })}
-            />
-          </div>
-        {:else if selectedNode.type === 'resize'}
-          <div class="param-group">
-            <label for="param-scaleMode">{t('resize.byPercent')}</label>
-            <select
-              id="param-scaleMode"
-              class="select preset-outlined-surface-200-800 w-full"
-              value={selectedNode.data?.params?.scaleMode ?? 'percent'}
-              onchange={(e) => updateNodeParams(selectedNode.id, { ...selectedNode.data?.params, scaleMode: e.target.value })}
-            >
-              <option value="percent">{t('resize.byPercent')}</option>
-              <option value="max">{t('resize.byMax')}</option>
-              <option value="width">{t('resize.byWidth')}</option>
-              <option value="height">{t('resize.byHeight')}</option>
-              <option value="long">{t('resize.byLong')}</option>
-            </select>
-          </div>
-          <div class="param-group">
-            <label for="param-scalePercent">{t('resize.scalePercent')}</label>
-            <input
-              id="param-scalePercent"
-              type="number"
-              min="1"
-              max="200"
-              class="input w-full"
-              value={selectedNode.data?.params?.scalePercent ?? 50}
-              oninput={(e) => updateNodeParams(selectedNode.id, { ...selectedNode.data?.params, scalePercent: Number(e.target.value) })}
-            />
-          </div>
-        {:else}
-          <p class="text-sm text-surface-600-400">{t('workflow.noParams')}</p>
+        {#if waitingStepIndex != null}
+          <p class="run-hint text-warning-500">{t('workflow.waitingCrop')}</p>
         {/if}
-      {:else}
-        <p class="text-sm text-surface-600-400">{t('workflow.selectNode')}</p>
-      {/if}
-    </aside>
-  </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="workflow-detail">
+    <StepDetailPanel
+      steps={steps}
+      selectedStepIndex={selectedStepIndex}
+      onParamsChange={updateStepParams}
+      files={files}
+      onFilesAdd={addFiles}
+      onClearFiles={clearFiles}
+    />
+  </section>
 
   <section class="workflow-run-section">
-    <div class="run-files">
-      <h3 class="text-sm font-medium mb-2">{t('workflow.files')}</h3>
-      <!-- svelte-ignore a11y_click_events_have_key_events -->
-      <div
-        class="drop-zone"
-        role="button"
-        tabindex="0"
-        ondragover={handleDragOver}
-        ondrop={handleDrop}
-        onclick={() => inputRef?.click()}
-        onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-      >
-        <input
-          type="file"
-          accept={ACCEPT_IMAGES}
-          multiple
-          class="hidden"
-          bind:this={inputRef}
-          onchange={handleFileInput}
-        />
-        <span class="text-surface-600-400">{t('common.addImages')}</span>
-      </div>
-      {#if files.length > 0}
-        <p class="text-sm mt-1">{files.length} {t('workflow.fileCount')}</p>
-        <button class="btn btn-sm preset-outlined-surface-200-800 mt-1" onclick={clearFiles}>{t('workflow.clearFiles')}</button>
-      {/if}
-    </div>
     <div class="run-results">
       <h3 class="text-sm font-medium mb-2">{t('common.result')}</h3>
       {#if error}
         <p class="text-error-500 text-sm">{error}</p>
-      {:else if runResults.length > 0}
-        <div class="results-list">
-          {#each runResults as r}
-            <div class="result-item">
-              <span class="truncate flex-1">{r.file?.name ?? '-'}</span>
-              {#if r.error}
-                <span class="text-error-500 text-sm">{r.error}</span>
-              {:else if r.blob}
-                <span class="text-surface-600-400 text-sm">{formatFileSize(r.blob.size)}</span>
-                <button class="btn btn-sm preset-outlined-surface-200-800" onclick={() => downloadSingle(r)}>
-                  {t('common.download')}
-                </button>
-              {/if}
+      {:else if files.length === 0}
+        <p class="text-surface-600-400 text-sm">{t('workflow.runHintSelectInStep')}</p>
+      {:else}
+        <div class="results-table-wrap">
+          {#if totalStats}
+            <div class="results-summary">
+              {t('common.total')}: {formatFileSize(totalStats.totalOriginal)} → {formatFileSize(totalStats.totalNew)}
+              <span
+                class={totalStats.ratio > 0 ? 'text-success-500' : totalStats.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}
+              >
+                ({totalStats.ratio > 0
+                  ? totalStats.ratio.toFixed(1) + '% ' + t('common.smaller')
+                  : totalStats.ratio < 0
+                    ? Math.abs(totalStats.ratio).toFixed(1) + '% ' + t('common.larger')
+                    : t('common.same')})
+              </span>
             </div>
-          {/each}
-        </div>
-        {#if runResults.some((r) => r.blob)}
-          <button class="btn btn-sm preset-filled-primary-500 mt-2" onclick={downloadAll}>
+          {/if}
+          <button
+            class="btn btn-sm preset-outlined-surface-200-800 mb-2"
+            onclick={downloadAll}
+            disabled={!mergedItems.some((x) => x.blob)}
+          >
             {t('common.downloadAll')}
           </button>
-        {/if}
-      {:else}
-        <p class="text-surface-600-400 text-sm">{t('workflow.runHint')}</p>
+          <div class="overflow-x-auto">
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{t('common.preview')}</th>
+                  <th>{t('common.filename')}</th>
+                  <th>{t('common.format')}</th>
+                  <th>{t('common.size')}</th>
+                  <th>{t('common.dimensions')}</th>
+                  <th>{t('common.result')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each mergedItems as item, i}
+                  <tr>
+                    <td>{i + 1}</td>
+                    <td>
+                      <img
+                        src={item.previewUrl}
+                        alt=""
+                        class="result-preview-thumb"
+                      />
+                    </td>
+                    <td class="truncate max-w-[120px]" title={item.name}>{item.name}</td>
+                    <td>{item.format}</td>
+                    <td>{formatFileSize(item.size)}</td>
+                    <td>{item.width}×{item.height}</td>
+                    <td>
+                      {#if item.status === 'processing'}
+                        <span class="text-surface-600-400">{t('common.processing')}</span>
+                      {:else if item.status === 'error'}
+                        <span class="text-error-500">{item.error}</span>
+                      {:else if item.status === 'done'}
+                        <div class="result-cell">
+                          <div class="text-surface-600-400 text-xs">
+                            {formatLabelFromFilename(item.outputName)} · {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
+                          </div>
+                          <div
+                            class={item.ratio > 0 ? 'text-success-500 text-xs' : item.ratio < 0 ? 'text-warning-500 text-xs' : 'text-surface-600-400 text-xs'}
+                          >
+                            {item.ratio > 0
+                              ? item.ratio.toFixed(1) + '% ' + t('common.smaller')
+                              : item.ratio < 0
+                                ? Math.abs(item.ratio).toFixed(1) + '% ' + t('common.larger')
+                                : t('common.sameSize')}
+                          </div>
+                          <div class="flex gap-1 mt-1">
+                            <button
+                              class="btn btn-sm preset-outlined-surface-200-800"
+                              onclick={() => openPreview(item)}
+                            >
+                              {t('common.preview')}
+                            </button>
+                            <button
+                              class="btn btn-sm preset-outlined-surface-200-800"
+                              onclick={() => downloadSingle(item)}
+                            >
+                              {t('common.download')}
+                            </button>
+                          </div>
+                        </div>
+                      {:else}
+                        <span class="text-surface-600-400">—</span>
+                      {/if}
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        </div>
       {/if}
     </div>
   </section>
@@ -481,14 +325,95 @@
   {#if cropRequest}
     <CropModal request={cropRequest} />
   {/if}
+
+  {#if previewItem}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_noninteractive_element_interactions -->
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Preview comparison"
+      tabindex="-1"
+      onclick={(e) => e.target === e.currentTarget && closePreview()}
+      onkeydown={(e) => e.key === 'Escape' && closePreview()}
+    >
+      <div class="card preset-filled-surface-50-950 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-surface-200-800">
+          <h3 class="font-medium m-0">{previewItem.name}</h3>
+          <button onclick={closePreview} class="btn preset-outlined-surface-200-800 btn-sm" aria-label={t('common.close')}>
+            {t('common.close')}
+          </button>
+        </div>
+        <div class="flex-1 overflow-auto p-4">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="flex flex-col items-center">
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.original')} · {formatFileSize(previewItem.size)}</p>
+              <img
+                src={previewItem.previewUrl}
+                alt="Original"
+                class="max-w-full max-h-[60vh] object-contain rounded border border-surface-200-800"
+              />
+            </div>
+            <div class="flex flex-col items-center">
+              <p class="text-sm text-surface-600-400 mb-2">{t('common.result')} · {formatFileSize(previewItem.newSize)}</p>
+              <img
+                src={previewBlobUrl}
+                alt="Result"
+                class="max-w-full max-h-[60vh] object-contain rounded border border-surface-200-800"
+              />
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-surface-600-400">{t('common.sliderCompare')}</span>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              bind:value={comparePos}
+              class="input flex-1 max-w-xs"
+            />
+          </div>
+          <div class="relative mt-2 rounded overflow-hidden border border-surface-200-800" style="aspect-ratio: 16/9; max-height: 40vh;">
+            <img
+              src={previewItem.previewUrl}
+              alt="Original"
+              class="absolute inset-0 w-full h-full object-contain"
+            />
+            <div class="absolute inset-0 overflow-hidden" style="clip-path: inset(0 {100 - comparePos}% 0 0);">
+              <img
+                src={previewBlobUrl}
+                alt="Result"
+                class="absolute inset-0 w-full h-full object-contain"
+              />
+            </div>
+            <div
+              class="absolute top-0 bottom-0 w-0.5 bg-primary-500 pointer-events-none"
+              style="left: {comparePos}%;"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
 </main>
 
 <style>
-  .workflow-editor {
+  /* 统一内容宽度，与其他工具页 max-w-4xl (896px) 一致 */
+  .workflow-simple {
+    --workflow-width: 896px;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    max-height: 100vh;
+    min-height: 100vh;
+    width: 100%;
+    max-width: var(--workflow-width);
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+  .workflow-simple > header,
+  .workflow-simple > section {
+    width: 100%;
+    max-width: var(--workflow-width);
+    box-sizing: border-box;
   }
   .workflow-header {
     display: flex;
@@ -500,115 +425,76 @@
   .workflow-header h1 {
     flex: 1;
   }
-  .header-actions {
+  .workflow-step-preview {
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+    width: 100%;
+  }
+  .step-bar-row {
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .run-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
   }
-  .workflow-layout {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-  }
-  .workflow-sidebar {
-    width: 180px;
-    padding: 0.75rem;
-    border-right: 1px solid var(--color-surface-200-800);
-    overflow-y: auto;
-  }
-  .workflow-sidebar-right {
-    border-right: none;
-    border-left: 1px solid var(--color-surface-200-800);
-  }
-  .sidebar-title {
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin: 0 0 0.5rem;
-  }
-  .sidebar-node-btn {
-    display: block;
-    width: 100%;
-    padding: 0.4rem 0.5rem;
-    margin-bottom: 0.25rem;
+  .run-hint {
     font-size: 0.8rem;
-    text-align: left;
-    background: var(--color-surface-100-900);
-    border: 1px solid var(--color-surface-200-800);
-    border-radius: 6px;
-    cursor: pointer;
+    margin: 0;
   }
-  .sidebar-node-btn:hover {
-    background: var(--color-surface-200-800);
-  }
-  .workflow-canvas-wrap {
-    flex: 1;
-    min-width: 0;
-    min-height: 400px;
-    height: 100%;
-  }
-  .workflow-canvas-wrap :global(.svelte-flow) {
+  .workflow-detail {
+    flex-shrink: 0;
     width: 100%;
-    height: 100%;
-  }
-  .param-group {
-    margin-bottom: 0.75rem;
-  }
-  .param-group label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--color-surface-600-400);
-    margin-bottom: 0.25rem;
   }
   .workflow-run-section {
     display: flex;
-    gap: 2rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
     padding: 1rem;
-    border-top: 1px solid var(--color-surface-200-800);
-    flex-shrink: 0;
+    flex: 1;
+    width: 100%;
+    min-width: 0;
   }
-  .run-files,
   .run-results {
-    min-width: 200px;
+    flex: 1;
+    min-width: 0;
   }
-  .drop-zone {
-    padding: 1rem;
-    border: 2px dashed var(--color-surface-200-800);
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-  }
-  .drop-zone:hover {
-    border-color: var(--color-primary-500);
-  }
-  .results-list {
-    max-height: 120px;
-    overflow-y: auto;
-  }
-  .result-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.25rem 0;
-    font-size: 0.875rem;
-  }
-
-  :global(.workflow-node) {
-    padding: 0.5rem 0.75rem;
-    min-width: 80px;
-    background: var(--color-surface-50-950);
-    border: 1px solid var(--color-surface-200-800);
-    border-radius: 8px;
-    font-size: 0.875rem;
-  }
-  :global(.workflow-node .node-label) {
-    font-weight: 500;
-  }
-  :global(.workflow-node .node-params) {
-    font-size: 0.75rem;
-    color: var(--color-surface-600-400);
-  }
-  :global(.workflow-node .node-content) {
+  .results-table-wrap {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.5rem;
+  }
+  .results-summary {
+    font-size: 0.875rem;
+    color: var(--color-surface-600-400);
+  }
+  .results-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+  }
+  .results-table th,
+  .results-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--color-surface-200-800);
+  }
+  .results-table th {
+    color: var(--color-surface-600-400);
+    font-weight: 500;
+  }
+  .result-preview-thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  .result-cell {
+    min-width: 140px;
   }
 </style>
