@@ -269,7 +269,7 @@
       <div class="mt-4 pt-4 border-t border-surface-200-800 space-y-4">
         <div class="flex gap-6 flex-wrap">
           <div>
-            <label for="outFormat" class="text-sm text-surface-600-400 block mb-1">{t('convert.outputFormat')}</label>
+            <label for="outFormat" class="text-sm text-surface-600-400 block mb-1">{t('compress.outputFormat')}</label>
             <select id="outFormat" bind:value={targetFormat} class="select w-28">
               <option value="">{t('common.sameAsOriginal')}</option>
               {#each ENCODE_FORMATS as fmt}

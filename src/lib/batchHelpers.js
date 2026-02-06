@@ -1,6 +1,6 @@
 /**
  * 批量工具共享逻辑 - 文件项构建、下载、统计等
- * 供 Compress、Convert 等批量工具复用
+ * 供 Compress、Resize 等批量工具复用
  */
 import JSZip from 'jszip';
 import { getFormatFromFile, getImageDimensions } from './imageProcessor.js';

@@ -44,22 +44,16 @@ const translations = {
     home: {
       title: 'FreeTools',
       subtitle: 'Browser-based utility collection',
-      compressTitle: 'Image Compress',
-      compressDesc: 'Reduce file size while keeping the same format. Quality adjustable. Batch supported.',
-      convertTitle: 'Image Format Convert',
-      convertDesc: 'Convert between JPEG, PNG, WebP, AVIF. Batch supported.',
+      compressTitle: 'Image Compress & Convert',
+      compressDesc: 'Reduce file size, convert format (JPEG, PNG, WebP, AVIF). Quality adjustable. Batch supported.',
       cropTitle: 'Image Crop',
       cropDesc: 'Crop by drag or exact size. Free/fixed ratio. Same format output.',
       resizeTitle: 'Image Resize',
       resizeDesc: 'Scale by percentage or max dimension. Same format output. Batch supported.',
     },
     compress: {
-      title: 'Image Compress',
-      desc: 'Reduce file size while keeping the same format.',
-    },
-    convert: {
-      title: 'Image Format Convert',
-      desc: 'Convert between JPEG, PNG, WebP, AVIF.',
+      title: 'Image Compress & Convert',
+      desc: 'Reduce file size and convert format (JPEG, PNG, WebP, AVIF).',
       outputFormat: 'Output format',
     },
     crop: {
@@ -134,22 +128,16 @@ const translations = {
     home: {
       title: 'FreeTools',
       subtitle: '浏览器实用工具集',
-      compressTitle: '图片压缩',
-      compressDesc: '保持格式不变减小体积，支持调节质量，支持批量。',
-      convertTitle: '图片格式转换',
-      convertDesc: '在 JPEG、PNG、WebP、AVIF 间转换，支持批量。',
+      compressTitle: '图片压缩与格式转换',
+      compressDesc: '减小体积、转换格式（JPEG、PNG、WebP、AVIF），支持调节质量，支持批量。',
       cropTitle: '图片裁剪',
       cropDesc: '拖拽或输入精确尺寸裁剪，支持自由/固定比例，输出同格式。',
       resizeTitle: '图片缩放',
       resizeDesc: '按比例或最大边缩放，输出同格式，支持批量。',
     },
     compress: {
-      title: '图片压缩',
-      desc: '保持格式不变减小文件体积。',
-    },
-    convert: {
-      title: '图片格式转换',
-      desc: '在 JPEG、PNG、WebP、AVIF 间转换。',
+      title: '图片压缩与格式转换',
+      desc: '减小体积、转换格式（JPEG、PNG、WebP、AVIF）。',
       outputFormat: '输出格式',
     },
     crop: {

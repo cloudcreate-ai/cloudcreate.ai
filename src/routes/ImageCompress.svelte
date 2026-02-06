@@ -13,9 +13,9 @@
   } from '../lib/batchHelpers.js';
   import { loadToolConfig, saveToolConfig } from '../lib/toolConfig.js';
 
-  const compressDefaults = { targetFormat: '', quality: 75 };
+  const compressDefaults = { targetFormat: 'webp', quality: 75 };
   const saved = loadToolConfig('compress', compressDefaults);
-  const validFormat = saved.targetFormat === '' || ENCODE_FORMATS.includes(saved.targetFormat) ? saved.targetFormat : '';
+  const validFormat = saved.targetFormat === '' || ENCODE_FORMATS.includes(saved.targetFormat) ? saved.targetFormat : 'webp';
   let items = $state([]);
   let targetFormat = $state(validFormat);
   let quality = $state(Math.min(100, Math.max(1, saved.quality ?? 75)));
@@ -147,7 +147,7 @@
     </summary>
     <div class="mt-4 pt-4 border-t border-surface-200-800 flex gap-8 flex-wrap">
       <div class="flex flex-col gap-1">
-        <label for="format" class="text-sm text-surface-600-400">{t('convert.outputFormat')}</label>
+        <label for="format" class="text-sm text-surface-600-400">{t('compress.outputFormat')}</label>
         <select id="format" bind:value={targetFormat} class="select w-28">
           <option value="">{t('common.sameAsOriginal')}</option>
           {#each ENCODE_FORMATS as fmt}
