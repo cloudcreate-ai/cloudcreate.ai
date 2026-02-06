@@ -58,20 +58,15 @@
     cropper.setAspectRatio(v === 0 || Number.isNaN(v) ? NaN : v);
   }
 
-  // 从精确输入应用裁剪框（cropW/cropH 为目标输出像素）
+  // 从精确输入应用裁剪框（cropW/cropH 为原图自然像素）
   function applyCropBoxFromInput() {
     if (!cropper || cropW <= 0 || cropH <= 0) return;
-    const imageData = cropper.getImageData();
-    const canvasData = cropper.getCanvasData();
-    const scale = imageData.width / canvasData.width;
-    const displayW = Math.min(cropW / scale, canvasData.width);
-    const displayH = Math.min(cropH / scale, canvasData.height);
-    const cd = cropper.getCropBoxData();
-    cropper.setCropBoxData({
-      left: cd.left,
-      top: cd.top,
-      width: Math.max(1, displayW),
-      height: Math.max(1, displayH),
+    const data = cropper.getData();
+    cropper.setData({
+      x: data.x,
+      y: data.y,
+      width: cropW,
+      height: cropH,
     });
   }
 
