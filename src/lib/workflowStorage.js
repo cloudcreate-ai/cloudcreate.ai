@@ -1,11 +1,15 @@
 /**
  * 工作流持久化 - localStorage 保存/加载，导出/导入 JSON
+ * SSG 构建时无 localStorage，返回空/默认值
  */
+import { browser } from '$app/environment';
+
 const PREFIX = 'freetools:workflow:';
 const LIST_KEY = PREFIX + 'list';
 const CURRENT_KEY = PREFIX + 'current';
 
 export function listWorkflows() {
+  if (!browser) return [];
   try {
     const s = localStorage.getItem(LIST_KEY);
     if (s) {
@@ -17,6 +21,7 @@ export function listWorkflows() {
 }
 
 export function saveWorkflow(id, graph, name = '') {
+  if (!browser) return false;
   const list = listWorkflows();
   const entry = { id, name: name || id, nodes: graph.nodes, edges: graph.edges };
   const idx = list.findIndex((x) => x.id === id);
@@ -32,6 +37,7 @@ export function saveWorkflow(id, graph, name = '') {
 }
 
 export function loadWorkflow(id) {
+  if (!browser) return null;
   try {
     const s = localStorage.getItem(PREFIX + id);
     if (s) return JSON.parse(s);
@@ -40,6 +46,7 @@ export function loadWorkflow(id) {
 }
 
 export function deleteWorkflow(id) {
+  if (!browser) return false;
   const list = listWorkflows().filter((x) => x.id !== id);
   try {
     localStorage.setItem(LIST_KEY, JSON.stringify(list));
@@ -51,6 +58,7 @@ export function deleteWorkflow(id) {
 }
 
 export function getCurrentWorkflowId() {
+  if (!browser) return null;
   try {
     return localStorage.getItem(CURRENT_KEY) || null;
   } catch (_) {}
@@ -58,6 +66,7 @@ export function getCurrentWorkflowId() {
 }
 
 export function setCurrentWorkflowId(id) {
+  if (!browser) return;
   try {
     if (id) localStorage.setItem(CURRENT_KEY, id);
     else localStorage.removeItem(CURRENT_KEY);

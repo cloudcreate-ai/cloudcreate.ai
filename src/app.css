@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 html, body { height: 100%; margin: 0; }
-#app { min-height: 100%; }
+:global(.app-wrap) { min-height: 100%; }
 
 /* 统一输入组件字体 */
 input, select, textarea {

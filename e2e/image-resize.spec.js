@@ -5,7 +5,7 @@ import { getTestImageFile } from './fixtures.js';
 
 test.describe('图片缩放', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/image/resize');
+    await page.goto('/image/resize');
   });
 
   test('未添加图片时缩放按钮禁用', async ({ page }) => {

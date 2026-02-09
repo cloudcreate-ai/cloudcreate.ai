@@ -2,8 +2,12 @@
  * 简单 i18n：中英双语，默认根据浏览器语言选择
  */
 import { writable, get } from 'svelte/store';
+import { browser } from '$app/environment';
 
 const STORAGE_KEY = 'freetools-locale';
+
+export const SUPPORTED_LOCALES = ['en', 'zh'];
+export const DEFAULT_LOCALE = 'en';
 
 const translations = {
   en: {
@@ -335,6 +339,7 @@ const translations = {
 };
 
 function detectLocale() {
+  if (!browser) return 'en';
   if (typeof localStorage !== 'undefined') {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'zh' || saved === 'en') return saved;
@@ -369,8 +374,8 @@ export function t(key) {
   return typeof obj === 'string' ? obj : key;
 }
 
-// 初始化时设置 html lang 和 title
-if (typeof document !== 'undefined') {
+// 初始化时设置 html lang 和 title（仅浏览器环境，SSG 构建时不执行）
+if (browser && typeof document !== 'undefined') {
   const initLang = get(locale);
   document.documentElement.lang = initLang === 'zh' ? 'zh-CN' : 'en';
   document.title = (initLang === 'zh' ? translations.zh.pageTitle : translations.en.pageTitle);

@@ -5,7 +5,7 @@ import { getTestImageFile } from './fixtures.js';
 
 test.describe('图片压缩与格式转换', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/image/compress');
+    await page.goto('/image/compress');
   });
 
   test('未添加图片时压缩按钮禁用', async ({ page }) => {

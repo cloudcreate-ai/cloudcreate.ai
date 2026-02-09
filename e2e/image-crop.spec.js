@@ -5,7 +5,7 @@ import { getTestImageFile } from './fixtures.js';
 
 test.describe('图片裁剪', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/#/image/crop');
+    await page.goto('/image/crop');
   });
 
   test('未添加图片时裁剪按钮禁用', async ({ page }) => {

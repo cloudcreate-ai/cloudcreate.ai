@@ -4,17 +4,19 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name=freetools"
+    "deploy": "npm run build && wrangler pages deploy build --project-name=freetools"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.1",
     "@skeletonlabs/skeleton": "^4.11.0",
     "@skeletonlabs/skeleton-svelte": "^4.11.0",
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.50.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
     "svelte": "^5.43.8",
     "vite": "^7.2.4",
@@ -29,7 +31,6 @@
     "@xyflow/svelte": "^1.5.0",
     "cropperjs": "^1.6.2",
     "jszip": "^3.10.1",
-    "svelte-spa-router": "^4.0.1",
     "tailwindcss": "^4.1.18",
     "upng-js": "^2.1.0"
   }

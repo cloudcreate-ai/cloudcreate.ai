@@ -1,11 +1,10 @@
-import { defineConfig } from 'vite'
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import tailwindcss from '@tailwindcss/vite'
+import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [tailwindcss(), svelte()],
+/** @type {import('vite').UserConfig} */
+export default {
+  plugins: [tailwindcss(), sveltekit()],
   optimizeDeps: {
     exclude: ['@jsquash/jpeg', '@jsquash/png', '@jsquash/webp', '@jsquash/avif'],
   },
-})
+};

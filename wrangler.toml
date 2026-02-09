@@ -2,4 +2,4 @@
 # 使用 hash 路由 (#/)，无需 SPA fallback
 name = "freetools"
 compatibility_date = "2025-02-01"
-pages_build_output_dir = "dist"
+pages_build_output_dir = "build"
