@@ -6,6 +6,7 @@
     { id: 'compress', titleKey: 'home.compressTitle', descKey: 'home.compressDesc', href: '/image/compress', icon: '🗜️' },
     { id: 'crop', titleKey: 'home.cropTitle', descKey: 'home.cropDesc', href: '/image/crop', icon: '✂️' },
     { id: 'resize', titleKey: 'home.resizeTitle', descKey: 'home.resizeDesc', href: '/image/resize', icon: '📐' },
+    { id: 'favicon', titleKey: 'home.faviconTitle', descKey: 'home.faviconDesc', href: '/image/favicon', icon: '🖼️' },
     { id: 'workflow', titleKey: 'home.workflowTitle', descKey: 'home.workflowDesc', href: '/workflow', icon: '🔀' },
   ];
 </script>

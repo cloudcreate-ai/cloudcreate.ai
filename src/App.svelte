@@ -5,6 +5,7 @@
   import ImageCompress from './routes/ImageCompress.svelte';
   import ImageCrop from './routes/ImageCrop.svelte';
   import ImageResize from './routes/ImageResize.svelte';
+  import FaviconGenerator from './routes/FaviconGenerator.svelte';
   import WorkflowEditor from './routes/WorkflowEditor.svelte';
   import WorkflowEditorAdvanced from './routes/WorkflowEditorAdvanced.svelte';
 
@@ -15,6 +16,7 @@
     '/image/compress': ImageCompress,
     '/image/crop': ImageCrop,
     '/image/resize': ImageResize,
+    '/image/favicon': FaviconGenerator,
   };
 </script>
 
