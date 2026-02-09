@@ -7,6 +7,7 @@ const config = {
   kit: {
     prerender: {
       entries: [
+        '/',
         '/en',
         '/en/image/compress',
         '/en/image/crop',
