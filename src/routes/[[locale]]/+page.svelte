@@ -12,6 +12,10 @@
     { id: 'favicon', titleKey: 'home.faviconTitle', descKey: 'home.faviconDesc', href: '/image/favicon', icon: '🖼️' },
     { id: 'playstore', titleKey: 'home.playstoreTitle', descKey: 'home.playstoreDesc', href: '/image/playstore', icon: '📱' },
     { id: 'appstore', titleKey: 'home.appstoreTitle', descKey: 'home.appstoreDesc', href: '/image/appstore', icon: '🍎' },
+    { id: 'cssMinify', titleKey: 'home.cssMinifyTitle', descKey: 'home.cssMinifyDesc', href: '/css/minify', icon: '🗜️' },
+    { id: 'cssBeautify', titleKey: 'home.cssBeautifyTitle', descKey: 'home.cssBeautifyDesc', href: '/css/beautify', icon: '📐' },
+    { id: 'archiveDecompress', titleKey: 'home.archiveDecompressTitle', descKey: 'home.archiveDecompressDesc', href: '/archive/decompress', icon: '📂' },
+    { id: 'archiveCompress', titleKey: 'home.archiveCompressTitle', descKey: 'home.archiveCompressDesc', href: '/archive/compress', icon: '📦' },
     { id: 'workflow', titleKey: 'home.workflowTitle', descKey: 'home.workflowDesc', href: '/workflow', icon: '🔀' },
   ];
 
