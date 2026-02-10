@@ -26,13 +26,15 @@
     { label: '9:16', value: 9 / 16 },
     { label: '3:2', value: 3 / 2 },
     { label: '2:3', value: 2 / 3 },
+    { labelKey: 'crop.custom', value: 'custom' },
   ];
 
-  const cropDefaults = { aspectRatio: 0, targetFormat: '', quality: 75 };
+  const cropDefaults = { aspectRatio: 0, customWidth: 16, customHeight: 9, targetFormat: '', quality: 75 };
   const savedCrop = loadToolConfig('crop', cropDefaults);
-  const validAspect = ASPECT_OPTIONS.some((o) => Math.abs(o.value - (savedCrop.aspectRatio ?? 0)) < 1e-6)
-    ? savedCrop.aspectRatio
-    : 0;
+  const presetMatch = ASPECT_OPTIONS.find(
+    (o) => typeof o.value === 'number' && Math.abs(o.value - (savedCrop.aspectRatio ?? 0)) < 1e-6
+  );
+  const validAspect = presetMatch ? presetMatch.value : (savedCrop.customWidth && savedCrop.customHeight ? 'custom' : 0);
   const validCropFormat = savedCrop.targetFormat === '' || ENCODE_FORMATS.includes(savedCrop.targetFormat)
     ? savedCrop.targetFormat
     : '';
@@ -40,9 +42,23 @@
   let workflow = $state(null);
   let items = $state([]);
   let aspectRatio = $state(validAspect);
+  let customWidth = $state(Math.max(1, savedCrop.customWidth ?? 16));
+  let customHeight = $state(Math.max(1, savedCrop.customHeight ?? 9));
   let targetFormat = $state(validCropFormat);
   let quality = $state(Math.min(100, Math.max(1, savedCrop.quality ?? 75)));
-  $effect(() => saveToolConfig('crop', { aspectRatio, targetFormat, quality }));
+
+  const effectiveAspectRatio = $derived.by(() => {
+    if (aspectRatio === 'custom') {
+      const w = Math.max(1, Number(customWidth) || 1);
+      const h = Math.max(1, Number(customHeight) || 1);
+      return w / h;
+    }
+    return Number(aspectRatio) || 0;
+  });
+
+  $effect(() =>
+    saveToolConfig('crop', { aspectRatio, customWidth, customHeight, targetFormat, quality })
+  );
 
   $effect(() => {
     loadWorkflow('/workflows/crop.json').then((r) => (workflow = r.workflow)).catch(() => {});
@@ -89,7 +105,7 @@
     error = '';
     processing = true;
     const paramsOverrides = {
-      crop: { aspectRatio: Number(aspectRatio) || 0 },
+      crop: { aspectRatio: effectiveAspectRatio },
       output: { targetFormat: targetFormat || undefined, quality },
     };
     const files = items.map((x) => x.file);
@@ -161,7 +177,7 @@
     const s = workflow?.steps ?? [];
     return s.map((step) => {
       if (step.type === 'crop') {
-        return { ...step, params: { ...step.params, aspectRatio: Number(aspectRatio) || 0 } };
+        return { ...step, params: { ...step.params, aspectRatio: effectiveAspectRatio } };
       }
       if (step.type === 'output') {
         return { ...step, params: { ...step.params, targetFormat: targetFormat || '', quality } };
@@ -207,11 +223,38 @@
       </div>
       <div class="flex flex-col gap-0.5">
         <label for="aspect" class="text-xs text-surface-600-400">{t('crop.aspectRatio')}</label>
-        <select id="aspect" bind:value={aspectRatio} class="select preset-outlined-surface-200-800 w-24">
-          {#each ASPECT_OPTIONS as opt}
-            <option value={opt.value}>{opt.labelKey ? t(opt.labelKey) : opt.label}</option>
-          {/each}
-        </select>
+        <div class="flex items-center gap-2">
+          <select id="aspect" bind:value={aspectRatio} class="select preset-outlined-surface-200-800 w-24">
+            {#each ASPECT_OPTIONS as opt}
+              <option value={opt.value}>{opt.labelKey ? t(opt.labelKey) : opt.label}</option>
+            {/each}
+          </select>
+          {#if aspectRatio === 'custom'}
+            <div class="flex items-center gap-1 text-sm">
+              <label for="customW" class="sr-only">{t('crop.customRatioW')}</label>
+              <input
+                id="customW"
+                type="number"
+                min="1"
+                max="9999"
+                bind:value={customWidth}
+                class="input w-20 text-center"
+                placeholder="W"
+              />
+              <span class="text-surface-600-400">:</span>
+              <label for="customH" class="sr-only">{t('crop.customRatioH')}</label>
+              <input
+                id="customH"
+                type="number"
+                min="1"
+                max="9999"
+                bind:value={customHeight}
+                class="input w-20 text-center"
+                placeholder="H"
+              />
+            </div>
+          {/if}
+        </div>
       </div>
     </div>
   </details>
@@ -229,7 +272,7 @@
       disabled={processing || items.length === 0}
       class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {processing ? t('common.processing') : t('crop.crop')}
+      {processing ? t('common.processing') : t('crop.selectRegion')}
     </button>
     <button onclick={clear} class="btn preset-outlined-surface-200-800">{t('common.clearAll')}</button>
   </section>

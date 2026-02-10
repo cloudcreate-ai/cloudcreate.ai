@@ -9,7 +9,7 @@ test.describe('图片裁剪', () => {
   });
 
   test('未添加图片时裁剪按钮禁用', async ({ page }) => {
-    const cropBtn = page.getByRole('button', { name: /Crop|裁剪/ });
+    const cropBtn = page.getByRole('button', { name: /Select crop region|选择裁剪区域/ });
     await expect(cropBtn).toBeDisabled();
   });
 
@@ -17,7 +17,7 @@ test.describe('图片裁剪', () => {
     const file = getTestImageFile();
     await page.locator('input[type="file"]').setInputFiles([file]);
     await expect(page.getByText('test.png').or(page.locator('img[src^="blob:"]'))).toBeVisible({ timeout: 5000 });
-    const cropBtn = page.getByRole('button', { name: /Crop|裁剪/ });
+    const cropBtn = page.getByRole('button', { name: /Select crop region|选择裁剪区域/ });
     await expect(cropBtn).toBeEnabled();
   });
 });
