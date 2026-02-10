@@ -32,9 +32,11 @@
     "brotli-wasm": "^3.0.1",
     "cropperjs": "^1.6.2",
     "csso": "^5.0.5",
+    "dompurify": "^3.3.1",
     "fflate": "^0.8.2",
     "js-beautify": "^1.15.4",
     "jszip": "^3.10.1",
+    "marked": "^17.0.1",
     "parse-tar": "^1.2.2",
     "tailwindcss": "^4.1.18",
     "upng-js": "^2.1.0"

@@ -38,6 +38,8 @@ const config = {
         '/zh/archive',
         '/zh/archive/decompress',
         '/zh/archive/compress',
+        '/en/markdown',
+        '/zh/markdown',
         '/zh/workflow',
         '/zh/workflow/advanced',
       ],

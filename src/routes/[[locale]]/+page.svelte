@@ -16,6 +16,7 @@
     { id: 'cssBeautify', titleKey: 'home.cssBeautifyTitle', descKey: 'home.cssBeautifyDesc', href: '/css/beautify', icon: '📐' },
     { id: 'archiveDecompress', titleKey: 'home.archiveDecompressTitle', descKey: 'home.archiveDecompressDesc', href: '/archive/decompress', icon: '📂' },
     { id: 'archiveCompress', titleKey: 'home.archiveCompressTitle', descKey: 'home.archiveCompressDesc', href: '/archive/compress', icon: '📦' },
+    { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', descKey: 'home.markdownPreviewDesc', href: '/markdown', icon: '📝' },
     { id: 'workflow', titleKey: 'home.workflowTitle', descKey: 'home.workflowDesc', href: '/workflow', icon: '🔀' },
   ];
 
