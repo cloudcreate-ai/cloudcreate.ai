@@ -17,6 +17,7 @@
     { id: 'archiveDecompress', titleKey: 'home.archiveDecompressTitle', descKey: 'home.archiveDecompressDesc', href: '/archive/decompress', icon: '📂' },
     { id: 'archiveCompress', titleKey: 'home.archiveCompressTitle', descKey: 'home.archiveCompressDesc', href: '/archive/compress', icon: '📦' },
     { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', descKey: 'home.markdownPreviewDesc', href: '/markdown', icon: '📝' },
+    { id: 'tableTools', titleKey: 'home.tableToolsTitle', descKey: 'home.tableToolsDesc', href: '/table', icon: '📊' },
     { id: 'workflow', titleKey: 'home.workflowTitle', descKey: 'home.workflowDesc', href: '/workflow', icon: '🔀' },
   ];
 

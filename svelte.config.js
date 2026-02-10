@@ -40,6 +40,8 @@ const config = {
         '/zh/archive/compress',
         '/en/markdown',
         '/zh/markdown',
+        '/en/table',
+        '/zh/table',
         '/zh/workflow',
         '/zh/workflow/advanced',
       ],
