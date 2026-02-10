@@ -58,6 +58,10 @@ Output: `dist/`. Deploy as static site. Uses hash routing (`#/`, `#/image`), so 
 - **Convert** formats: JPEG, PNG, WebP, AVIF
 - **Batch** process multiple images
 
+## 开发规范
+
+- [图片工具预览规范](docs/image-tools-preview.md) - 所有生成图片的工具必须提供预览功能
+
 ## Note
 
 Uses `@jsquash/avif@1.1.2-single-thread-only` for Vite compatibility (multi-threaded AVIF has worker build issues).

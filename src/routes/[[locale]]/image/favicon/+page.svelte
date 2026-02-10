@@ -9,6 +9,7 @@
   import { formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
+  import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import JSZip from 'jszip';
 
   const DEFAULT_SIZES = [16, 32, 48, 180, 192, 512];
@@ -22,6 +23,7 @@
   let results = $state([]);
   let processing = $state(false);
   let error = $state('');
+  let previewItem = $state(null);
 
   $effect(() => {
     const arr = Array.from(selectedSizes).sort((a, b) => a - b);
@@ -129,6 +131,11 @@
     sourcePreviewUrl = null;
     results = [];
     error = '';
+    previewItem = null;
+  }
+
+  function openPreview(item) {
+    previewItem = item;
   }
 </script>
 
@@ -206,7 +213,9 @@
         {#each results as item}
           <div class="p-4 flex flex-wrap items-center gap-4">
             <div class="flex items-center gap-3 min-w-0">
-              <img src={item.previewUrl} alt="" class="w-12 h-12 object-contain border border-surface-200-800 rounded flex-shrink-0" />
+              <button type="button" class="block p-0 border-0 bg-transparent cursor-pointer shrink-0" onclick={() => openPreview(item)} aria-label={t('common.preview')}>
+                <img src={item.previewUrl} alt="" class="w-12 h-12 object-contain border border-surface-200-800 rounded" />
+              </button>
               <div class="flex flex-col gap-0.5">
                 <span class="text-sm font-medium">{item.name}</span>
                 <span class="text-xs text-surface-500-500">{formatFileSize(item.blob.size)}</span>
@@ -216,7 +225,8 @@
               <p class="text-xs text-surface-600-400 mb-1">{t('favicon.htmlExample')}</p>
               <code class="block text-xs font-mono bg-surface-100-900 px-2 py-1.5 rounded overflow-x-auto">{getHtmlForItem(item)}</code>
             </div>
-            <div class="flex gap-2 flex-shrink-0">
+            <div class="flex gap-2 shrink-0">
+              <button class="btn btn-sm preset-outlined-surface-200-800" onclick={() => openPreview(item)}>{t('common.preview')}</button>
               <button class="btn btn-sm preset-outlined-surface-200-800" onclick={() => copyHtml(item)} title={t('favicon.copyHtml')}>
                 Copy
               </button>
@@ -229,4 +239,11 @@
       </div>
     </section>
   {/if}
+
+  <SliderComparePreview
+    open={!!previewItem}
+    item={previewItem && sourceFile ? { name: previewItem.name, previewUrl: sourcePreviewUrl, size: sourceFile.size, newSize: previewItem.blob.size } : null}
+    resultBlobUrl={previewItem?.previewUrl ?? null}
+    onClose={() => (previewItem = null)}
+  />
 </main>

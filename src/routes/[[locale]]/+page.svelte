@@ -10,6 +10,8 @@
     { id: 'resize', titleKey: 'home.resizeTitle', descKey: 'home.resizeDesc', href: '/image/resize', icon: '📐' },
     { id: 'rotate', titleKey: 'home.rotateTitle', descKey: 'home.rotateDesc', href: '/image/rotate', icon: '🔄' },
     { id: 'favicon', titleKey: 'home.faviconTitle', descKey: 'home.faviconDesc', href: '/image/favicon', icon: '🖼️' },
+    { id: 'playstore', titleKey: 'home.playstoreTitle', descKey: 'home.playstoreDesc', href: '/image/playstore', icon: '📱' },
+    { id: 'appstore', titleKey: 'home.appstoreTitle', descKey: 'home.appstoreDesc', href: '/image/appstore', icon: '🍎' },
     { id: 'workflow', titleKey: 'home.workflowTitle', descKey: 'home.workflowDesc', href: '/workflow', icon: '🔀' },
   ];
 

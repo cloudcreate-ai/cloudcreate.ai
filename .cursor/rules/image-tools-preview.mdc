@@ -1,0 +1,42 @@
+---
+description: 图片生成工具必须提供预览功能
+globs: src/routes/**/image/**/+page.svelte
+alwaysApply: false
+---
+
+# 图片工具预览规范
+
+所有生成/处理图片的工具页必须提供**预览功能**。
+
+## 要求
+
+1. **必须有预览入口**：每个生成结果旁提供「预览」按钮，或点击缩略图可打开预览。
+2. **预览内容**：优先使用 `SliderComparePreview` 组件，展示原图与结果对比 + 滑块交互。
+3. **数据结构**：向 `SliderComparePreview` 传入：
+   - `item`: `{ name, previewUrl（原图 blob URL）, size（原图字节）, newSize（结果字节） }`
+   - `resultBlobUrl`: 结果图片的 blob URL
+   - `onClose`: 关闭回调
+
+## 参考实现
+
+- `image/compress`：BatchResultsTable + SliderComparePreview
+- `image/playstore`：单结果 + 预览按钮 + SliderComparePreview
+- `image/favicon`：多结果，每行预览按钮 + SliderComparePreview
+
+## 示例
+
+```svelte
+<button onclick={() => openPreview(item)}>{t('common.preview')}</button>
+
+<SliderComparePreview
+  open={!!previewItem}
+  item={previewItem && sourceFile ? {
+    name: previewItem.name,
+    previewUrl: sourcePreviewUrl,
+    size: sourceFile.size,
+    newSize: previewItem.blob.size
+  } : null}
+  resultBlobUrl={previewItem?.previewUrl ?? null}
+  onClose={() => (previewItem = null)}
+/>
+```
