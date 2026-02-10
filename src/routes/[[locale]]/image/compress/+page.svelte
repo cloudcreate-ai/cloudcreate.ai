@@ -71,6 +71,8 @@
           blob: r?.blob,
           outputName: r?.outputName,
           newSize,
+          newWidth: r?.width ?? x.width,
+          newHeight: r?.height ?? x.height,
           ratio,
         };
       });

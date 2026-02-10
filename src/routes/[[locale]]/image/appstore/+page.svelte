@@ -5,6 +5,7 @@
   import { t } from '$lib/i18n.js';
   import { filterImageFiles, downloadBlob } from '$lib/batchHelpers.js';
   import { generateAppStoreIcon } from '$lib/appStoreIcon.js';
+  import { getImageDimensions } from '$lib/imageProcessor.js';
   import { formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
@@ -12,6 +13,8 @@
 
   let sourceFile = $state(null);
   let sourcePreviewUrl = $state(null);
+  let sourceWidth = $state(null);
+  let sourceHeight = $state(null);
   let result = $state(null);
   let processing = $state(false);
   let error = $state('');
@@ -24,6 +27,13 @@
     result?.previewUrl && URL.revokeObjectURL(result.previewUrl);
     sourceFile = filtered[0];
     sourcePreviewUrl = URL.createObjectURL(sourceFile);
+    sourceWidth = null;
+    sourceHeight = null;
+    try {
+      const dim = await getImageDimensions(sourceFile);
+      sourceWidth = dim.width;
+      sourceHeight = dim.height;
+    } catch (_) {}
     result = null;
     error = '';
   }
@@ -132,7 +142,7 @@
 
   <SliderComparePreview
     open={previewOpen}
-    item={result && sourceFile ? { name: result.name, previewUrl: sourcePreviewUrl, size: sourceFile.size, newSize: result.blob.size } : null}
+    item={result && sourceFile ? { name: result.name, previewUrl: sourcePreviewUrl, size: sourceFile.size, newSize: result.blob.size, width: sourceWidth, height: sourceHeight, newWidth: 1024, newHeight: 1024 } : null}
     resultBlobUrl={result?.previewUrl ?? null}
     onClose={() => (previewOpen = false)}
   />

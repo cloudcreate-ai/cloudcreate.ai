@@ -260,6 +260,8 @@
         blob: r?.blob,
         outputName: r?.outputName,
         newSize,
+        newWidth: r?.width,
+        newHeight: r?.height,
         ratio,
       };
     })
@@ -549,7 +551,9 @@
         <div class="flex-1 overflow-auto p-4">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div class="flex flex-col items-center">
-              <p class="text-sm text-surface-600-400 mb-2">{t('common.original')} · {formatFileSize(previewItem.size)}</p>
+              <p class="text-sm text-surface-600-400 mb-2">
+                {t('common.original')} · {formatFileSize(previewItem.size)}{#if previewItem.width != null && previewItem.height != null} · {previewItem.width}×{previewItem.height}{/if}
+              </p>
               <img
                 src={previewItem.previewUrl}
                 alt="Original"
@@ -557,7 +561,9 @@
               />
             </div>
             <div class="flex flex-col items-center">
-              <p class="text-sm text-surface-600-400 mb-2">{t('common.result')} · {formatFileSize(previewItem.newSize)}</p>
+              <p class="text-sm text-surface-600-400 mb-2">
+                {t('common.result')} · {formatFileSize(previewItem.newSize)}{#if previewItem.newWidth != null && previewItem.newHeight != null} · {previewItem.newWidth}×{previewItem.newHeight}{/if}
+              </p>
               <img
                 src={previewBlobUrl}
                 alt="Result"

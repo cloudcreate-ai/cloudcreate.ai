@@ -6,7 +6,7 @@
   import { filterImageFiles, downloadBlob } from '$lib/batchHelpers.js';
   import { loadToolConfig, saveToolConfig } from '$lib/toolConfig.js';
   import { generateFavicons, FAVICON_SIZES } from '$lib/faviconGenerator.js';
-  import { formatFileSize } from '$lib/imageProcessor.js';
+  import { getImageDimensions, formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
@@ -18,6 +18,8 @@
 
   let sourceFile = $state(null);
   let sourcePreviewUrl = $state(null);
+  let sourceWidth = $state(null);
+  let sourceHeight = $state(null);
   let selectedSizes = $state(new Set(validSizes));
   let includeIco = $state(saved.includeIco !== false);
   let results = $state([]);
@@ -51,6 +53,13 @@
     sourcePreviewUrl && URL.revokeObjectURL(sourcePreviewUrl);
     sourceFile = filtered[0];
     sourcePreviewUrl = URL.createObjectURL(sourceFile);
+    sourceWidth = null;
+    sourceHeight = null;
+    try {
+      const dim = await getImageDimensions(sourceFile);
+      sourceWidth = dim.width;
+      sourceHeight = dim.height;
+    } catch (_) {}
     results = [];
     error = '';
   }
@@ -242,7 +251,7 @@
 
   <SliderComparePreview
     open={!!previewItem}
-    item={previewItem && sourceFile ? { name: previewItem.name, previewUrl: sourcePreviewUrl, size: sourceFile.size, newSize: previewItem.blob.size } : null}
+    item={previewItem && sourceFile ? { name: previewItem.name, previewUrl: sourcePreviewUrl, size: sourceFile.size, newSize: previewItem.blob.size, width: sourceWidth, height: sourceHeight, newWidth: previewItem.size, newHeight: previewItem.size } : null}
     resultBlobUrl={previewItem?.previewUrl ?? null}
     onClose={() => (previewItem = null)}
   />
