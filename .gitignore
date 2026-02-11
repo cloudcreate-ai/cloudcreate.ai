@@ -29,3 +29,6 @@ build
 test-results
 playwright-report
 playwright/.cache
+
+# Temporary files
+tempfiles/
