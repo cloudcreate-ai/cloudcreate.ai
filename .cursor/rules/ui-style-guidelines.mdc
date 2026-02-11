@@ -1,0 +1,23 @@
+---
+description: 统一 CloudCreate Workspace 交互控件样式，避免再次出现不一致按钮或内联色值
+globs: src/**/*.svelte
+alwaysApply: false
+---
+
+# UI/交互样式规范
+
+- **优先复用公共样式**  
+  - 交互按钮、分页/缩放等操作控件必须复用已有的 `control-btn` 或其他既有 `.app-header-*` / `.app-sidebar-*` 类。  
+  - 不允许在组件内部随意添加新的按钮类名或内联 `style` 来定义 padding/圆角/背景；如确需扩展，应在公共样式文件（如 `src/app.css`）补充通用类并在此文件中记录。
+
+- **只能使用 CCW 主题变量**  
+  - 所有前景/背景颜色、边框、阴影必须引用 `--ccw-*` 变量（例如 `var(--ccw-text-secondary)`），不得直接写 `#fff`、`rgba(...)` 等魔法值。  
+  - 若组件需要渐变或阴影，请先确认 `src/app.css` 是否已有 `--ccw-shadow-soft` 等变量；没有时新增变量再引用。
+
+- **交互状态完整**  
+  - 新增控件必须包含 `:hover`、`:disabled` 等状态，动画/过渡统一使用 `transition: … 150ms ease`。  
+  - 禁止只实现默认态导致主题切换或悬停反馈缺失。
+
+- **组件复用示例**  
+  - 分页、缩放、清空等操作按钮 → 使用 `<button class="control-btn">` 并根据需要添加 `disabled`。  
+  - 进度/加载反馈 → 统一使用 `ProgressBar` 组件或 Skeleton 现有指示器，不得自定义临时进度条。

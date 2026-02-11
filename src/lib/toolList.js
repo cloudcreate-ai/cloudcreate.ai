@@ -36,6 +36,7 @@ export const TOOL_GROUPS = [
     labelKey: 'sidebar.other',
     items: [
       { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', href: '/markdown', icon: '📝' },
+      { id: 'pdfViewer', titleKey: 'home.pdfViewerTitle', href: '/pdf', icon: '📄' },
       { id: 'tableTools', titleKey: 'home.tableToolsTitle', href: '/table', icon: '📊' },
       { id: 'workflow', titleKey: 'home.workflowTitle', href: '/workflow', icon: '🔀' },
     ],
