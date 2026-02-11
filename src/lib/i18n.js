@@ -45,7 +45,7 @@ const translations = {
       changeImage: 'Change image',
       sameAsOriginal: 'Same as original',
     },
-    pageTitle: 'FreeTools - Browser Utility Collection',
+    pageTitle: 'CloudCreate Workspace - Browser Utility Collection',
     sidebar: {
       image: 'Image',
       css: 'CSS',
@@ -53,12 +53,12 @@ const translations = {
       other: 'Other',
     },
     layout: {
-      aiChat: 'AI Chat',
+      aiChat: 'AI Assistant',
       aiChatPlaceholder: 'Coming soon. Chat with AI, call agents, use tools.',
       toggleSidebar: 'Toggle navigation',
     },
     home: {
-      title: 'FreeTools',
+      title: 'CloudCreate Workspace',
       subtitle: 'Browser-based utility collection',
       favoritesTitle: 'My Favorites',
       recentlyUsedTitle: 'Recently Used',
@@ -369,7 +369,7 @@ const translations = {
       changeImage: '更换图片',
       sameAsOriginal: '同原图',
     },
-    pageTitle: 'FreeTools - 浏览器实用工具集',
+    pageTitle: 'CloudCreate Workspace - 浏览器实用工具集',
     sidebar: {
       image: '图片',
       css: 'CSS',
@@ -377,12 +377,12 @@ const translations = {
       other: '其他',
     },
     layout: {
-      aiChat: 'AI 对话',
+      aiChat: 'AI 助理',
       aiChatPlaceholder: '敬请期待。与 AI 对话、调用 Agent、使用页面工具。',
       toggleSidebar: '切换导航',
     },
     home: {
-      title: 'FreeTools',
+      title: 'CloudCreate Workspace',
       subtitle: '浏览器实用工具集',
       favoritesTitle: '我的收藏',
       recentlyUsedTitle: '最近使用',

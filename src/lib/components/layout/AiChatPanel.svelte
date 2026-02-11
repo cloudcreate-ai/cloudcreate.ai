@@ -45,11 +45,12 @@
     flex-direction: column;
     overflow: hidden;
   }
+  /* 与侧栏、工作区标题对齐 */
   .ai-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.35rem 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem;
     font-size: 0.75rem;
     font-weight: 600;
     border-bottom: 1px solid var(--color-surface-200-800);

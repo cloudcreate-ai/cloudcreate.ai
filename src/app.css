@@ -27,7 +27,7 @@ html, body { height: 100%; margin: 0; overflow-x: hidden; }
   min-width: 320px;
   height: 100%;
   overflow: auto;
-  padding: 1rem 1.75rem;
+  padding: 0.75rem;
 }
 /* 右栏 AI 面板：宽度由子组件决定（展开 280px/收起 36px），紧贴右侧，占满高度 */
 :global(.app-shell-ai) {

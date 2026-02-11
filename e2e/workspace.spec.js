@@ -6,7 +6,7 @@ test.describe('工作区首页', () => {
   test('打开首页显示标题与副标题', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('FreeTools', { timeout: 15000 });
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('CloudCreate Workspace', { timeout: 15000 });
     await expect(page.getByText('Browser-based utility collection').or(page.getByText('浏览器实用工具集'))).toBeVisible();
   });
 

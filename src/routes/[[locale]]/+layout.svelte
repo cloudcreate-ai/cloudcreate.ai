@@ -64,7 +64,7 @@
     <!-- 工作区：始终显示，最小宽度 -->
     <main
       class="app-shell-workspace"
-      style="flex: 1 1 0%; min-width: 320px; height: 100%; overflow: auto;"
+      style="flex: 1 1 0%; min-width: 320px; height: 100%; overflow: auto; padding: 0.75rem;"
     ><slot /></main>
     <!-- 右侧 AI：大屏正常，小屏折叠时窄条，展开时覆盖 -->
     <aside

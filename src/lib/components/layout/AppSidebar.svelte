@@ -73,8 +73,9 @@
     display: flex;
     flex-direction: column;
   }
+  /* 与工作区、AI 面板标题对齐（0.75rem） */
   .app-sidebar-nav {
-    padding: 0.5rem 0;
+    padding: 0.4rem 0 0.5rem;
   }
   .app-sidebar-item {
     display: flex;

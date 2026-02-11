@@ -3,7 +3,7 @@
 </script>
 
 <footer class="app-footer">
-  <span class="app-footer-text">FreeTools</span>
+  <span class="app-footer-text">CloudCreate Workspace</span>
 </footer>
 
 <style>
