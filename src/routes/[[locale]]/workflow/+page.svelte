@@ -28,7 +28,6 @@
   let workflowName = $state('');
   let workflowDescription = $state('');
 
-  const homeHref = $derived(localePath($page.url.pathname, '/'));
   const advancedHref = $derived(localePath($page.url.pathname, '/workflow/advanced'));
 
   function addStep(index, type) {
@@ -297,9 +296,9 @@
   bind:this={importInputRef}
   onchange={handleImportFile}
 />
+<div class="workspace-content">
 <main class="workflow-simple">
   <header class="workflow-header">
-    <a href={homeHref} class="text-primary-500 text-sm no-underline hover:underline">{t('common.backWorkspace')}</a>
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
     <div class="header-actions">
       <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={openViewJson}>
@@ -604,6 +603,7 @@
     </div>
   {/if}
 </main>
+</div>
 
 <style>
   /* 统一内容宽度，与其他工具页 max-w-4xl (896px) 一致 */
@@ -611,7 +611,6 @@
     --workflow-width: 896px;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
     width: 100%;
     max-width: var(--workflow-width);
     margin: 0 auto;

@@ -198,7 +198,7 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
 
-<main class="p-8 max-w-4xl mx-auto">
+<div class="workspace-content">
   <ToolPageHeader titleKey="resize.title" descKey="resize.desc" />
 
   {#if steps.length > 0}
@@ -318,4 +318,4 @@
     resultBlobUrl={previewBlobUrl}
     onClose={closePreview}
   />
-</main>
+</div>

@@ -189,7 +189,7 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') (cropRequest ? null : closePreview()); }} />
 
-<main class="p-8 max-w-4xl mx-auto">
+<div class="workspace-content">
   <ToolPageHeader titleKey="crop.title" descKey="crop.desc" />
 
   {#if steps.length > 0}
@@ -296,4 +296,4 @@
     resultBlobUrl={previewBlobUrl}
     onClose={closePreview}
   />
-</main>
+</div>

@@ -144,7 +144,7 @@
   }
 </script>
 
-<main class="p-8 max-w-4xl mx-auto">
+<div class="workspace-content">
   <ToolPageHeader titleKey="archiveCompress.title" descKey="archiveCompress.desc" />
 
   <section class="mb-4">
@@ -250,4 +250,4 @@
   {#if error}
     <p class="text-sm text-error-500 mb-4">{error}</p>
   {/if}
-</main>
+</div>

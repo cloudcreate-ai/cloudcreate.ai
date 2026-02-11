@@ -142,7 +142,7 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
 
-<main class="p-8 max-w-4xl mx-auto">
+<div class="workspace-content">
   <ToolPageHeader titleKey="rotate.title" descKey="rotate.desc" />
 
   <details class="card preset-outlined-surface-200-800 p-4 mb-4">
@@ -222,4 +222,4 @@
     resultBlobUrl={previewBlobUrl}
     onClose={closePreview}
   />
-</main>
+</div>

@@ -1,7 +1,92 @@
 @import 'tailwindcss';
 
-html, body { height: 100%; margin: 0; }
-:global(.app-wrap) { min-height: 100%; }
+html, body { height: 100%; margin: 0; overflow-x: hidden; }
+:global(.app-wrap) { min-height: 100%; height: 100%; width: 100%; overflow: hidden; }
+
+@import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton-svelte';
+@import '@skeletonlabs/skeleton/themes/cerberus';
+
+/* 布局辅助样式（关键布局用内联样式，此处补充子元素样式） */
+:global(.app-shell-header),
+:global(.app-shell-footer) {
+  flex-shrink: 0;
+}
+/* 左栏侧边栏：固定宽度，占满高度 */
+:global(.app-shell-sidebar) {
+  flex: 0 0 auto;
+  width: 200px;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+/* 中栏工作区：占满剩余宽度和高度，最小宽度保证始终可读 */
+:global(.app-shell-workspace) {
+  flex: 1 1 0%;
+  min-width: 320px;
+  height: 100%;
+  overflow: auto;
+  padding: 1rem 1.75rem;
+}
+/* 右栏 AI 面板：宽度由子组件决定（展开 280px/收起 36px），紧贴右侧，占满高度 */
+:global(.app-shell-ai) {
+  flex: 0 0 auto;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 小屏响应式：侧边栏折叠/覆盖 */
+:global(.app-shell-sidebar-collapsed) {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  flex: 0 0 0 !important;
+  border: none !important;
+}
+:global(.app-shell-sidebar-overlay) {
+  position: fixed !important;
+  left: 0;
+  top: 40px;
+  bottom: 24px;
+  width: 200px !important;
+  z-index: 100;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+}
+:global(.app-shell-ai-collapsed) {
+  width: 36px !important;
+  min-width: 36px !important;
+}
+:global(.app-shell-ai-overlay) {
+  position: fixed !important;
+  right: 0;
+  top: 40px;
+  bottom: 24px;
+  width: 280px !important;
+  z-index: 100;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+}
+:global(.app-shell-backdrop) {
+  position: fixed;
+  inset: 0;
+  top: 40px;
+  bottom: 24px;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 99;
+  border: none;
+  cursor: pointer;
+}
+
+:global(.workspace-content) {
+  max-width: 56rem;
+  margin: 0 auto;
+}
+:global(.workspace-content-wide) {
+  max-width: 72rem;
+  margin: 0 auto;
+}
 
 /* 统一输入组件字体 */
 input, select, textarea {
@@ -10,6 +95,3 @@ input, select, textarea {
   line-height: 1.5;
 }
 
-@import '@skeletonlabs/skeleton';
-@import '@skeletonlabs/skeleton-svelte';
-@import '@skeletonlabs/skeleton/themes/cerberus';

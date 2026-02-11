@@ -82,7 +82,7 @@
   }
 </script>
 
-<main class="p-8 max-w-4xl mx-auto">
+<div class="workspace-content">
   <ToolPageHeader titleKey="cssBeautify.title" descKey="cssBeautify.desc" />
 
   <section class="mb-4">
@@ -148,4 +148,4 @@
       </div>
     </section>
   {/if}
-</main>
+</div>

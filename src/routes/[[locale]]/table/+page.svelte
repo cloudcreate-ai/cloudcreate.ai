@@ -99,7 +99,7 @@
   }
 </script>
 
-<main class="p-8 max-w-6xl mx-auto">
+<div class="workspace-content workspace-content-wide">
   <ToolPageHeader titleKey="tableTools.title" descKey="tableTools.desc" />
 
   <section class="mb-4">
@@ -259,4 +259,4 @@
       </div>
     </section>
   {/if}
-</main>
+</div>

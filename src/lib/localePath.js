@@ -3,8 +3,8 @@
  */
 const LOCALE_PREFIXES = ['en', 'zh'];
 
-/** 去掉 pathname 中已知的语言前缀，得到逻辑路径 */
-function stripLocalePrefix(pathname) {
+/** 去掉 pathname 中已知的语言前缀，得到逻辑路径（如 /en/image/compress -> /image/compress） */
+export function getLogicalPath(pathname) {
   const normalized = pathname.replace(/\/$/, '') || '/';
   for (const p of LOCALE_PREFIXES) {
     const m = normalized.match(new RegExp(`^/${p}(/|$)`));
@@ -19,7 +19,7 @@ function stripLocalePrefix(pathname) {
  * - locale === 'zh'：/zh、/zh/image/compress
  */
 export function pathForLocale(locale, pathname) {
-  const logical = stripLocalePrefix(pathname);
+  const logical = getLogicalPath(pathname);
   const path = logical === '/' ? '' : logical;
   if (locale === 'en') {
     return '/en' + path;

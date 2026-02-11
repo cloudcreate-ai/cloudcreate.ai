@@ -47,7 +47,7 @@
   }
 </script>
 
-<main class="p-8 max-w-6xl mx-auto">
+<div class="workspace-content workspace-content-wide">
   <ToolPageHeader titleKey="markdownPreview.title" descKey="markdownPreview.desc" />
 
   <section class="mb-4">
@@ -131,7 +131,7 @@
       </div>
     </div>
   </div>
-</main>
+</div>
 
 <style>
   .markdown-preview :global(h1) { font-size: 1.5rem; font-weight: 600; margin: 0 0 0.5rem; }

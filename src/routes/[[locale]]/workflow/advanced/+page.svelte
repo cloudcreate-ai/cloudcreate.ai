@@ -37,7 +37,6 @@
     output: OutputNode,
   };
 
-  const homeHref = $derived(localePath($page.url.pathname, '/'));
   const workflowHref = $derived(localePath($page.url.pathname, '/workflow'));
 
   function toSvelteFlowNodes(nodes) {
@@ -280,9 +279,9 @@
   }
 </script>
 
+<div class="workspace-content">
 <main class="workflow-editor">
   <header class="workflow-header">
-    <a href={homeHref} class="text-primary-500 text-sm no-underline hover:underline">{t('common.backWorkspace')}</a>
     <a href={workflowHref} class="text-surface-600-400 text-sm no-underline hover:text-primary-500">← {t('workflow.simpleMode')}</a>
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
     <div class="header-actions">
@@ -487,13 +486,13 @@
     <CropModal request={cropRequest} />
   {/if}
 </main>
+</div>
 
 <style>
   .workflow-editor {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    max-height: 100vh;
+    min-height: 70vh;
   }
   .workflow-header {
     display: flex;

@@ -7,12 +7,9 @@
   import { localePath } from '$lib/localePath.js';
 </script>
 
-<main class="p-8 max-w-4xl mx-auto">
-  <header class="mb-6">
-    <a href={localePath($page.url.pathname, '/')} class="text-primary-500 text-sm no-underline hover:underline block mb-3">
-      {t('common.backWorkspace')}
-    </a>
-    <h1 class="text-2xl font-semibold mb-1">{t('archiveIndex.title')}</h1>
+<div class="workspace-content">
+  <header class="tool-page-header mb-6">
+    <h1 class="text-xl font-semibold mb-1">{t('archiveIndex.title')}</h1>
     <p class="text-surface-600-400 text-sm m-0">{t('archiveIndex.desc')}</p>
   </header>
 
@@ -34,4 +31,4 @@
       <p class="text-sm text-surface-600-400 m-0">{t('archiveIndex.compressDesc')}</p>
     </a>
   </section>
-</main>
+</div>

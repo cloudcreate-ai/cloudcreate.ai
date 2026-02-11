@@ -42,6 +42,8 @@ const config = {
         '/zh/markdown',
         '/en/table',
         '/zh/table',
+        '/en/framework',
+        '/zh/framework',
         '/zh/workflow',
         '/zh/workflow/advanced',
       ],
