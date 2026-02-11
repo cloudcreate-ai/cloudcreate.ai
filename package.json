@@ -18,6 +18,7 @@
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.50.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "pngjs": "^7.0.0",
     "svelte": "^5.43.8",
     "vite": "^7.2.4",
     "wrangler": "^4.63.0"
@@ -34,6 +35,9 @@
     "csso": "^5.0.5",
     "dompurify": "^3.3.1",
     "fflate": "^0.8.2",
+    "gif.js": "^0.2.0",
+    "gifenc": "^1.0.3",
+    "gifuct-js": "^2.1.2",
     "js-beautify": "^1.15.4",
     "jszip": "^3.10.1",
     "marked": "^17.0.1",

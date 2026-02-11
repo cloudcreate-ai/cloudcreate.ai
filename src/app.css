@@ -176,3 +176,56 @@ input, select, textarea {
   outline-offset: 2px;
 }
 
+:global(.btn) {
+  border-radius: var(--ccw-radius-pill) !important;
+  border: 1px solid var(--ccw-border-soft) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: var(--ccw-text-primary) !important;
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+:global(.btn:hover:not(:disabled)) {
+  border-color: var(--ccw-border-contrast) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--ccw-text-primary) !important;
+}
+:global(.btn:disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+:global(.btn.btn-sm) {
+  padding: 0.25rem 0.8rem;
+  font-size: 0.75rem;
+}
+:global(.btn.preset-outlined-surface-200-800) {
+  background: transparent !important;
+  color: var(--ccw-text-secondary) !important;
+  border-color: var(--ccw-border-contrast) !important;
+}
+:global(.btn.preset-outlined-surface-200-800:hover:not(:disabled)) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--ccw-text-primary) !important;
+}
+:global(.btn.preset-filled-primary-500) {
+  background: var(--ccw-accent-strong) !important;
+  border-color: var(--ccw-accent-strong) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(0, 120, 212, 0.4) !important;
+}
+:global(.btn.preset-filled-primary-500:hover:not(:disabled)) {
+  background: var(--ccw-accent) !important;
+  border-color: var(--ccw-accent) !important;
+}
+:global(.btn.btn-ghost) {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--ccw-text-secondary) !important;
+}
+:global(.btn.btn-ghost:hover:not(:disabled)) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--ccw-text-primary) !important;
+}
+

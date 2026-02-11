@@ -6,6 +6,8 @@ export const TOOL_GROUPS = [
     id: 'image',
     labelKey: 'sidebar.image',
     items: [
+      { id: 'preview', titleKey: 'home.imagePreviewTitle', href: '/image/preview', icon: '🖥️' },
+      { id: 'gif', titleKey: 'home.gifToolTitle', href: '/image/gif', icon: '🎞️' },
       { id: 'compress', titleKey: 'home.compressTitle', href: '/image/compress', icon: '🗜️' },
       { id: 'crop', titleKey: 'home.cropTitle', href: '/image/crop', icon: '✂️' },
       { id: 'resize', titleKey: 'home.resizeTitle', href: '/image/resize', icon: '📐' },
@@ -35,6 +37,7 @@ export const TOOL_GROUPS = [
     id: 'other',
     labelKey: 'sidebar.other',
     items: [
+      { id: 'styleGuide', titleKey: 'home.styleGuideTitle', href: '/styleguide', icon: '🎨' },
       { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', href: '/markdown', icon: '📝' },
       { id: 'pdfViewer', titleKey: 'home.pdfViewerTitle', href: '/pdf', icon: '📄' },
       { id: 'tableTools', titleKey: 'home.tableToolsTitle', href: '/table', icon: '📊' },
