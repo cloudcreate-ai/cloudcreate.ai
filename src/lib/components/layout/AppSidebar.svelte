@@ -67,40 +67,68 @@
     width: 200px;
     height: 100%;
     flex-shrink: 0;
-    border-right: 1px solid var(--color-surface-200-800);
-    background: var(--color-surface-100-900);
+    border-right: 1px solid var(--ccw-border-contrast);
+    background: var(--ccw-bg-panel);
+    color: var(--ccw-text-secondary);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ccw-border-contrast) transparent;
   }
   /* 与工作区、AI 面板标题对齐（0.75rem） */
   .app-sidebar-nav {
-    padding: 0.4rem 0 0.5rem;
+    padding: 0.4rem 0.35rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
   }
   .app-sidebar-item {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.35rem 0.75rem;
+    gap: 0.45rem;
+    padding: 0.35rem 0.85rem 0.35rem 1rem;
     font-size: 0.8125rem;
     text-decoration: none;
-    color: inherit;
+    color: var(--ccw-text-secondary);
     border: none;
     background: none;
     width: 100%;
     text-align: left;
     cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+  }
+  .app-sidebar-item::before {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    border-radius: 2px;
+    background: transparent;
+    transition: background-color 150ms ease;
   }
   .app-sidebar-item:hover {
-    background: var(--color-surface-200-800);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ccw-text-primary);
   }
   .app-sidebar-item.active {
-    background: var(--color-primary-500);
-    color: var(--color-primary-500-contrast);
+    background: rgba(10, 132, 255, 0.18);
+    color: #fff;
+  }
+  .app-sidebar-item.active::before {
+    background: var(--ccw-accent);
   }
   .app-sidebar-icon {
     font-size: 1rem;
     line-height: 1;
+    color: var(--ccw-icon-muted);
+  }
+  .app-sidebar-item.active .app-sidebar-icon {
+    color: #fff;
   }
   .app-sidebar-label {
     white-space: nowrap;
@@ -108,16 +136,16 @@
     text-overflow: ellipsis;
   }
   .app-sidebar-group {
-    margin-top: 0.25rem;
+    margin-top: 0.35rem;
   }
   .app-sidebar-group-toggle {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.85rem;
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--color-surface-600-400);
+    color: var(--ccw-text-muted);
     background: none;
     border: none;
     width: 100%;
@@ -125,12 +153,12 @@
     cursor: pointer;
   }
   .app-sidebar-group-toggle:hover {
-    color: inherit;
+    color: var(--ccw-text-secondary);
   }
   .app-sidebar-group-chevron {
     font-size: 0.6rem;
   }
   .app-sidebar-group-items {
-    padding-left: 0.25rem;
+    padding-left: 0.35rem;
   }
 </style>

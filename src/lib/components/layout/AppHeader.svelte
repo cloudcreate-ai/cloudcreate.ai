@@ -29,15 +29,17 @@
   </div>
   <div class="app-header-actions">
     <button
+      type="button"
+      class="app-header-locale {$locale === 'en' ? 'is-active' : ''}"
       onclick={() => switchLocale('en')}
-      class="btn btn-xs {$locale === 'en' ? 'preset-filled-primary-500' : 'preset-outlined-surface-200-800'}"
       aria-pressed={$locale === 'en'}
     >
       EN
     </button>
     <button
+      type="button"
+      class="app-header-locale {$locale === 'zh' ? 'is-active' : ''}"
       onclick={() => switchLocale('zh')}
-      class="btn btn-xs {$locale === 'zh' ? 'preset-filled-primary-500' : 'preset-outlined-surface-200-800'}"
       aria-pressed={$locale === 'zh'}
     >
       中文
@@ -50,11 +52,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 40px;
-    padding: 0 0.75rem;
+    height: 46px;
+    padding: 0 1rem;
     flex-shrink: 0;
-    border-bottom: 1px solid var(--color-surface-200-800);
-    background: var(--color-surface-50-950);
+    border-bottom: 1px solid var(--ccw-border-contrast);
+    background: var(--ccw-bg-panel);
+    box-shadow: 0 1px 0 var(--ccw-border-soft);
   }
   .app-header-left {
     display: flex;
@@ -62,33 +65,53 @@
     gap: 0.5rem;
   }
   .app-header-menu-btn {
-    padding: 0.25rem 0.5rem;
-    font-size: 1.125rem;
+    padding: 0.2rem 0.55rem;
+    font-size: 1.05rem;
     line-height: 1;
-    background: none;
-    border: none;
+    background: transparent;
+    border: 1px solid transparent;
     cursor: pointer;
-    color: inherit;
-    border-radius: 4px;
+    color: var(--ccw-text-secondary);
+    border-radius: var(--ccw-radius-pill);
+    transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
   }
   .app-header-menu-btn:hover {
-    background: var(--color-surface-200-800);
+    color: var(--ccw-text-primary);
+    border-color: var(--ccw-border-soft);
+    background: rgba(255, 255, 255, 0.05);
   }
   .app-header-title {
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 600;
     text-decoration: none;
-    color: inherit;
+    color: var(--ccw-text-primary);
   }
   .app-header-title:hover {
-    color: var(--color-primary-500);
+    color: var(--ccw-accent);
   }
   .app-header-actions {
     display: flex;
     gap: 0.25rem;
   }
-  :global(.btn-xs) {
-    padding: 0.15rem 0.4rem;
+  .app-header-locale {
+    border: 1px solid var(--ccw-border-soft);
+    border-radius: var(--ccw-radius-pill);
     font-size: 0.75rem;
+    padding: 0.15rem 0.65rem;
+    background: transparent;
+    color: var(--ccw-text-secondary);
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .app-header-locale:hover {
+    color: var(--ccw-text-primary);
+    border-color: var(--ccw-border-contrast);
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .app-header-locale.is-active {
+    background: var(--ccw-accent-strong);
+    color: #fff;
+    border-color: var(--ccw-accent-strong);
+    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
   }
 </style>

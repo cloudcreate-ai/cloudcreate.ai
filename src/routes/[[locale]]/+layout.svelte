@@ -39,11 +39,14 @@
 </script>
 
 <!-- 第一层：上中下三区。内联样式确保布局生效（第三方 CSS 会覆盖外部样式表） -->
-<div class="app-shell" style="display: flex; flex-direction: column; width: 100%; height: 100vh; overflow: hidden;">
+<div
+  class="app-shell"
+  style="display: flex; flex-direction: column; width: 100%; height: 100vh; overflow: hidden; background: var(--ccw-bg-base); color: var(--ccw-text-primary); font-family: var(--ccw-font-sans);"
+>
   <header class="app-shell-header"><AppHeader /></header>
   <div
     class="app-shell-main"
-    style="flex: 1; min-height: 0; min-width: 0; width: 100%; display: flex; flex-direction: row; flex-wrap: nowrap; align-items: stretch; gap: 0.75rem; overflow: hidden;"
+    style="flex: 1; min-height: 0; min-width: 0; width: 100%; display: flex; flex-direction: row; flex-wrap: nowrap; align-items: stretch; gap: 0.75rem; padding: 0.75rem; background: var(--ccw-bg-base); border-top: 1px solid var(--ccw-border-contrast); overflow: hidden;"
   >
     <!-- 左侧栏：大屏正常显示，小屏折叠时隐藏，展开时覆盖 -->
     <aside
@@ -64,7 +67,7 @@
     <!-- 工作区：始终显示，最小宽度 -->
     <main
       class="app-shell-workspace"
-      style="flex: 1 1 0%; min-width: 320px; height: 100%; overflow: auto; padding: 0.75rem;"
+      style="flex: 1 1 0%; min-width: 320px; height: 100%; overflow: auto; padding: 0.75rem; background: var(--ccw-bg-panel); border: 1px solid var(--ccw-border-soft); border-radius: var(--ccw-radius-card); box-shadow: var(--ccw-shadow-soft);"
     ><slot /></main>
     <!-- 右侧 AI：大屏正常，小屏折叠时窄条，展开时覆盖 -->
     <aside

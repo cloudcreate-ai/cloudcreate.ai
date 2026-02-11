@@ -39,22 +39,24 @@
     width: 280px;
     height: 100%;
     flex-shrink: 0;
-    border-left: 1px solid var(--color-surface-200-800);
-    background: var(--color-surface-100-900);
+    border-left: 1px solid var(--ccw-border-contrast);
+    background: var(--ccw-bg-panel);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    color: var(--ccw-text-secondary);
   }
-  /* 与侧栏、工作区标题对齐 */
+  /* 与侧栏、工作区标题对齐（0.5rem） */
   .ai-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0.5rem 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 600;
-    border-bottom: 1px solid var(--color-surface-200-800);
+    border-bottom: 1px solid var(--ccw-border-contrast);
     flex-shrink: 0;
+    color: var(--ccw-text-primary);
   }
   .ai-panel-title {
     white-space: nowrap;
@@ -62,26 +64,29 @@
     text-overflow: ellipsis;
   }
   .ai-panel-close {
-    padding: 0.15rem 0.35rem;
+    padding: 0.15rem 0.4rem;
     font-size: 0.75rem;
-    background: none;
-    border: none;
+    background: transparent;
+    border: 1px solid transparent;
     cursor: pointer;
-    color: var(--color-surface-600-400);
-    border-radius: 4px;
+    color: var(--ccw-text-muted);
+    border-radius: var(--ccw-radius-pill);
+    transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
   }
   .ai-panel-close:hover {
-    background: var(--color-surface-200-800);
-    color: inherit;
+    color: var(--ccw-text-primary);
+    border-color: var(--ccw-border-soft);
+    background: rgba(255, 255, 255, 0.05);
   }
   .ai-panel-content {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
+    background: var(--ccw-bg-elevated);
   }
   .ai-panel-placeholder {
     font-size: 0.8125rem;
-    color: var(--color-surface-600-400);
+    color: var(--ccw-text-muted);
     margin: 0;
     line-height: 1.5;
   }
@@ -89,8 +94,8 @@
     width: 36px;
     height: 100%;
     flex-shrink: 0;
-    border-left: 1px solid var(--color-surface-200-800);
-    background: var(--color-surface-100-900);
+    border-left: 1px solid var(--ccw-border-contrast);
+    background: var(--ccw-bg-panel);
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -106,11 +111,12 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--color-surface-600-400);
+    color: var(--ccw-text-muted);
     border-radius: 4px;
+    transition: color 150ms ease, background-color 150ms ease;
   }
   .ai-panel-expand:hover {
-    background: var(--color-surface-200-800);
-    color: var(--color-primary-500);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--ccw-accent);
   }
 </style>

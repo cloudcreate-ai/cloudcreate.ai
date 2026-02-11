@@ -36,11 +36,11 @@
           {@const fav = isFavorite(tool.href)}
           <a
             href={localePath($page.url.pathname, tool.href)}
-            class="home-tool-card card preset-outlined-surface-200-800 block p-4 no-underline text-inherit transition hover:brightness-95 dark:hover:brightness-110"
+            class="home-tool-card card block p-4 no-underline text-inherit"
           >
             <button
               type="button"
-              class="home-tool-fav"
+              class="home-tool-fav {fav ? 'is-active' : ''}"
               onclick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -70,11 +70,11 @@
           {@const fav = isFavorite(tool.href)}
           <a
             href={localePath($page.url.pathname, tool.href)}
-            class="home-tool-card card preset-outlined-surface-200-800 block p-4 no-underline text-inherit transition hover:brightness-95 dark:hover:brightness-110"
+            class="home-tool-card card block p-4 no-underline text-inherit"
           >
             <button
               type="button"
-              class="home-tool-fav"
+              class="home-tool-fav {fav ? 'is-active' : ''}"
               onclick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -103,11 +103,11 @@
         {@const fav = isFavorite(tool.href)}
         <a
           href={localePath($page.url.pathname, tool.href)}
-          class="home-tool-card card preset-outlined-surface-200-800 block p-4 no-underline text-inherit transition hover:brightness-95 dark:hover:brightness-110"
+          class="home-tool-card card block p-4 no-underline text-inherit"
         >
           <button
             type="button"
-            class="home-tool-fav"
+            class="home-tool-fav {fav ? 'is-active' : ''}"
             onclick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -130,14 +130,17 @@
   .home-workspace {
     max-width: 56rem;
     margin: 0 auto;
+    padding-bottom: 2rem;
   }
   .home-intro {
-    font-size: 0.9375rem;
-    color: var(--color-surface-600-400);
-    margin: 0 0 1.5rem 0;
+    font-size: 0.875rem;
+    color: var(--ccw-text-muted);
+    margin: 0 0 1rem 0;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
   .home-section {
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
   }
   .home-section:last-child {
     margin-bottom: 0;
@@ -145,8 +148,18 @@
   .home-section-title {
     font-size: 0.9375rem;
     font-weight: 600;
-    color: var(--color-surface-700-300);
-    margin: 0 0 0.75rem 0;
+    color: var(--ccw-text-primary);
+    margin: 0 0 0.85rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .home-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ccw-border-soft);
+    opacity: 0.5;
   }
   .home-tool-grid {
     display: grid;
@@ -155,37 +168,65 @@
   }
   .home-tool-card {
     position: relative;
+    background: var(--ccw-bg-elevated);
+    border: 1px solid var(--ccw-border-soft);
+    border-radius: var(--ccw-radius-card);
+    color: var(--ccw-text-secondary);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease, color 150ms ease, background-color 150ms ease;
+  }
+  .home-tool-card:hover {
+    border-color: var(--ccw-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--ccw-shadow-soft);
+    color: var(--ccw-text-primary);
+  }
+  .home-tool-card:focus-visible {
+    outline: 2px solid var(--ccw-accent);
+    outline-offset: 2px;
   }
   .home-tool-fav {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    padding: 0.15rem;
+    padding: 0.2rem;
     font-size: 1rem;
     line-height: 1;
-    background: none;
-    border: none;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid transparent;
+    border-radius: 999px;
     cursor: pointer;
-    color: var(--color-surface-500-500);
-    opacity: 0.7;
+    color: var(--ccw-text-muted);
+    transition: color 150ms ease, transform 150ms ease, border-color 150ms ease, background-color 150ms ease;
   }
   .home-tool-fav:hover {
-    opacity: 1;
-    color: var(--color-primary-500);
+    color: var(--ccw-accent);
+    background: rgba(10, 132, 255, 0.15);
+    border-color: rgba(10, 132, 255, 0.3);
+  }
+  .home-tool-fav.is-active {
+    color: var(--ccw-accent);
+    background: rgba(10, 132, 255, 0.2);
+    border-color: rgba(10, 132, 255, 0.35);
+  }
+  .home-tool-card:hover .home-tool-fav {
+    color: var(--ccw-accent);
   }
   .home-tool-icon {
     display: block;
     font-size: 2rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
+    color: var(--ccw-text-primary);
   }
   .home-tool-name {
     font-size: 0.875rem;
     font-weight: 600;
     margin: 0;
+    color: currentColor;
   }
   .home-empty {
     font-size: 0.8125rem;
-    color: var(--color-surface-600-400);
+    color: var(--ccw-text-muted);
     margin: 0;
   }
 </style>

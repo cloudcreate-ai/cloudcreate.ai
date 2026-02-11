@@ -1,11 +1,66 @@
 @import 'tailwindcss';
 
-html, body { height: 100%; margin: 0; overflow-x: hidden; }
-:global(.app-wrap) { min-height: 100%; height: 100%; width: 100%; overflow: hidden; }
-
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton-svelte';
 @import '@skeletonlabs/skeleton/themes/cerberus';
+
+:root {
+  color-scheme: dark;
+  --ccw-font-sans: 'Segoe UI', 'Inter', 'SF Pro Display', 'PingFang SC', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --ccw-bg-base: #1e1e1e;
+  --ccw-bg-panel: #252526;
+  --ccw-bg-elevated: #2d2d2d;
+  --ccw-border-contrast: #3c3c3c;
+  --ccw-border-soft: #2a2a2a;
+  --ccw-text-primary: #f3f3f3;
+  --ccw-text-secondary: #c8c8c8;
+  --ccw-text-muted: #8c8c8c;
+  --ccw-icon-muted: #8f93a2;
+  --ccw-accent: #0a84ff;
+  --ccw-accent-strong: #0078d4;
+  --ccw-focus-ring: rgba(10, 132, 255, 0.45);
+  --ccw-shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --ccw-radius-card: 6px;
+  --ccw-radius-pill: 999px;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  background-color: var(--ccw-bg-base);
+  color: var(--ccw-text-primary);
+  font-family: var(--ccw-font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+::selection {
+  background: rgba(10, 132, 255, 0.4);
+  color: #fff;
+}
+
+:global(.app-wrap) {
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--ccw-bg-base);
+}
+
+body,
+:global(.app-wrap),
+:global(.app-shell) {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 /* 布局辅助样式（关键布局用内联样式，此处补充子元素样式） */
 :global(.app-shell-header),
@@ -93,5 +148,31 @@ input, select, textarea {
   font-family: inherit;
   font-size: 0.875rem;
   line-height: 1.5;
+}
+
+/* VS Code 风格卡片与按钮 */
+:global(.card) {
+  background: var(--ccw-bg-elevated);
+  border: 1px solid var(--ccw-border-soft);
+  border-radius: var(--ccw-radius-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  color: var(--ccw-text-secondary);
+}
+:global(.card:hover) {
+  border-color: var(--ccw-accent);
+  box-shadow: var(--ccw-shadow-soft);
+  transform: translateY(-1px);
+  color: var(--ccw-text-primary);
+}
+:global(button),
+:global(.btn),
+:global(.btn-primary) {
+  font-family: var(--ccw-font-sans);
+}
+:global(button:focus-visible),
+:global(.btn:focus-visible) {
+  outline: 2px solid var(--ccw-accent);
+  outline-offset: 2px;
 }
 

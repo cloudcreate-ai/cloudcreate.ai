@@ -9,16 +9,16 @@
 <style>
   .app-footer {
     height: 24px;
-    padding: 0 0.75rem;
+    padding: 0 1rem;
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    border-top: 1px solid var(--color-surface-200-800);
-    background: var(--color-surface-50-950);
-    font-size: 0.6875rem;
-    color: var(--color-surface-600-400);
+    border-top: 1px solid var(--ccw-border-contrast);
+    background: var(--ccw-bg-panel);
+    font-size: 0.75rem;
+    color: var(--ccw-text-muted);
   }
   .app-footer-text {
-    opacity: 0.8;
+    letter-spacing: 0.02em;
   }
 </style>
