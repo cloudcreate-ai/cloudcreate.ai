@@ -23,6 +23,7 @@ function createInitialState() {
     frames: [],
     selectedIndex: 0,
     sourceFps: 0,
+    sourcePaletteSize: 0,
     options: createDefaultOptions(),
     compression: {
       frames: [],
@@ -65,6 +66,7 @@ function createGifEditorStore() {
         frames: result.frames,
         selectedIndex: 0,
         sourceFps: fps,
+        sourcePaletteSize: result.sourcePaletteSize ?? 0,
         options: {
           targetFps: fps ? Math.max(1, Math.round(Math.min(60, fps))) : 24,
           scalePercent: 100,

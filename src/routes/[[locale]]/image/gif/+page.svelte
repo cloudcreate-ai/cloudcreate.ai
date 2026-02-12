@@ -13,6 +13,8 @@
   let playbackTimer = null;
   let playing = false;
   let playingIndex = 0;
+  const ZOOM_STEPS = [50, 75, 100, 125, 150, 200];
+  let previewZoomIndex = 2; // 100%
 
   $: state = $gifEditorStore;
   $: frames = state.frames ?? [];
@@ -29,6 +31,7 @@
   $: originalBytes = state.fileSize || 0;
   $: estimatedBytes = compression.estimatedBytes || 0;
   $: sourceFps = state.sourceFps || 0;
+  $: previewZoom = ZOOM_STEPS[previewZoomIndex];
 
   $: if (!playing) {
     playingIndex = state.selectedIndex;
@@ -167,6 +170,15 @@
     return value.toFixed(1).replace(/\.0$/, '');
   }
 
+  function zoomPreviewIn() {
+    if (previewZoomIndex < ZOOM_STEPS.length - 1) previewZoomIndex += 1;
+  }
+  function zoomPreviewOut() {
+    if (previewZoomIndex > 0) previewZoomIndex -= 1;
+  }
+  function zoomPreviewReset() {
+    previewZoomIndex = 2;
+  }
   function formatUpdatedAt(timestamp) {
     if (!timestamp) return '';
     const date = new Date(timestamp);
@@ -192,11 +204,14 @@
       <div>
         <strong>{t('gifTool.metaFrames')}:</strong> {frames.length}
       </div>
-      <div>
-        <strong>{t('gifTool.metaLoop')}:</strong> {state.loopCount ?? 0}
-      </div>
-      <div>
-        <strong>{t('common.size')}:</strong> {formatBytes(originalBytes)}
+        <div>
+          <strong>{t('gifTool.metaLoop')}:</strong> {state.loopCount ?? 0}
+        </div>
+        <div>
+          <strong>{t('gifTool.metaPalette')}:</strong> {state.sourcePaletteSize || '—'}
+        </div>
+        <div>
+          <strong>{t('common.size')}:</strong> {formatBytes(originalBytes)}
       </div>
     </section>
 
@@ -206,31 +221,32 @@
           <h4>{t('gifTool.optionsTitle')}</h4>
           <p class="hint">{t('gifTool.optionsNote')}</p>
         </div>
-        <div class="options-actions">
-          <label class="checkbox toggle-accurate">
-            <input
-              type="checkbox"
-              checked={options.accuratePreview ?? true}
-              onchange={() => toggleOption('accuratePreview')}
-            />
-            <span>
-              {t('gifTool.accuratePreviewLabel')}
-              <span class="hint small">{t('gifTool.accuratePreviewHint')}</span>
-            </span>
-          </label>
-          <button
-            type="button"
-            class="btn preset-filled-primary-500"
-            disabled={compression.running || !frames.length}
-            onclick={generatePreview}
-          >
-            {compression.running ? t('gifTool.processingPreview') : t('gifTool.generatePreview')}
-          </button>
-          {#if compression.dirty}
-            <span class="status-badge">{t('gifTool.previewDirty')}</span>
-          {:else if compressionReady}
-            <span class="status-badge ready">{formatUpdatedAt(compression.lastUpdated)}</span>
-          {/if}
+        <div class="options-heading-right">
+          <div class="options-toggle-wrap">
+            <label class="checkbox toggle-accurate">
+              <input
+                type="checkbox"
+                checked={options.accuratePreview ?? true}
+                onchange={() => toggleOption('accuratePreview')}
+              />
+              <span>{t('gifTool.accuratePreviewLabel')}</span>
+            </label>
+          </div>
+          <div class="options-actions">
+            <button
+              type="button"
+              class="btn preset-filled-primary-500"
+              disabled={compression.running || !frames.length}
+              onclick={generatePreview}
+            >
+              {compression.running ? t('gifTool.processingPreview') : t('gifTool.generatePreview')}
+            </button>
+            {#if compression.dirty}
+              <span class="status-badge">{t('gifTool.previewDirty')}</span>
+            {:else if compressionReady}
+              <span class="status-badge ready">{formatUpdatedAt(compression.lastUpdated)}</span>
+            {/if}
+          </div>
         </div>
       </div>
 
@@ -311,7 +327,7 @@
               onchange={handlePaletteInput}
             />
           </div>
-          <label class="checkbox">
+          <label class="checkbox dither-option" title={t('gifTool.ditherHint')}>
             <input type="checkbox" checked={options.dither} onchange={() => toggleOption('dither')} />
             <span>{t('gifTool.ditherLabel')}</span>
           </label>
@@ -359,6 +375,18 @@
       </aside>
 
       <div class="viewer">
+        <div class="preview-zoom-bar">
+          <span class="zoom-label">{previewZoom}%</span>
+          <button type="button" class="control-btn" onclick={zoomPreviewOut} disabled={previewZoomIndex === 0} title={t('gifTool.zoomOut')}>
+            −
+          </button>
+          <button type="button" class="control-btn" onclick={zoomPreviewIn} disabled={previewZoomIndex === ZOOM_STEPS.length - 1} title={t('gifTool.zoomIn')}>
+            +
+          </button>
+          <button type="button" class="control-btn" onclick={zoomPreviewReset} title={t('gifTool.zoomReset')}>
+            100%
+          </button>
+        </div>
         <div class="preview-columns">
           <div class="preview-panel">
             <div class="panel-header">
@@ -369,7 +397,9 @@
             </div>
             <div class="viewer-canvas">
               {#if selectedFrame}
-                <img src={selectedFrame.previewUrl} alt="original preview" />
+                <div class="preview-zoom-wrap" style="width: {state.width * previewZoom / 100}px; height: {state.height * previewZoom / 100}px;">
+                  <img src={selectedFrame.previewUrl} alt="original preview" />
+                </div>
               {/if}
             </div>
           </div>
@@ -383,7 +413,9 @@
             </div>
             <div class="viewer-canvas">
               {#if compressionReady && compressedFrame}
-                <img src={compressedFrame.previewUrl} alt="compressed preview" />
+                <div class="preview-zoom-wrap" style="width: {compression.width * previewZoom / 100}px; height: {compression.height * previewZoom / 100}px;">
+                  <img src={compressedFrame.previewUrl} alt="compressed preview" />
+                </div>
               {/if}
             </div>
           </div>
@@ -393,33 +425,40 @@
 
     <section class="card summary-card">
       <h4>{t('gifTool.compressionSummaryTitle')}</h4>
-      <div class="summary-grid">
-        <div>
-          <span>{t('gifTool.summaryOriginalSize')}</span>
-          <strong>{formatBytes(originalBytes)}</strong>
-        </div>
-        <div>
-          <span>{t('gifTool.summaryCompressedSize')}</span>
-          <strong>{compressionReady ? formatBytes(estimatedBytes) : '--'}</strong>
-        </div>
-        <div>
-          <span>{t('gifTool.summaryResolution')}</span>
-          <strong>
-            {compressionReady ? `${compression.width} × ${compression.height}px` : `${state.width} × ${state.height}px`}
-          </strong>
-        </div>
-        <div>
-          <span>{t('gifTool.summaryFps')}</span>
-          <strong>{compressionReady ? formatFps(compression.fps) : formatFps(sourceFps)}</strong>
-        </div>
-        <div>
-          <span>{t('gifTool.summaryPalette')}</span>
-          <strong>{compressionReady ? compression.paletteSize : 256}</strong>
-        </div>
-        <div>
-          <span>{t('gifTool.summaryLoops')}</span>
-          <strong>{state.loopCount ?? 0}</strong>
-        </div>
+      <div class="summary-table-wrap">
+        <table class="summary-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>{t('gifTool.summaryFileSize')}</th>
+              <th>{t('gifTool.summaryResolution')}</th>
+              <th>{t('gifTool.summaryFrames')}</th>
+              <th>{t('gifTool.summaryFps')}</th>
+              <th>{t('gifTool.summaryPalette')}</th>
+              <th>{t('gifTool.summaryLoops')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{t('gifTool.summaryColOriginal')}</td>
+              <td>{formatBytes(originalBytes)}</td>
+              <td>{state.width} × {state.height}px</td>
+              <td>{frames.length}</td>
+              <td>{formatFps(sourceFps)}</td>
+              <td>{state.sourcePaletteSize || 256}</td>
+              <td>{state.loopCount ?? 0}</td>
+            </tr>
+            <tr>
+              <td>{t('gifTool.summaryColCompressed')}</td>
+              <td>{compressionReady ? formatBytes(estimatedBytes) : '—'}</td>
+              <td>{compressionReady ? `${compression.width} × ${compression.height}px` : '—'}</td>
+              <td>{compressionReady ? compression.frames?.length : '—'}</td>
+              <td>{compressionReady ? formatFps(compression.fps) : '—'}</td>
+              <td>{compressionReady ? compression.paletteSize : '—'}</td>
+              <td>{state.loopCount ?? 0}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -491,11 +530,21 @@
     gap: 1rem;
     flex-wrap: wrap;
   }
+  .options-heading-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .options-toggle-wrap {
+    width: 100%;
+    max-width: 400px;
+  }
   .options-actions {
     display: flex;
     gap: 0.75rem;
-    align-items: flex-start;
-    flex-wrap: wrap;
+    align-items: center;
+    flex-shrink: 0;
   }
   .status-badge {
     font-size: 0.75rem;
@@ -542,19 +591,17 @@
   }
   .checkbox.toggle-accurate {
     align-items: flex-start;
-    max-width: 360px;
-    flex: 1 1 240px;
   }
   .checkbox.toggle-accurate span {
     display: flex;
     flex-direction: column;
     gap: 0.1rem;
   }
-  .options-actions .btn {
-    flex: 0 0 auto;
-  }
   .checkbox input {
     flex: 0 0 auto;
+  }
+  .checkbox.dither-option {
+    cursor: help;
   }
   .checkbox span {
     white-space: nowrap;
@@ -611,6 +658,16 @@
     flex-direction: column;
     gap: 1rem;
   }
+  .preview-zoom-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .preview-zoom-bar .zoom-label {
+    font-size: 0.85rem;
+    color: var(--ccw-text-muted);
+    min-width: 2.5rem;
+  }
   .preview-columns {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -633,12 +690,21 @@
     border-radius: var(--ccw-radius-card);
     background: var(--ccw-bg-base);
     padding: 0.5rem;
+    overflow: auto;
+    max-height: 420px;
+    min-height: 160px;
     display: flex;
     justify-content: center;
-    min-height: 160px;
+    align-items: flex-start;
   }
-  .viewer-canvas img {
-    max-width: 100%;
+  .preview-zoom-wrap {
+    flex-shrink: 0;
+  }
+  .preview-zoom-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    display: block;
   }
   .control-btn {
     border: 1px solid var(--ccw-border-soft);
@@ -652,18 +718,32 @@
     flex-direction: column;
     gap: 0.75rem;
   }
-  .summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 0.75rem;
+  .summary-table-wrap {
+    overflow-x: auto;
   }
-  .summary-grid span {
-    display: block;
-    font-size: 0.8rem;
+  .summary-table {
+    width: 100%;
+    min-width: max-content;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .summary-table th,
+  .summary-table td {
+    padding: 0.5rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--ccw-border-soft);
+  }
+  .summary-table th {
+    font-weight: 600;
     color: var(--ccw-text-muted);
   }
-  .summary-grid strong {
-    font-size: 1rem;
+  .summary-table th:first-child,
+  .summary-table td:first-child {
+    padding-right: 1.5rem;
+    white-space: nowrap;
+  }
+  .summary-table td:not(:first-child) {
+    color: var(--ccw-text-secondary);
   }
   .export {
     display: flex;

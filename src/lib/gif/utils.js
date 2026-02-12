@@ -106,8 +106,12 @@ export async function decodeGifFile(file) {
   const height = parsed?.lsd?.height ?? 0;
   const loopCount = extractLoopCount(parsed);
   const backgroundColor = null; // treat background as transparent to avoid fake colors
+  const sourcePaletteSize =
+    framesRaw.length > 0
+      ? Math.max(...framesRaw.map((f) => f.colorTable?.length ?? 0))
+      : (parsed?.gct?.length ?? 0);
   if (!browser) {
-    return { width, height, loopCount, frames: [] };
+    return { width, height, loopCount, sourcePaletteSize, frames: [] };
   }
   let frameBuffer = createFrameBuffer(width, height);
   const frames = [];
@@ -131,7 +135,7 @@ export async function decodeGifFile(file) {
       frameBuffer.set(before);
     }
   });
-  return { width, height, loopCount, frames };
+  return { width, height, loopCount, sourcePaletteSize, frames };
 }
 
 export function scaleImageData(imageData, targetWidth, targetHeight) {
