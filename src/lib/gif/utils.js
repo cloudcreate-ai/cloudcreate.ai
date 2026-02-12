@@ -87,13 +87,34 @@ function fillRectBuffer(buffer, dims, canvasWidth, color) {
   }
 }
 
+function hasTransparentPixels(patch) {
+  for (let i = 3; i < patch.length; i += 4) {
+    if (patch[i] === 0) return true;
+  }
+  return false;
+}
+
 function drawPatch(buffer, patch, dims, canvasWidth) {
   const { left, top, width, height } = dims;
   const bytesPerRow = width * 4;
+  if (!hasTransparentPixels(patch)) {
+    for (let row = 0; row < height; row += 1) {
+      const patchStart = row * bytesPerRow;
+      const screenStart = ((top + row) * canvasWidth + left) * 4;
+      buffer.set(patch.subarray(patchStart, patchStart + bytesPerRow), screenStart);
+    }
+    return;
+  }
   for (let row = 0; row < height; row += 1) {
-    const patchStart = row * bytesPerRow;
-    const screenStart = ((top + row) * canvasWidth + left) * 4;
-    buffer.set(patch.subarray(patchStart, patchStart + bytesPerRow), screenStart);
+    for (let col = 0; col < width; col += 1) {
+      const patchIdx = (row * width + col) * 4;
+      if (patch[patchIdx + 3] === 0) continue;
+      const screenIdx = ((top + row) * canvasWidth + (left + col)) * 4;
+      buffer[screenIdx] = patch[patchIdx];
+      buffer[screenIdx + 1] = patch[patchIdx + 1];
+      buffer[screenIdx + 2] = patch[patchIdx + 2];
+      buffer[screenIdx + 3] = patch[patchIdx + 3];
+    }
   }
 }
 
@@ -105,7 +126,7 @@ export async function decodeGifFile(file) {
   const width = parsed?.lsd?.width ?? 0;
   const height = parsed?.lsd?.height ?? 0;
   const loopCount = extractLoopCount(parsed);
-  const backgroundColor = null; // treat background as transparent to avoid fake colors
+  const backgroundColor = getBackgroundColor(parsed);
   const sourcePaletteSize =
     framesRaw.length > 0
       ? Math.max(...framesRaw.map((f) => f.colorTable?.length ?? 0))
@@ -114,6 +135,8 @@ export async function decodeGifFile(file) {
     return { width, height, loopCount, sourcePaletteSize, frames: [] };
   }
   let frameBuffer = createFrameBuffer(width, height);
+  // 用 GIF 背景色填充画布，避免首帧未覆盖区域显示为黑块
+  fillRectBuffer(frameBuffer, { left: 0, top: 0, width, height }, width, backgroundColor);
   const frames = [];
   framesRaw.forEach((frame, index) => {
     const before = cloneBuffer(frameBuffer);
@@ -130,7 +153,7 @@ export async function decodeGifFile(file) {
       previewUrl,
     });
     if (frame.disposalType === 2) {
-      fillRectBuffer(frameBuffer, frame.dims, width, backgroundColor);
+      fillRectBuffer(frameBuffer, frame.dims, width, backgroundColor || { r: 0, g: 0, b: 0, a: 0 });
     } else if (frame.disposalType === 3) {
       frameBuffer.set(before);
     }
