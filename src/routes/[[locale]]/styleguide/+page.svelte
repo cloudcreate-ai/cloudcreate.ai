@@ -2,8 +2,11 @@
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
+  import ZoomControls from '$lib/components/common/ZoomControls.svelte';
+  import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
 
   let controlZoom = $state(1);
+  let sliderDemoValue = $state(50);
 </script>
 
 <div class="workspace-content workspace-content-wide styleguide">
@@ -27,16 +30,28 @@
       <div>
         <p class="label">{t('styleGuide.controlButtons')}</p>
         <div class="control-row">
-          <button class="control-btn" onclick={() => (controlZoom = Math.min(3, controlZoom + 0.1))}>
-            {t('styleGuide.zoomIn')}
-          </button>
-          <button class="control-btn" onclick={() => (controlZoom = Math.max(0.25, controlZoom - 0.1))}>
-            {t('styleGuide.zoomOut')}
-          </button>
-          <button class="control-btn" onclick={() => (controlZoom = 1)}>
-            {t('styleGuide.resetView')}
-          </button>
-          <span class="control-value">{Math.round(controlZoom * 100)}%</span>
+          <ZoomControls
+            value={controlZoom}
+            min={0.25}
+            max={3}
+            step={0.1}
+            resetValue={1}
+            suffix="%"
+            scaleDisplay={true}
+            onchange={(v) => (controlZoom = v)}
+          />
+        </div>
+      </div>
+      <div>
+        <p class="label">SliderWithInput</p>
+        <div class="control-row" style="max-width: 320px;">
+          <SliderWithInput
+            value={sliderDemoValue}
+            min={0}
+            max={100}
+            step={5}
+            oninput={(v) => (sliderDemoValue = v)}
+          />
         </div>
       </div>
       <div>
@@ -107,10 +122,6 @@
     flex-wrap: wrap;
     gap: 0.5rem;
     align-items: center;
-  }
-  .control-value {
-    font-size: 0.85rem;
-    color: var(--ccw-text-primary);
   }
   .cards-demo {
     display: grid;

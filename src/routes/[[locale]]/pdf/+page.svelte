@@ -4,6 +4,7 @@
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
+  import ZoomControls from '$lib/components/common/ZoomControls.svelte';
 
   const MIN_SCALE = 0.5;
   const MAX_SCALE = 2;
@@ -171,21 +172,6 @@
     currentPage += 1;
   }
 
-  function zoomIn() {
-    if (!pdfDoc) return;
-    scale = Math.min(MAX_SCALE, +(scale + SCALE_STEP).toFixed(2));
-  }
-
-  function zoomOut() {
-    if (!pdfDoc) return;
-    scale = Math.max(MIN_SCALE, +(scale - SCALE_STEP).toFixed(2));
-  }
-
-  function resetView() {
-    if (!pdfDoc) return;
-    scale = 1;
-  }
-
   onDestroy(() => {
     if (pdfDoc) {
       pdfDoc.destroy();
@@ -280,15 +266,17 @@
         </button>
       </div>
       <div class="zoom-controls">
-        <button type="button" class="control-btn" onclick={zoomOut} disabled={!pdfDoc}>
-          {t('pdfViewer.zoomOut')}
-        </button>
-        <button type="button" class="control-btn" onclick={zoomIn} disabled={!pdfDoc}>
-          {t('pdfViewer.zoomIn')}
-        </button>
-        <button type="button" class="control-btn" onclick={resetView} disabled={!pdfDoc}>
-          {t('pdfViewer.resetView')}
-        </button>
+        <ZoomControls
+          value={scale}
+          min={MIN_SCALE}
+          max={MAX_SCALE}
+          step={SCALE_STEP}
+          resetValue={1}
+          suffix="%"
+          scaleDisplay={true}
+          disabled={!pdfDoc}
+          onchange={(v) => (scale = v)}
+        />
       </div>
     </div>
     <div class="canvas-wrapper">

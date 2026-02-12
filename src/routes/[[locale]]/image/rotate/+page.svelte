@@ -17,6 +17,7 @@
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
+  import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
 
   const ROTATE_OPTIONS = [
     { value: 0, labelKey: 'rotate.0deg' },
@@ -183,8 +184,16 @@
         </select>
       </div>
       <div class="flex flex-col gap-0.5">
-        <label for="quality" class="text-xs text-surface-600-400">{t('common.quality')} {quality}</label>
-        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-28" />
+        <label for="quality" class="text-xs text-surface-600-400">{t('common.quality')}</label>
+        <SliderWithInput
+          id="quality"
+          value={quality}
+          min={1}
+          max={100}
+          step={1}
+          oninput={(v) => (quality = v)}
+          inputWidth="64px"
+        />
       </div>
     </div>
   </details>

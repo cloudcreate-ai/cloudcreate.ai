@@ -15,6 +15,7 @@
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
+  import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
 
   const VALID_MODES = ['percent', 'max', 'width', 'height', 'long'];
   const resizeDefaults = {
@@ -250,8 +251,16 @@
       </div>
       {#if scaleMode === 'percent'}
         <div class="flex flex-col gap-0.5">
-          <label for="scalePercent" class="text-xs text-surface-600-400">{t('resize.scalePercent')} {scalePercent}%</label>
-          <input id="scalePercent" type="range" min="1" max="200" bind:value={scalePercent} class="input w-28" />
+          <label for="scalePercent" class="text-xs text-surface-600-400">{t('resize.scalePercent')}</label>
+          <SliderWithInput
+            id="scalePercent"
+            value={scalePercent}
+            min={1}
+            max={200}
+            step={1}
+            oninput={(v) => (scalePercent = v)}
+            inputWidth="64px"
+          />
         </div>
       {:else if scaleMode === 'max'}
         <div class="flex flex-col gap-0.5">
@@ -279,8 +288,16 @@
         </div>
       {/if}
       <div class="flex flex-col gap-0.5">
-        <label for="quality" class="text-xs text-surface-600-400">{t('common.quality')} {quality}</label>
-        <input id="quality" type="range" min="1" max="100" bind:value={quality} class="input w-28" />
+        <label for="quality" class="text-xs text-surface-600-400">{t('common.quality')}</label>
+        <SliderWithInput
+          id="quality"
+          value={quality}
+          min={1}
+          max={100}
+          step={1}
+          oninput={(v) => (quality = v)}
+          inputWidth="64px"
+        />
       </div>
     </div>
   </details>

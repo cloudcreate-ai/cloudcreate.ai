@@ -9,6 +9,7 @@ export const TOOL_GROUPS = [
       { id: 'preview', titleKey: 'home.imagePreviewTitle', href: '/image/preview', icon: '🖥️' },
       { id: 'gif', titleKey: 'home.gifToolTitle', href: '/image/gif', icon: '🎞️' },
       { id: 'compress', titleKey: 'home.compressTitle', href: '/image/compress', icon: '🗜️' },
+      { id: 'convert', titleKey: 'home.convertTitle', href: '/image/convert', icon: '📄' },
       { id: 'crop', titleKey: 'home.cropTitle', href: '/image/crop', icon: '✂️' },
       { id: 'resize', titleKey: 'home.resizeTitle', href: '/image/resize', icon: '📐' },
       { id: 'rotate', titleKey: 'home.rotateTitle', href: '/image/rotate', icon: '🔄' },

@@ -3,6 +3,7 @@
   import { onDestroy } from 'svelte';
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import ZoomControls from '$lib/components/common/ZoomControls.svelte';
 
   let inputRef = $state(null);
   let dropActive = $state(false);
@@ -188,17 +189,17 @@
                 </span>
               </div>
               <div class="zoom-control">
-                <label>
-                  {t('imagePreview.zoomLabel')}
-                  <input
-                    type="range"
-                    min="0.25"
-                    max="3"
-                    step="0.05"
-                    bind:value={zoom}
-                  />
-                </label>
-                <span class="zoom-value">{Math.round(zoom * 100)}%</span>
+                <span class="zoom-label">{t('imagePreview.zoomLabel')}</span>
+                <ZoomControls
+                  value={zoom}
+                  min={0.25}
+                  max={3}
+                  step={0.05}
+                  resetValue={1}
+                  suffix="%"
+                  scaleDisplay={true}
+                  onchange={(v) => (zoom = v)}
+                />
               </div>
             </div>
             <div class="viewer-canvas">
@@ -349,19 +350,9 @@
     align-items: center;
     gap: 0.5rem;
   }
-  .zoom-control label {
+  .zoom-control .zoom-label {
     font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
     color: var(--ccw-text-secondary);
-  }
-  .zoom-control input[type='range'] {
-    accent-color: var(--ccw-accent);
-  }
-  .zoom-value {
-    font-size: 0.85rem;
-    color: var(--ccw-text-primary);
   }
   .viewer-canvas {
     flex: 1;

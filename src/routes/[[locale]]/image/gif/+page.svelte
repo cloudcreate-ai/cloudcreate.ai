@@ -4,6 +4,8 @@
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
+  import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
+  import ZoomControls from '$lib/components/common/ZoomControls.svelte';
   import { gifEditorStore } from '$lib/stores/gifEditorStore.js';
   import { encodeGif } from '$lib/gif/utils.js';
   import JSZip from 'jszip';
@@ -11,43 +13,49 @@
   let exporting = false;
   let exportingMessage = '';
   let playbackTimer = null;
-  let playing = false;
-  let playingIndex = 0;
-  const ZOOM_STEPS = [50, 75, 100, 125, 150, 200];
-  let previewZoomIndex = 2; // 100%
+  let playing = $state(false);
+  let playingIndex = $state(0);
+  let previewZoom = $state(100);
 
-  $: state = $gifEditorStore;
-  $: frames = state.frames ?? [];
-  $: compression = state.compression ?? {};
-  $: options = state.options ?? {};
-  $: selectedFrame = frames[state.selectedIndex] ?? null;
-  $: compressionReady = Boolean(compression.frames?.length && !compression.dirty && !compression.running);
-  $: compressedFrame = compressionReady
-    ? compression.frames[state.selectedIndex % compression.frames.length]
-    : null;
-  $: scaleRatio = (options.scalePercent || 100) / 100;
-  $: targetWidth = Math.max(1, Math.round(state.width * scaleRatio));
-  $: targetHeight = Math.max(1, Math.round(state.height * scaleRatio));
-  $: originalBytes = state.fileSize || 0;
-  $: estimatedBytes = compression.estimatedBytes || 0;
-  $: sourceFps = state.sourceFps || 0;
-  $: previewZoom = ZOOM_STEPS[previewZoomIndex];
+  const gifState = $derived($gifEditorStore);
+  const frames = $derived(gifState.frames ?? []);
+  const compression = $derived(gifState.compression ?? {});
+  const options = $derived(gifState.options ?? {});
+  const selectedFrame = $derived(frames[gifState.selectedIndex] ?? null);
+  const compressionReady = $derived(
+    Boolean(compression.frames?.length && !compression.dirty && !compression.running),
+  );
+  const compressedFrame = $derived(
+    compressionReady
+      ? compression.frames[gifState.selectedIndex % compression.frames.length]
+      : null,
+  );
+  const scaleRatio = $derived((options.scalePercent || 100) / 100);
+  const targetWidth = $derived(Math.max(1, Math.round(gifState.width * scaleRatio)));
+  const targetHeight = $derived(Math.max(1, Math.round(gifState.height * scaleRatio)));
+  const originalBytes = $derived(gifState.fileSize || 0);
+  const estimatedBytes = $derived(compression.estimatedBytes || 0);
+  const sourceFps = $derived(gifState.sourceFps || 0);
 
-  $: if (!playing) {
-    playingIndex = state.selectedIndex;
-  }
+  $effect(() => {
+    if (!playing) {
+      playingIndex = gifState.selectedIndex;
+    }
+  });
 
-  $: if (playing && frames.length > 1) {
-    clearTimeout(playbackTimer);
-    const frame = frames[playingIndex] ?? frames[0];
-    const delay = Math.max(30, frame?.delay || 100);
-    playbackTimer = setTimeout(() => {
-      playingIndex = (playingIndex + 1) % frames.length;
-      gifEditorStore.selectFrame(playingIndex);
-    }, delay);
-  } else {
-    clearTimeout(playbackTimer);
-  }
+  $effect(() => {
+    if (playing && frames.length > 1) {
+      const frame = frames[playingIndex] ?? frames[0];
+      const delay = Math.max(30, frame?.delay || 100);
+      playbackTimer = setTimeout(() => {
+        playingIndex = (playingIndex + 1) % frames.length;
+        gifEditorStore.selectFrame(playingIndex);
+      }, delay);
+    } else {
+      clearTimeout(playbackTimer);
+    }
+    return () => clearTimeout(playbackTimer);
+  });
 
   onDestroy(() => {
     clearTimeout(playbackTimer);
@@ -59,18 +67,6 @@
     playing = false;
     gifEditorStore.reset();
     await gifEditorStore.loadGif(files[0]);
-  }
-
-  function handleFpsInput(event) {
-    gifEditorStore.updateOptions({ targetFps: Number(event.currentTarget.value) });
-  }
-
-  function handleScaleInput(event) {
-    gifEditorStore.updateOptions({ scalePercent: Number(event.currentTarget.value) });
-  }
-
-  function handlePaletteInput(event) {
-    gifEditorStore.updateOptions({ paletteSize: Number(event.currentTarget.value) });
   }
 
   function toggleOption(key) {
@@ -96,7 +92,7 @@
       exportingMessage = t('gifTool.downloadGif');
       const link = document.createElement('a');
       link.href = compression.encodedGifUrl;
-      link.download = (state.fileName?.replace(/\.gif$/i, '') || 'gif') + '-compressed.gif';
+      link.download = (gifState.fileName?.replace(/\.gif$/i, '') || 'gif') + '-compressed.gif';
       link.click();
       exporting = false;
       return;
@@ -115,7 +111,7 @@
       });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = (state.fileName?.replace(/\.gif$/i, '') || 'gif') + '-compressed.gif';
+      link.download = (gifState.fileName?.replace(/\.gif$/i, '') || 'gif') + '-compressed.gif';
       link.click();
       URL.revokeObjectURL(link.href);
     } finally {
@@ -138,7 +134,7 @@
       const url = URL.createObjectURL(zipBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = (state.fileName?.replace(/\.gif$/i, '') || 'gif') + suffix;
+      link.download = (gifState.fileName?.replace(/\.gif$/i, '') || 'gif') + suffix;
       link.click();
       URL.revokeObjectURL(url);
     } finally {
@@ -170,15 +166,6 @@
     return value.toFixed(1).replace(/\.0$/, '');
   }
 
-  function zoomPreviewIn() {
-    if (previewZoomIndex < ZOOM_STEPS.length - 1) previewZoomIndex += 1;
-  }
-  function zoomPreviewOut() {
-    if (previewZoomIndex > 0) previewZoomIndex -= 1;
-  }
-  function zoomPreviewReset() {
-    previewZoomIndex = 2;
-  }
   function formatUpdatedAt(timestamp) {
     if (!timestamp) return '';
     const date = new Date(timestamp);
@@ -194,21 +181,21 @@
     <FileDropZone accept="image/gif" multiple={false} onFilesAdd={handleFiles} />
   </section>
 
-  {#if state.width === 0}
+  {#if gifState.width === 0}
     <p class="placeholder">{t('gifTool.emptyPlaceholder')}</p>
   {:else}
     <section class="card meta">
       <div>
-        <strong>{t('gifTool.metaResolution')}:</strong> {state.width} × {state.height}px
+        <strong>{t('gifTool.metaResolution')}:</strong> {gifState.width} × {gifState.height}px
       </div>
       <div>
         <strong>{t('gifTool.metaFrames')}:</strong> {frames.length}
       </div>
         <div>
-          <strong>{t('gifTool.metaLoop')}:</strong> {state.loopCount ?? 0}
+          <strong>{t('gifTool.metaLoop')}:</strong> {gifState.loopCount ?? 0}
         </div>
         <div>
-          <strong>{t('gifTool.metaPalette')}:</strong> {state.sourcePaletteSize || '—'}
+          <strong>{t('gifTool.metaPalette')}:</strong> {gifState.sourcePaletteSize || '—'}
         </div>
         <div>
           <strong>{t('common.size')}:</strong> {formatBytes(originalBytes)}
@@ -255,21 +242,13 @@
           <div class="option-title">{t('gifTool.fpsTitle')}</div>
           <label for="gif-fps-range">{t('gifTool.fpsLabel')}</label>
           <div class="control-pair">
-            <input
+            <SliderWithInput
               id="gif-fps-range"
-              type="range"
-              min="1"
-              max={Math.max(60, Math.round(sourceFps || 60))}
-              step="1"
               value={options.targetFps}
-              oninput={handleFpsInput}
-            />
-            <input
-              type="number"
-              min="1"
+              min={1}
               max={Math.max(60, Math.round(sourceFps || 60))}
-              value={options.targetFps}
-              onchange={handleFpsInput}
+              step={1}
+              oninput={(v) => gifEditorStore.updateOptions({ targetFps: v })}
             />
           </div>
           <p class="hint">{t('gifTool.fpsAuto').replace('{fps}', formatFps(sourceFps))}</p>
@@ -280,22 +259,13 @@
           <div class="option-title">{t('gifTool.sizeTitle')}</div>
           <label for="gif-scale-range">{t('gifTool.scalePercentLabel')}</label>
           <div class="control-pair">
-            <input
+            <SliderWithInput
               id="gif-scale-range"
-              type="range"
-              min="10"
-              max="400"
-              step="5"
               value={options.scalePercent}
-              oninput={handleScaleInput}
-            />
-            <input
-              type="number"
-              min="10"
-              max="400"
-              step="5"
-              value={options.scalePercent}
-              onchange={handleScaleInput}
+              min={10}
+              max={400}
+              step={5}
+              oninput={(v) => gifEditorStore.updateOptions({ scalePercent: v })}
             />
           </div>
           <p class="hint">
@@ -309,22 +279,13 @@
           <div class="option-title">{t('gifTool.paletteTitle')}</div>
           <label for="gif-palette-range">{t('gifTool.paletteLabel')}</label>
           <div class="control-pair">
-            <input
+            <SliderWithInput
               id="gif-palette-range"
-              type="range"
-              min="8"
-              max="256"
-              step="8"
               value={options.paletteSize}
-              oninput={handlePaletteInput}
-            />
-            <input
-              type="number"
-              min="8"
-              max="256"
-              step="1"
-              value={options.paletteSize}
-              onchange={handlePaletteInput}
+              min={8}
+              max={256}
+              step={1}
+              oninput={(v) => gifEditorStore.updateOptions({ paletteSize: v })}
             />
           </div>
           <label class="checkbox dither-option" title={t('gifTool.ditherHint')}>
@@ -363,7 +324,7 @@
             {#each frames as frame, index}
               <button
                 type="button"
-                class="frame-item {state.selectedIndex === index ? 'is-active' : ''}"
+                class="frame-item {gifState.selectedIndex === index ? 'is-active' : ''}"
                 onclick={() => gifEditorStore.selectFrame(index)}
               >
                 <img src={frame.previewUrl} alt={`frame-${index + 1}`} />
@@ -376,16 +337,15 @@
 
       <div class="viewer">
         <div class="preview-zoom-bar">
-          <span class="zoom-label">{previewZoom}%</span>
-          <button type="button" class="control-btn" onclick={zoomPreviewOut} disabled={previewZoomIndex === 0} title={t('gifTool.zoomOut')}>
-            −
-          </button>
-          <button type="button" class="control-btn" onclick={zoomPreviewIn} disabled={previewZoomIndex === ZOOM_STEPS.length - 1} title={t('gifTool.zoomIn')}>
-            +
-          </button>
-          <button type="button" class="control-btn" onclick={zoomPreviewReset} title={t('gifTool.zoomReset')}>
-            100%
-          </button>
+          <ZoomControls
+            value={previewZoom}
+            min={50}
+            max={200}
+            step={25}
+            resetValue={100}
+            suffix="%"
+            onchange={(v) => (previewZoom = v)}
+          />
         </div>
         <div class="preview-columns">
           <div class="preview-panel">
@@ -397,7 +357,7 @@
             </div>
             <div class="viewer-canvas">
               {#if selectedFrame}
-                <div class="preview-zoom-wrap" style="width: {state.width * previewZoom / 100}px; height: {state.height * previewZoom / 100}px;">
+                <div class="preview-zoom-wrap" style="width: {(gifState.width * previewZoom) / 100}px; height: {(gifState.height * previewZoom) / 100}px;">
                   <img src={selectedFrame.previewUrl} alt="original preview" />
                 </div>
               {/if}
@@ -413,7 +373,7 @@
             </div>
             <div class="viewer-canvas">
               {#if compressionReady && compressedFrame}
-                <div class="preview-zoom-wrap" style="width: {compression.width * previewZoom / 100}px; height: {compression.height * previewZoom / 100}px;">
+                <div class="preview-zoom-wrap" style="width: {(compression.width * previewZoom) / 100}px; height: {(compression.height * previewZoom) / 100}px;">
                   <img src={compressedFrame.previewUrl} alt="compressed preview" />
                 </div>
               {/if}
@@ -442,11 +402,11 @@
             <tr>
               <td>{t('gifTool.summaryColOriginal')}</td>
               <td>{formatBytes(originalBytes)}</td>
-              <td>{state.width} × {state.height}px</td>
+              <td>{gifState.width} × {gifState.height}px</td>
               <td>{frames.length}</td>
               <td>{formatFps(sourceFps)}</td>
-              <td>{state.sourcePaletteSize || 256}</td>
-              <td>{state.loopCount ?? 0}</td>
+              <td>{gifState.sourcePaletteSize || 256}</td>
+              <td>{gifState.loopCount ?? 0}</td>
             </tr>
             <tr>
               <td>{t('gifTool.summaryColCompressed')}</td>
@@ -455,7 +415,7 @@
               <td>{compressionReady ? compression.frames?.length : '—'}</td>
               <td>{compressionReady ? formatFps(compression.fps) : '—'}</td>
               <td>{compressionReady ? compression.paletteSize : '—'}</td>
-              <td>{state.loopCount ?? 0}</td>
+              <td>{gifState.loopCount ?? 0}</td>
             </tr>
           </tbody>
         </table>
@@ -578,9 +538,6 @@
     gap: 0.5rem;
     align-items: center;
   }
-  .control-pair input[type='number'] {
-    width: 80px;
-  }
   .checkbox {
     display: flex;
     gap: 0.5rem;
@@ -663,12 +620,6 @@
   .preview-zoom-bar {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-  }
-  .preview-zoom-bar .zoom-label {
-    font-size: 0.85rem;
-    color: var(--ccw-text-muted);
-    min-width: 2.5rem;
   }
   .preview-columns {
     display: grid;
