@@ -3,7 +3,7 @@
    * 统一文件选择组件 - 点击/拖拽选择文件，统一样式与操作
    */
   import { t } from '$lib/i18n.js';
-  import { ACCEPT_IMAGES } from '$lib/batchHelpers.js';
+  import { ACCEPT_IMAGES } from '$lib/fileConstants.js';
 
   let {
     multiple = true,
@@ -83,9 +83,9 @@
     class="hidden"
     id="{idPrefix}-input"
   />
-  <p class="hint text-surface-600-400 m-0">{t(hintKey)}</p>
+  <p class="hint text-base text-surface-700-300 m-0">{t(hintKey)}</p>
   {#if showFormats}
-    <p class="formats text-sm text-surface-600-400 mt-1 m-0">{t(formatsKey)}</p>
+    <p class="formats text-[11px] text-surface-500-500 mt-1 m-0">{t(formatsKey)}</p>
   {/if}
   {#if selectedName}
     <p class="selected-name text-sm text-primary-500 mt-1 m-0">{selectedName}</p>

@@ -5,6 +5,12 @@ import tailwindcss from '@tailwindcss/vite';
 export default {
   plugins: [tailwindcss(), sveltekit()],
   optimizeDeps: {
-    exclude: ['@jsquash/jpeg', '@jsquash/png', '@jsquash/webp', '@jsquash/avif'],
+    exclude: [
+      '@jsquash/jpeg',
+      '@jsquash/png',
+      '@jsquash/webp',
+      '@jsquash/avif',
+      'brotli-wasm',
+    ],
   },
 };

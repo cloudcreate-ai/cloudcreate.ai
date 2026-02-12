@@ -178,7 +178,13 @@
 
   <section class="card upload">
     <h3>{t('gifTool.upload')}</h3>
-    <FileDropZone accept="image/gif" multiple={false} onFilesAdd={handleFiles} />
+    <FileDropZone
+      accept="image/gif"
+      multiple={false}
+      onFilesAdd={handleFiles}
+      hintKey="gifTool.uploadHint"
+      formatsKey="gifTool.formats"
+    />
   </section>
 
   {#if gifState.width === 0}

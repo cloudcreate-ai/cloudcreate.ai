@@ -85,11 +85,17 @@
     rendering = true;
     try {
       const page = await pdfDoc.getPage(currentPage);
-      const viewport = page.getViewport({ scale });
+      const dpr = window.devicePixelRatio || 1;
+      const outputScale = scale * dpr;
+      const viewport = page.getViewport({ scale: outputScale });
       const canvas = canvasRef;
       const context = canvas.getContext('2d');
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+      canvas.width = Math.floor(viewport.width);
+      canvas.height = Math.floor(viewport.height);
+          const logicalW = Math.floor(viewport.width / dpr);
+      const logicalH = Math.floor(viewport.height / dpr);
+      canvas.style.width = logicalW + 'px';
+      canvas.style.height = logicalH + 'px';
       if (renderTask) {
         renderTask.cancel();
         renderTask = null;

@@ -4,8 +4,9 @@
  */
 import JSZip from 'jszip';
 import { getFormatFromFile, getImageDimensions } from './imageProcessor.js';
+import { ACCEPT_IMAGES, filterImageFiles } from './fileConstants.js';
 
-export const ACCEPT_IMAGES = 'image/jpeg,image/png,image/webp,image/avif';
+export { ACCEPT_IMAGES, filterImageFiles };
 
 /**
  * 从 File 构建文件项（含预览 URL、尺寸等）
@@ -99,11 +100,3 @@ export function computeTotalStats(items) {
   return { totalOriginal, totalNew, ratio };
 }
 
-/**
- * 过滤出图片类型的文件
- * @param {FileList|File[]} fileList
- * @returns {File[]}
- */
-export function filterImageFiles(fileList) {
-  return Array.from(fileList || []).filter((f) => f.type?.startsWith('image/'));
-}

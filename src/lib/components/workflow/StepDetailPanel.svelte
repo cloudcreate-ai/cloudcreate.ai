@@ -4,7 +4,7 @@
    */
   import { t } from '$lib/i18n.js';
   import { getStepOrdinal } from '$lib/workflow/stepUtils.js';
-  import { ACCEPT_IMAGES, filterImageFiles } from '$lib/batchHelpers.js';
+  import { ACCEPT_IMAGES, filterImageFiles } from '$lib/fileConstants.js';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
 
   let {
