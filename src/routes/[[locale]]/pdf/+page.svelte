@@ -3,6 +3,7 @@
   import { browser } from '$app/environment';
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
   import ZoomControls from '$lib/components/common/ZoomControls.svelte';
 
@@ -10,9 +11,7 @@
   const MAX_SCALE = 2;
   const SCALE_STEP = 0.1;
 
-  let inputRef = $state(null);
   let canvasRef = $state(null);
-  let dropActive = $state(false);
   let pdfDoc = $state(null);
   let totalPages = $state(0);
   let currentPage = $state(1);
@@ -54,7 +53,6 @@
     }
     docLoading = true;
     error = '';
-    dropActive = false;
     if (pdfDoc) {
       pdfDoc.destroy();
       pdfDoc = null;
@@ -75,7 +73,10 @@
       currentPage = 1;
       docLoading = false;
     }
-    if (inputRef) inputRef.value = '';
+  }
+
+  function handleFiles(files) {
+    if (files?.[0]) handleFile(files[0]);
   }
 
   async function renderCurrentPage() {
@@ -120,34 +121,6 @@
     }
   });
 
-  function handleInputChange(event) {
-    const file = event.target?.files?.[0];
-    if (file) {
-      handleFile(file);
-    }
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-    if (!pdfReady) return;
-    dropActive = true;
-  }
-
-  function handleDragLeave(event) {
-    event.preventDefault();
-    dropActive = false;
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    dropActive = false;
-    if (!pdfReady) return;
-    const file = event.dataTransfer?.files?.[0];
-    if (file) {
-      handleFile(file);
-    }
-  }
-
   function clearPdf() {
     if (pdfDoc) {
       pdfDoc.destroy();
@@ -182,50 +155,19 @@
 <div class="workspace-content workspace-content-wide pdf-viewer">
   <ToolPageHeader titleKey="pdfViewer.title" descKey="pdfViewer.desc" />
 
-  <section class="upload card preset-outlined-surface-200-800 p-4 mb-4">
-    <p class="text-sm font-medium m-0 mb-2">{t('pdfViewer.upload')}</p>
-    <div class="actions">
-      <input
-        bind:this={inputRef}
-        type="file"
-        accept="application/pdf,.pdf"
-        class="hidden"
-        onchange={handleInputChange}
-      />
-      <button
-        type="button"
-        class="btn btn-sm preset-outlined-surface-200-800"
-        onclick={() => pdfReady && inputRef?.click()}
-        disabled={!pdfReady}
-      >
-        {t('pdfViewer.upload')}
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm preset-outlined-surface-200-800"
-        onclick={clearPdf}
-        disabled={!pdfDoc}
-      >
-        {t('common.clearAll')}
-      </button>
-    </div>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-      class="drop-zone {dropActive ? 'is-active' : ''} {!pdfReady ? 'is-disabled' : ''}"
-      role="button"
-      tabindex="0"
-      aria-disabled={!pdfReady}
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-      onclick={() => pdfReady && inputRef?.click()}
-      onkeydown={(e) => pdfReady && e.key === 'Enter' && inputRef?.click()}
-    >
-      <p class="hint">{pdfReady ? t('pdfViewer.uploadHint') : t('pdfViewer.loading')}</p>
-      {#if pdfReady}
-        <p class="sub-hint">{t('pdfViewer.dropHint')}</p>
-      {/if}
-    </div>
+  <section class="mb-4">
+    <FileDropZone
+      accept="application/pdf,.pdf"
+      multiple={false}
+      onFilesAdd={handleFiles}
+      disabled={!pdfReady}
+      hintKey={pdfReady ? 'pdfViewer.uploadHint' : 'pdfViewer.loading'}
+      formatsKey=""
+      selectedName={fileName}
+      onClear={clearPdf}
+      showClear={!!pdfDoc}
+      idPrefix="pdf"
+    />
   </section>
 
   <section class="viewer card preset-outlined-surface-200-800 p-4">
@@ -328,38 +270,6 @@
     max-width: 100%;
     height: auto;
     display: block;
-  }
-  .upload .actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-  .drop-zone {
-    border: 1px dashed var(--ccw-border-contrast);
-    border-radius: var(--ccw-radius-card);
-    padding: 1rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.02);
-    transition: border-color 150ms ease, background-color 150ms ease;
-    cursor: pointer;
-  }
-  .drop-zone.is-disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  .drop-zone.is-active {
-    border-color: var(--ccw-accent);
-    background: rgba(10, 132, 255, 0.08);
-  }
-  .drop-zone .hint {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--ccw-text-primary);
-  }
-  .drop-zone .sub-hint {
-    margin: 0.25rem 0 0;
-    font-size: 0.8rem;
-    color: var(--ccw-text-muted);
   }
   .viewer-toolbar {
     display: flex;

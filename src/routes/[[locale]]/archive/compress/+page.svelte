@@ -6,6 +6,7 @@
   import { downloadBlob } from '$lib/batchHelpers.js';
   import { formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
   import {
     compressZip,
     compressGzip,
@@ -23,8 +24,6 @@
   let files = $state([]);
   let processing = $state(false);
   let error = $state('');
-  let dropActive = $state(false);
-  let inputRef = $state(null);
   let folderInputRef = $state(null);
 
   const singleFileFormats = [FMT_GZIP, FMT_BROTLI];
@@ -47,47 +46,24 @@
 
   function handleFiles(fileList) {
     if (!fileList?.length) return;
-    const list = Array.from(fileList).map((f) => ({
-      file: f,
-      name: f.webkitRelativePath || f.name,
-    }));
+    const list = Array.from(fileList).map((f) =>
+      f?.file != null ? { file: f.file, name: f.name } : { file: f, name: f.webkitRelativePath || f.name }
+    );
     const toAdd = isSingleFormat && list.length > 1 ? list.slice(0, 1) : list;
     files = [...files, ...toAdd];
     error = '';
   }
 
-  function handleInputChange(e) {
-    const fileList = e.target?.files;
-    if (fileList?.length) handleFiles(fileList);
-    if (inputRef) inputRef.value = '';
+  async function handleDropRaw(e) {
+    const list = await readFilesFromDataTransfer(e.dataTransfer);
+    const toAdd = isSingleFormat && list.length > 1 ? list.slice(0, 1) : list;
+    if (toAdd.length) handleFiles(toAdd);
   }
 
   function handleFolderInputChange(e) {
     const fileList = e.target?.files;
     if (fileList?.length) handleFiles(fileList);
     if (folderInputRef) folderInputRef.value = '';
-  }
-
-  async function handleDrop(e) {
-    e.preventDefault();
-    dropActive = false;
-    const items = e.dataTransfer?.items;
-    if (!items?.length) return;
-    const list = await readFilesFromDataTransfer(e.dataTransfer);
-    const toAdd = isSingleFormat && list.length > 1 ? list.slice(0, 1) : list;
-    if (toAdd.length) {
-      files = [...files, ...toAdd];
-      error = '';
-    }
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    dropActive = true;
-  }
-
-  function handleDragLeave() {
-    dropActive = false;
   }
 
   function removeFile(i) {
@@ -139,7 +115,6 @@
   function clear() {
     files = [];
     error = '';
-    if (inputRef) inputRef.value = '';
     if (folderInputRef) folderInputRef.value = '';
   }
 </script>
@@ -170,50 +145,37 @@
   </section>
 
   <section class="mb-4">
-    <p class="text-sm font-medium block mb-2 m-0">{t('archiveCompress.input')}</p>
-    <div
-      class="card preset-outlined-surface-200-800 p-4 mb-2 transition {dropActive ? 'border-primary-500 bg-primary-500/5' : ''}"
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-    >
-      <input
-        type="file"
-        multiple={!isSingleFormat}
-        class="hidden"
-        bind:this={inputRef}
-        onchange={handleInputChange}
-      />
-      <input
-        type="file"
-        webkitdirectory
-        multiple
-        class="hidden"
-        bind:this={folderInputRef}
-        onchange={handleFolderInputChange}
-      />
-      <p class="text-surface-600-400 text-sm m-0 mb-2">
-        {isSingleFormat ? t('archiveCompress.uploadSingleHint') : t('archiveCompress.uploadHint')}
-      </p>
-      <div class="flex flex-wrap gap-2">
+    <FileDropZone
+      accept="*"
+      multiple={!isSingleFormat}
+      onFilesAdd={handleFiles}
+      onDropRaw={handleDropRaw}
+      hintKey={isSingleFormat ? 'archiveCompress.uploadSingleHint' : 'archiveCompress.uploadHint'}
+      formatsKey=""
+      selectedName={files.length > 0 ? `${fileStats?.count} ${t('archiveCompress.filesUnit')} · ${fileStats?.totalFormatted}` : ''}
+      onClear={clear}
+      showClear={files.length > 0}
+      idPrefix="compress"
+    />
+    {#if !isSingleFormat}
+      <div class="flex gap-2 mt-2">
+        <input
+          type="file"
+          webkitdirectory
+          multiple
+          class="hidden"
+          bind:this={folderInputRef}
+          onchange={handleFolderInputChange}
+        />
         <button
           type="button"
           class="btn btn-sm preset-outlined-surface-200-800"
-          onclick={() => inputRef?.click()}
+          onclick={() => folderInputRef?.click()}
         >
-          {isSingleFormat ? t('archiveCompress.selectFile') : t('archiveCompress.selectFiles')}
+          {t('archiveCompress.selectFolder')}
         </button>
-        {#if !isSingleFormat}
-          <button
-            type="button"
-            class="btn btn-sm preset-outlined-surface-200-800"
-            onclick={() => folderInputRef?.click()}
-          >
-            {t('archiveCompress.selectFolder')}
-          </button>
-        {/if}
       </div>
-    </div>
+    {/if}
     {#if files.length > 0}
       <div class="mt-2 text-surface-600-400 text-sm mb-1">
         {fileStats.count} {t('archiveCompress.filesUnit')} · {fileStats.totalFormatted}

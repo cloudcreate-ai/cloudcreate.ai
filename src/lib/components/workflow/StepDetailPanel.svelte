@@ -5,6 +5,7 @@
   import { t } from '$lib/i18n.js';
   import { getStepOrdinal } from '$lib/workflow/stepUtils.js';
   import { ACCEPT_IMAGES, filterImageFiles } from '$lib/batchHelpers.js';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
 
   let {
     steps = [],
@@ -15,7 +16,10 @@
     onClearFiles = () => {},
   } = $props();
 
-  let inputRef = $state(null);
+  function handleFilesAdd(files) {
+    const list = filterImageFiles(files);
+    if (list.length) onFilesAdd(list);
+  }
 
   $effect(() => {
     const idx = selectedStepIndex;
@@ -61,40 +65,17 @@
 
       {#if s.type === 'input'}
         <p class="config-label config-label-deferred">{t('workflow.inputManualHint')}</p>
-        <!-- svelte-ignore a11y_click_events_have_key_events -->
-        <div
-          class="drop-zone"
-          role="button"
-          tabindex="0"
-          ondragover={(e) => e.preventDefault()}
-          ondrop={(e) => {
-            e.preventDefault();
-            const list = filterImageFiles(e.dataTransfer?.files);
-            if (list.length) onFilesAdd(list);
-          }}
-          onclick={() => inputRef?.click()}
-          onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-        >
-          <input
-            type="file"
-            accept={ACCEPT_IMAGES}
-            multiple
-            class="hidden"
-            bind:this={inputRef}
-            onchange={(e) => {
-              const list = filterImageFiles(e.target?.files);
-              if (list.length) onFilesAdd(list);
-              if (inputRef) inputRef.value = '';
-            }}
-          />
-          <span class="text-surface-600-400">{t('common.addImages')}</span>
-        </div>
-        {#if files.length > 0}
-          <p class="file-count text-sm mt-1">{files.length} {t('workflow.fileCount')}</p>
-          <button class="btn btn-sm preset-outlined-surface-200-800 mt-1" onclick={onClearFiles}>
-            {t('workflow.clearFiles')}
-          </button>
-        {/if}
+        <FileDropZone
+          accept={ACCEPT_IMAGES}
+          multiple={true}
+          onFilesAdd={handleFilesAdd}
+          hintKey="common.addImages"
+          formatsKey=""
+          selectedName={files.length > 0 ? `${files.length} ${t('workflow.fileCount')}` : ''}
+          onClear={onClearFiles}
+          showClear={files.length > 0}
+          idPrefix="step-input"
+        />
       {:else if s.type === 'resize'}
         <p class="config-label">{t('workflow.presetConfig')}</p>
         <div class="param-row">
@@ -297,35 +278,9 @@
     color: var(--color-surface-600-400);
     white-space: nowrap;
   }
-  .param-group {
-    margin-bottom: 0.5rem;
-  }
-  .param-group:last-child {
-    margin-bottom: 0;
-  }
-  .param-group label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--color-surface-600-400);
-    margin-bottom: 0.25rem;
-  }
   .detail-empty {
     font-size: 0.85rem;
     color: var(--color-surface-600-400);
     margin: 0;
-  }
-  .drop-zone {
-    padding: 1rem;
-    border: 2px dashed var(--color-surface-200-800);
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-  }
-  .drop-zone:hover {
-    border-color: var(--color-primary-500);
-  }
-  .file-count {
-    margin: 0.25rem 0 0;
-    color: var(--color-surface-600-400);
   }
 </style>

@@ -5,10 +5,10 @@
   import { t } from '$lib/i18n.js';
   import { markdownToHtml } from '$lib/markdownTools.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
 
   let text = $state('');
-  let dropActive = $state(false);
-  let inputRef = $state(null);
+  let selectedFileName = $state('');
   let editCollapsed = $state(false);
 
   const html = $derived(markdownToHtml(text));
@@ -17,33 +17,17 @@
     if (!file) return;
     const raw = await file.text();
     text = raw;
+    selectedFileName = file.name;
   }
 
-  async function handleInputChange(e) {
-    const f = e.target?.files?.[0];
-    if (f) await handleFile(f);
-    if (inputRef) inputRef.value = '';
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    dropActive = false;
-    const f = e.dataTransfer?.files?.[0];
-    if (f && /\.(md|markdown|txt)$/i.test(f.name)) handleFile(f);
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    dropActive = true;
-  }
-
-  function handleDragLeave() {
-    dropActive = false;
+  async function handleFiles(files) {
+    const f = files?.[0];
+    if (f && /\.(md|markdown|txt)$/i.test(f.name)) await handleFile(f);
   }
 
   function clear() {
     text = '';
-    if (inputRef) inputRef.value = '';
+    selectedFileName = '';
   }
 </script>
 
@@ -51,36 +35,18 @@
   <ToolPageHeader titleKey="markdownPreview.title" descKey="markdownPreview.desc" />
 
   <section class="mb-4">
-    <p class="text-sm font-medium block mb-2 m-0">{t('markdownPreview.input')}</p>
-    <div class="flex gap-2 mb-3">
-      <input
-        type="file"
-        accept=".md,.markdown,.txt,text/markdown,text/plain"
-        class="hidden"
-        bind:this={inputRef}
-        onchange={handleInputChange}
-      />
-      <button type="button" class="btn btn-sm preset-outlined-surface-200-800" onclick={() => inputRef?.click()}>
-        {t('markdownPreview.upload')}
-      </button>
-      <button type="button" class="btn btn-sm preset-outlined-surface-200-800" onclick={clear}>
-        {t('common.clearAll')}
-      </button>
-    </div>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-      class="card preset-outlined-surface-200-800 p-3 mb-3 cursor-pointer transition {dropActive ? 'border-primary-500 bg-primary-500/5' : ''}"
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-      onclick={() => inputRef?.click()}
-      role="button"
-      tabindex="0"
-      onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-    >
-      <p class="text-surface-600-400 text-sm m-0">{t('markdownPreview.uploadHint')}</p>
-    </div>
-    <p class="text-xs text-surface-500-500 mb-2">{t('markdownPreview.orPaste')}</p>
+    <FileDropZone
+      accept=".md,.markdown,.txt,text/markdown,text/plain"
+      multiple={false}
+      onFilesAdd={handleFiles}
+      hintKey="markdownPreview.uploadHint"
+      formatsKey=""
+      selectedName={selectedFileName}
+      onClear={clear}
+      showClear={!!text}
+      idPrefix="markdown"
+    />
+    <p class="text-xs text-surface-500-500 mb-2 mt-2">{t('markdownPreview.orPaste')}</p>
   </section>
 
   <div

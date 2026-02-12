@@ -6,6 +6,7 @@
   import { downloadBlob } from '$lib/batchHelpers.js';
   import { parseTableFile, tableToBlob, FORMATS } from '$lib/tableTools.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
 
   const ROW_PAGE_SIZE = 200;
   const COL_PAGE_SIZE = 30;
@@ -15,8 +16,6 @@
   let rowPage = $state(0);
   let colPage = $state(0);
   let error = $state('');
-  let dropActive = $state(false);
-  let inputRef = $state(null);
   let outputFormat = $state('csv');
   let processing = $state(false);
   let fileName = $state('');
@@ -60,26 +59,9 @@
     }
   }
 
-  function handleInputChange(e) {
-    const f = e.target?.files?.[0];
-    if (f) handleFile(f);
-    if (inputRef) inputRef.value = '';
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    dropActive = false;
-    const f = e.dataTransfer?.files?.[0];
+  function handleFiles(files) {
+    const f = files?.[0];
     if (f && /\.(csv|tsv|xlsx|xls|json)$/i.test(f.name)) handleFile(f);
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    dropActive = true;
-  }
-
-  function handleDragLeave() {
-    dropActive = false;
   }
 
   function download() {
@@ -95,7 +77,6 @@
     table = null;
     error = '';
     fileName = '';
-    if (inputRef) inputRef.value = '';
   }
 </script>
 
@@ -103,35 +84,17 @@
   <ToolPageHeader titleKey="tableTools.title" descKey="tableTools.desc" />
 
   <section class="mb-4">
-    <p class="text-sm font-medium block mb-2 m-0">{t('tableTools.input')}</p>
-    <input
-      type="file"
+    <FileDropZone
       accept={ACCEPT}
-      class="hidden"
-      bind:this={inputRef}
-      onchange={handleInputChange}
+      multiple={false}
+      onFilesAdd={handleFiles}
+      hintKey="tableTools.uploadHint"
+      formatsKey=""
+      selectedName={table ? fileName + (table.sheets?.length > 1 ? ` (${table.sheets.length} sheets)` : '') : ''}
+      onClear={clear}
+      showClear={!!table}
+      idPrefix="table"
     />
-    <div class="flex gap-2 mb-3">
-      <button type="button" class="btn btn-sm preset-outlined-surface-200-800" onclick={() => inputRef?.click()}>
-        {t('tableTools.upload')}
-      </button>
-      <button type="button" class="btn btn-sm preset-outlined-surface-200-800" onclick={clear}>
-        {t('common.clearAll')}
-      </button>
-    </div>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-      class="card preset-outlined-surface-200-800 p-4 mb-2 cursor-pointer transition {dropActive ? 'border-primary-500 bg-primary-500/5' : ''}"
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-      onclick={() => inputRef?.click()}
-      role="button"
-      tabindex="0"
-      onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-    >
-      <p class="text-surface-600-400 text-sm m-0">{t('tableTools.uploadHint')}</p>
-    </div>
   </section>
 
   {#if error}

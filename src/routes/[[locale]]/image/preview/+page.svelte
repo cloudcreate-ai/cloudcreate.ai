@@ -3,10 +3,9 @@
   import { onDestroy } from 'svelte';
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ZoomControls from '$lib/components/common/ZoomControls.svelte';
 
-  let inputRef = $state(null);
-  let dropActive = $state(false);
   let images = $state([]);
   let selectedIndex = $state(0);
   let zoom = $state(1);
@@ -66,27 +65,6 @@
     zoom = 1;
   }
 
-  function handleInputChange(event) {
-    handleFiles(event.target?.files);
-    if (inputRef) inputRef.value = '';
-  }
-
-  function handleDragOver(event) {
-    event.preventDefault();
-    dropActive = true;
-  }
-
-  function handleDragLeave(event) {
-    event.preventDefault();
-    dropActive = false;
-  }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    dropActive = false;
-    handleFiles(event.dataTransfer?.files);
-  }
-
   function selectImage(index) {
     safeSelect(index);
     zoom = 1;
@@ -114,46 +92,18 @@
 <div class="workspace-content workspace-content-wide image-preview">
   <ToolPageHeader titleKey="imagePreview.title" descKey="imagePreview.desc" />
 
-  <section class="upload card preset-outlined-surface-200-800 p-4 mb-4">
-    <p class="text-sm font-medium m-0 mb-2">{t('imagePreview.upload')}</p>
-    <div class="actions">
-      <input
-        bind:this={inputRef}
-        type="file"
-        accept={acceptedTypes}
-        multiple
-        class="hidden"
-        onchange={handleInputChange}
-      />
-      <button
-        type="button"
-        class="btn btn-sm preset-outlined-surface-200-800"
-        onclick={() => inputRef?.click()}
-      >
-        {t('imagePreview.upload')}
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm preset-outlined-surface-200-800"
-        onclick={clearAll}
-        disabled={!images.length}
-      >
-        {t('common.clearAll')}
-      </button>
-    </div>
-    <div
-      class="drop-zone {dropActive ? 'is-active' : ''}"
-      role="button"
-      tabindex="0"
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-      onclick={() => inputRef?.click()}
-      onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-    >
-      <p class="hint">{t('imagePreview.uploadHint')}</p>
-      <p class="sub-hint">{t('imagePreview.dropHint')}</p>
-    </div>
+  <section class="mb-4">
+    <FileDropZone
+      accept={acceptedTypes}
+      multiple
+      onFilesAdd={handleFiles}
+      hintKey="imagePreview.uploadHint"
+      formatsKey="common.formats"
+      selectedName={images.length === 1 ? images[0]?.name : images.length > 1 ? `${images.length} files` : ''}
+      onClear={clearAll}
+      showClear={images.length > 0}
+      idPrefix="preview"
+    />
   </section>
 
   <section class="image-preview-panel card preset-outlined-surface-200-800 p-4">
@@ -222,34 +172,6 @@
   .image-preview :global(img) {
     max-width: 100%;
     display: block;
-  }
-  .upload .actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-  .drop-zone {
-    border: 1px dashed var(--ccw-border-contrast);
-    border-radius: var(--ccw-radius-card);
-    padding: 1rem;
-    text-align: center;
-    background: rgba(255, 255, 255, 0.02);
-    transition: border-color 150ms ease, background-color 150ms ease;
-    cursor: pointer;
-  }
-  .drop-zone.is-active {
-    border-color: var(--ccw-accent);
-    background: rgba(10, 132, 255, 0.08);
-  }
-  .drop-zone .hint {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--ccw-text-primary);
-  }
-  .drop-zone .sub-hint {
-    margin: 0.25rem 0 0;
-    font-size: 0.8rem;
-    color: var(--ccw-text-muted);
   }
   .image-preview-panel {
     min-height: 420px;

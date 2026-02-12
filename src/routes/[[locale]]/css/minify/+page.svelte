@@ -6,6 +6,7 @@
   import { minifyBasic, minifyAggressive } from '$lib/cssTools.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
 
   const MINIFY_BASIC = 'basic';
   const MINIFY_AGGRESSIVE = 'aggressive';
@@ -16,8 +17,6 @@
   let inputFileName = $state('');
   let processing = $state(false);
   let error = $state('');
-  let dropActive = $state(false);
-  let inputRef = $state(null);
 
   const ACCEPT_CSS = '.css,text/css,text/plain';
 
@@ -30,26 +29,9 @@
     error = '';
   }
 
-  function handleInputChange(e) {
-    const files = e.target?.files;
-    if (files?.[0]) handleFile(files[0]);
-    if (inputRef) inputRef.value = '';
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    dropActive = false;
-    const file = e.dataTransfer?.files?.[0];
-    if (file && /\.(css|txt)$/i.test(file.name)) handleFile(file);
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    dropActive = true;
-  }
-
-  function handleDragLeave() {
-    dropActive = false;
+  async function handleFiles(files) {
+    const file = files?.[0];
+    if (file && /\.(css|txt)$/i.test(file.name)) await handleFile(file);
   }
 
   function process() {
@@ -82,7 +64,6 @@
     outputText = '';
     inputFileName = '';
     error = '';
-    if (inputRef) inputRef.value = '';
   }
 </script>
 
@@ -103,31 +84,18 @@
   </section>
 
   <section class="mb-4">
-    <p class="text-sm font-medium block mb-2 m-0">{t('cssMinify.input')}</p>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-      class="card preset-outlined-surface-200-800 p-4 mb-2 cursor-pointer transition {dropActive ? 'border-primary-500 bg-primary-500/5' : ''}"
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-      onclick={() => inputRef?.click()}
-      role="button"
-      tabindex="0"
-      onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-    >
-      <input
-        type="file"
-        accept={ACCEPT_CSS}
-        class="hidden"
-        bind:this={inputRef}
-        onchange={handleInputChange}
-      />
-      <p class="text-surface-600-400 text-sm m-0">{t('cssMinify.uploadHint')}</p>
-      {#if inputFileName}
-        <p class="text-sm text-primary-500 mt-1 m-0">{inputFileName}.css</p>
-      {/if}
-    </div>
-    <p class="text-xs text-surface-500-500 mb-2">{t('cssMinify.orPaste')}</p>
+    <FileDropZone
+      accept={ACCEPT_CSS}
+      multiple={false}
+      onFilesAdd={handleFiles}
+      hintKey="cssMinify.uploadHint"
+      formatsKey=""
+      selectedName={inputFileName ? `${inputFileName}.css` : ''}
+      onClear={clear}
+      showClear={!!inputText}
+      idPrefix="minify"
+    />
+    <p class="text-xs text-surface-500-500 mb-2 mt-2">{t('cssMinify.orPaste')}</p>
     <textarea
       bind:value={inputText}
       class="input font-mono text-sm w-full min-h-[120px] resize-y"

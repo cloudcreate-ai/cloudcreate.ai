@@ -5,6 +5,7 @@
   import { t } from '$lib/i18n.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import FileDropZone from '$lib/components/FileDropZone.svelte';
   import { formatFileSize } from '$lib/imageProcessor.js';
   import {
     decompressZip,
@@ -18,38 +19,18 @@
   let extractedFiles = $state([]);
   let processing = $state(false);
   let error = $state('');
-  let dropActive = $state(false);
-  let inputRef = $state(null);
 
   const ACCEPT = '.zip,.gz,.tgz,.br,application/zip,application/gzip,application/x-brotli';
 
-  async function handleFile(file) {
+  function handleFile(file) {
     if (!file) return;
     archiveFile = file;
     extractedFiles = [];
     error = '';
   }
 
-  function handleInputChange(e) {
-    const files = e.target?.files;
+  function handleFiles(files) {
     if (files?.[0]) handleFile(files[0]);
-    if (inputRef) inputRef.value = '';
-  }
-
-  function handleDrop(e) {
-    e.preventDefault();
-    dropActive = false;
-    const file = e.dataTransfer?.files?.[0];
-    if (file) handleFile(file);
-  }
-
-  function handleDragOver(e) {
-    e.preventDefault();
-    dropActive = true;
-  }
-
-  function handleDragLeave() {
-    dropActive = false;
   }
 
   async function decompress() {
@@ -101,7 +82,6 @@
     archiveFile = null;
     extractedFiles = [];
     error = '';
-    if (inputRef) inputRef.value = '';
   }
 </script>
 
@@ -109,30 +89,17 @@
   <ToolPageHeader titleKey="archiveDecompress.title" descKey="archiveDecompress.desc" />
 
   <section class="mb-4">
-    <p class="text-sm font-medium block mb-2 m-0">{t('archiveDecompress.input')}</p>
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <div
-      class="card preset-outlined-surface-200-800 p-4 cursor-pointer transition {dropActive ? 'border-primary-500 bg-primary-500/5' : ''}"
-      ondragover={handleDragOver}
-      ondragleave={handleDragLeave}
-      ondrop={handleDrop}
-      onclick={() => inputRef?.click()}
-      role="button"
-      tabindex="0"
-      onkeydown={(e) => e.key === 'Enter' && inputRef?.click()}
-    >
-      <input
-        type="file"
-        accept={ACCEPT}
-        class="hidden"
-        bind:this={inputRef}
-        onchange={handleInputChange}
-      />
-      <p class="text-surface-600-400 text-sm m-0">{t('archiveDecompress.uploadHint')}</p>
-      {#if archiveFile}
-        <p class="text-sm text-primary-500 mt-1 m-0">{archiveFile.name}</p>
-      {/if}
-    </div>
+    <FileDropZone
+      accept={ACCEPT}
+      multiple={false}
+      onFilesAdd={handleFiles}
+      hintKey="archiveDecompress.uploadHint"
+      formatsKey=""
+      selectedName={archiveFile?.name}
+      onClear={clear}
+      showClear={!!archiveFile}
+      idPrefix="decompress"
+    />
     <p class="text-xs text-surface-500-500 mt-2 m-0">{t('archiveDecompress.formats')}</p>
   </section>
 
