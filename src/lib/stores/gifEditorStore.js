@@ -7,7 +7,7 @@ function createDefaultOptions() {
     targetFps: 0,
     scalePercent: 100,
     paletteSize: 128,
-    dither: true,
+    dither: false,
     optimizeBackground: true,
     accuratePreview: true,
   };
@@ -71,7 +71,7 @@ function createGifEditorStore() {
           targetFps: fps ? Math.max(1, Math.round(Math.min(60, fps))) : 24,
           scalePercent: 100,
           paletteSize: 128,
-          dither: true,
+          dither: false,
           optimizeBackground: true,
         },
         compression: {

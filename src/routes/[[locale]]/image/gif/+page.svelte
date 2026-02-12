@@ -367,7 +367,7 @@
                 onclick={() => gifEditorStore.selectFrame(index)}
               >
                 <img src={frame.previewUrl} alt={`frame-${index + 1}`} />
-                <span>{frame.delay} ms</span>
+                <span class="frame-meta">{index + 1} · {frame.delay} ms</span>
               </button>
             {/each}
           </div>
@@ -611,34 +611,34 @@
   }
   .editor-grid {
     display: grid;
-    grid-template-columns: 220px 1fr;
+    grid-template-columns: 120px 1fr;
     gap: 1rem;
   }
   .frame-list {
     border-right: 1px solid var(--ccw-border-soft);
-    padding-right: 1rem;
+    padding-right: 0.75rem;
   }
   .frame-list h4 {
     margin: 0 0 0.5rem 0;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--ccw-text-muted);
   }
   .frame-scroll {
-    max-height: 420px;
+    max-height: 360px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.35rem;
   }
   .frame-item {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0.2rem;
     border: 1px solid var(--ccw-border-soft);
     border-radius: var(--ccw-radius-card);
     background: rgba(255, 255, 255, 0.02);
-    padding: 0.35rem;
+    padding: 0.25rem;
     transition: border-color 150ms ease;
   }
   .frame-item.is-active {
@@ -646,12 +646,14 @@
   }
   .frame-item img {
     width: 100%;
+    aspect-ratio: 1;
     border-radius: 4px;
     object-fit: cover;
   }
-  .frame-item span {
-    font-size: 0.7rem;
+  .frame-item .frame-meta {
+    font-size: 0.65rem;
     color: var(--ccw-text-muted);
+    white-space: nowrap;
   }
   .viewer {
     display: flex;
