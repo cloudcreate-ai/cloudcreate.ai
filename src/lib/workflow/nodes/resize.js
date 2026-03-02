@@ -1,8 +1,9 @@
 /**
  * Resize 节点 - ImageData -> ImageData
- * 复用 resize 工作流的 scaleImageData + computeSize
+ * 复用 resize 工作流的 scaleImageData + computeSize，放大时做轻度锐化
  */
 import { DATA_TYPES } from '../types.js';
+import { unsharpMask } from '../../imageFilters.js';
 
 function scaleImageData(imageData, newWidth, newHeight) {
   const w = imageData.width;
@@ -19,7 +20,11 @@ function scaleImageData(imageData, newWidth, newHeight) {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(src, 0, 0, w, h, 0, 0, newWidth, newHeight);
-  return ctx.getImageData(0, 0, newWidth, newHeight);
+  let result = ctx.getImageData(0, 0, newWidth, newHeight);
+  if (newWidth > w || newHeight > h) {
+    result = unsharpMask(result, 0.35);
+  }
+  return result;
 }
 
 function computeSize(w, h, mode, percent, maxW, maxH, targetW, targetH, targetLong) {

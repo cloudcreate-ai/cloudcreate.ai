@@ -8,9 +8,10 @@ import {
   encodePngQuantized,
   getFormatFromFile,
 } from '../imageProcessor.js';
+import { unsharpMask } from '../imageFilters.js';
 
 /**
- * 将 ImageData 缩放到新尺寸（使用 canvas 双线性插值）
+ * 将 ImageData 缩放到新尺寸（canvas 高质量插值），放大时再做轻度锐化减轻糊/颗粒感
  * @param {ImageData} imageData
  * @param {number} newWidth
  * @param {number} newHeight
@@ -33,7 +34,12 @@ function scaleImageData(imageData, newWidth, newHeight) {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(src, 0, 0, w, h, 0, 0, newWidth, newHeight);
-  return ctx.getImageData(0, 0, newWidth, newHeight);
+  let result = ctx.getImageData(0, 0, newWidth, newHeight);
+  // 放大时做轻度反锐化掩模，减轻颗粒感/糊感
+  if (newWidth > w || newHeight > h) {
+    result = unsharpMask(result, 0.35);
+  }
+  return result;
 }
 
 /**

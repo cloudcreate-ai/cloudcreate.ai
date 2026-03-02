@@ -168,6 +168,8 @@ export function scaleImageData(imageData, targetWidth, targetHeight) {
   const temp = createCanvas(imageData.width, imageData.height);
   if (!temp.canvas || !temp.ctx) return imageData;
   temp.ctx.putImageData(imageData, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(temp.canvas, 0, 0, targetWidth, targetHeight);
   return ctx.getImageData(0, 0, targetWidth, targetHeight);
 }
