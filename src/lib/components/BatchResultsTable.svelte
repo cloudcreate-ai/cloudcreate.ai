@@ -59,10 +59,18 @@
             <td class="p-3">{item.format}</td>
             <td class="p-3">{formatFileSize(item.size)}</td>
             <td class="p-3">
-              {#if item.newWidth != null && item.newHeight != null}
-                {item.width}×{item.height} → {item.newWidth}×{item.newHeight}
+              {#if item.width != null && item.height != null}
+                {#if item.newWidth != null && item.newHeight != null}
+                  {item.width}×{item.height} → {item.newWidth}×{item.newHeight}
+                {:else}
+                  {item.width}×{item.height}
+                {/if}
               {:else}
-                {item.width}×{item.height}
+                {#if item.newWidth != null && item.newHeight != null}
+                  — → {item.newWidth}×{item.newHeight}
+                {:else}
+                  —
+                {/if}
               {/if}
             </td>
             <td class="p-3 text-right">
@@ -73,6 +81,10 @@
               {:else if item.status === 'done'}
                 <div class="space-y-0.5">
                   <div class="text-surface-600-400">
+                    {#if item.newWidth != null && item.newHeight != null}
+                      <span class="text-surface-500-500" title={t('common.dimensions')}>{item.newWidth}×{item.newHeight}</span>
+                      <span class="mx-1">·</span>
+                    {/if}
                     {formatLabelFromFilename(item.outputName)} · {formatFileSize(item.size)} → {formatFileSize(item.newSize)}
                   </div>
                   <div class={item.ratio > 0 ? 'text-success-500' : item.ratio < 0 ? 'text-warning-500' : 'text-surface-600-400'}>

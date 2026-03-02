@@ -41,7 +41,8 @@
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div class="flex flex-col items-center">
             <p class="text-sm text-surface-600-400 mb-2">
-              {t('common.original')} · {formatFileSize(item.size)}{#if item.width != null && item.height != null} · {item.width}×{item.height}{/if}
+              {t('common.original')} · {formatFileSize(item.size)}
+              · {#if item.width != null && item.height != null}{item.width}×{item.height}{:else}—{/if}
             </p>
             <img
               src={item.previewUrl}
@@ -51,7 +52,8 @@
           </div>
           <div class="flex flex-col items-center">
             <p class="text-sm text-surface-600-400 mb-2">
-              {t('common.result')} · {formatFileSize(item.newSize ?? 0)}{#if item.newWidth != null && item.newHeight != null} · {item.newWidth}×{item.newHeight}{/if}
+              {t('common.result')} · {formatFileSize(item.newSize ?? 0)}
+              · {#if item.newWidth != null && item.newHeight != null}{item.newWidth}×{item.newHeight}{:else}—{/if}
             </p>
             <img
               src={resultBlobUrl}

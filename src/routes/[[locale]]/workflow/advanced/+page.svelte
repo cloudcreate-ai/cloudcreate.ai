@@ -400,6 +400,7 @@
               <option value="width">{t('resize.byWidth')}</option>
               <option value="height">{t('resize.byHeight')}</option>
               <option value="long">{t('resize.byLong')}</option>
+              <option value="exact">{t('resize.byExact')}</option>
             </select>
           </div>
           <div class="param-group">

@@ -9,6 +9,7 @@ export const DATA_TYPES = {
   IMAGE_DATA: 'imageData',
   BLOB: 'blob',
   CROP_REGION: 'cropRegion',
+  NUMBER: 'number',
 };
 
 /** 端口类型兼容性：源类型 -> 可连接的目标类型 */
@@ -16,6 +17,7 @@ export const TYPE_COMPATIBLE = {
   [DATA_TYPES.FILE]: [DATA_TYPES.FILE],
   [DATA_TYPES.IMAGE_DATA]: [DATA_TYPES.IMAGE_DATA],
   [DATA_TYPES.BLOB]: [DATA_TYPES.BLOB],
+  [DATA_TYPES.NUMBER]: [DATA_TYPES.NUMBER],
 };
 
 /** 校验两个端口类型是否可连接 */
@@ -40,7 +42,7 @@ export const PARAM_SCHEMAS = {
   scaleMode: {
     type: 'string',
     default: 'percent',
-    options: ['percent', 'max', 'width', 'height', 'long'],
+    options: ['percent', 'max', 'width', 'height', 'long', 'exact'],
   },
   scalePercent: {
     type: 'number',

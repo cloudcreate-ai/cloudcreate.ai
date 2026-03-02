@@ -56,13 +56,29 @@ export function buildGraphFromSteps(steps) {
     sourceHandle: prevHandle,
     targetHandle: 'imageData',
   });
-  edges.push({
-    id: `e-${encodeId}-${outputId}`,
-    source: encodeId,
-    target: outputId,
-    sourceHandle: 'blob',
-    targetHandle: 'blob',
-  });
+  edges.push(
+    {
+      id: `e-${encodeId}-${outputId}-blob`,
+      source: encodeId,
+      target: outputId,
+      sourceHandle: 'blob',
+      targetHandle: 'blob',
+    },
+    {
+      id: `e-${encodeId}-${outputId}-width`,
+      source: encodeId,
+      target: outputId,
+      sourceHandle: 'width',
+      targetHandle: 'width',
+    },
+    {
+      id: `e-${encodeId}-${outputId}-height`,
+      source: encodeId,
+      target: outputId,
+      sourceHandle: 'height',
+      targetHandle: 'height',
+    }
+  );
 
   return { nodes, edges };
 }

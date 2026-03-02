@@ -23,6 +23,12 @@ function scaleImageData(imageData, newWidth, newHeight) {
 }
 
 function computeSize(w, h, mode, percent, maxW, maxH, targetW, targetH, targetLong) {
+  if (mode === 'exact') {
+    return {
+      width: Math.max(1, Math.round(targetW || w)),
+      height: Math.max(1, Math.round(targetH || h)),
+    };
+  }
   if (mode === 'percent') {
     const p = Math.min(200, Math.max(1, percent)) / 100;
     return { width: Math.max(1, Math.round(w * p)), height: Math.max(1, Math.round(h * p)) };

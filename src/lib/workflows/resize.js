@@ -40,15 +40,21 @@ function scaleImageData(imageData, newWidth, newHeight) {
  * 计算缩放后的尺寸
  * @param {number} w 原宽
  * @param {number} h 原高
- * @param {'percent'|'max'|'width'|'height'|'long'} mode
+ * @param {'percent'|'max'|'width'|'height'|'long'|'exact'} mode
  * @param {number} percent 1-200
  * @param {number} maxW
  * @param {number} maxH
- * @param {number} targetW 按宽时目标宽度
- * @param {number} targetH 按高时目标高度
+ * @param {number} targetW 按宽/指定宽度
+ * @param {number} targetH 按高/指定高度
  * @param {number} targetLong 按长边时目标像素
  */
 function computeSize(w, h, mode, percent, maxW, maxH, targetW, targetH, targetLong) {
+  if (mode === 'exact') {
+    return {
+      width: Math.max(1, Math.round(targetW || w)),
+      height: Math.max(1, Math.round(targetH || h)),
+    };
+  }
   if (mode === 'percent') {
     const p = Math.min(200, Math.max(1, percent)) / 100;
     return { width: Math.max(1, Math.round(w * p)), height: Math.max(1, Math.round(h * p)) };

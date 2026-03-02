@@ -25,6 +25,7 @@ export function formatStepBrief(type, params = {}) {
     if (mode === 'width') return `W${params.targetWidth ?? 1920}`;
     if (mode === 'height') return `H${params.targetHeight ?? 1080}`;
     if (mode === 'long') return `L${params.targetLong ?? 1920}`;
+    if (mode === 'exact') return `${params.targetWidth ?? 1920}×${params.targetHeight ?? 1080}`;
     return `${params.scalePercent ?? 50}%`;
   }
   if (type === 'crop') {

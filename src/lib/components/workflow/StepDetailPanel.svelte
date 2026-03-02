@@ -92,6 +92,7 @@
               <option value="width">{t('resize.byWidth')}</option>
               <option value="height">{t('resize.byHeight')}</option>
               <option value="long">{t('resize.byLong')}</option>
+              <option value="exact">{t('resize.byExact')}</option>
             </select>
           </div>
           {#if (s.params?.scaleMode ?? 'percent') === 'percent'}
@@ -147,6 +148,29 @@
               <label for="detail-targetHeight-{index}">{t('resize.targetHeight')}</label>
               <input
                 id="detail-targetHeight-{index}"
+                type="number"
+                min="1"
+                class="input w-20"
+                value={s.params?.targetHeight ?? 1080}
+                oninput={(e) => { const el = getTarget(e); if (el) updateParams(index, { targetHeight: Number(el.value) }); }}
+              />
+            </div>
+          {:else if (s.params?.scaleMode ?? 'percent') === 'exact'}
+            <div class="param-inline">
+              <label for="detail-exactW-{index}">{t('resize.targetWidth')}</label>
+              <input
+                id="detail-exactW-{index}"
+                type="number"
+                min="1"
+                class="input w-20"
+                value={s.params?.targetWidth ?? 1920}
+                oninput={(e) => { const el = getTarget(e); if (el) updateParams(index, { targetWidth: Number(el.value) }); }}
+              />
+            </div>
+            <div class="param-inline">
+              <label for="detail-exactH-{index}">{t('resize.targetHeight')}</label>
+              <input
+                id="detail-exactH-{index}"
                 type="number"
                 min="1"
                 class="input w-20"

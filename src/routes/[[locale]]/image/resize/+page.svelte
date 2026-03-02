@@ -17,7 +17,7 @@
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
 
-  const VALID_MODES = ['percent', 'max', 'width', 'height', 'long'];
+  const VALID_MODES = ['percent', 'max', 'width', 'height', 'long', 'exact'];
   const resizeDefaults = {
     scaleMode: 'percent',
     scalePercent: 50,
@@ -193,7 +193,9 @@
           ? `${t('resize.byWidth')} ${targetWidth}px`
           : scaleMode === 'height'
             ? `${t('resize.byHeight')} ${targetHeight}px`
-            : `${t('resize.byLong')} ${targetLong}px`
+            : scaleMode === 'long'
+              ? `${t('resize.byLong')} ${targetLong}px`
+              : `${targetWidth}×${targetHeight}`
   );
 </script>
 
@@ -248,8 +250,22 @@
           <input type="radio" name="scaleMode" value="long" bind:group={scaleMode} class="radio" />
           <span>{t('resize.byLong')}</span>
         </label>
+        <label class="flex items-center gap-1.5 cursor-pointer text-xs">
+          <input type="radio" name="scaleMode" value="exact" bind:group={scaleMode} class="radio" />
+          <span>{t('resize.byExact')}</span>
+        </label>
       </div>
-      {#if scaleMode === 'percent'}
+      {#if scaleMode === 'exact'}
+        <p class="text-xs text-surface-500-500 w-full mb-1">{t('resize.aspectWarning')}</p>
+        <div class="flex flex-col gap-0.5">
+          <label for="exactW" class="text-xs text-surface-600-400">{t('resize.targetWidth')}</label>
+          <input id="exactW" type="number" min="1" bind:value={targetWidth} class="input w-20" />
+        </div>
+        <div class="flex flex-col gap-0.5">
+          <label for="exactH" class="text-xs text-surface-600-400">{t('resize.targetHeight')}</label>
+          <input id="exactH" type="number" min="1" bind:value={targetHeight} class="input w-20" />
+        </div>
+      {:else if scaleMode === 'percent'}
         <div class="flex flex-col gap-0.5">
           <label for="scalePercent" class="text-xs text-surface-600-400">{t('resize.scalePercent')}</label>
           <SliderWithInput
@@ -281,7 +297,7 @@
           <label for="targetH" class="text-xs text-surface-600-400">{t('resize.targetHeight')}</label>
           <input id="targetH" type="number" min="1" bind:value={targetHeight} class="input w-20" />
         </div>
-      {:else}
+      {:else if scaleMode === 'long'}
         <div class="flex flex-col gap-0.5">
           <label for="targetLong" class="text-xs text-surface-600-400">{t('resize.targetLong')}</label>
           <input id="targetLong" type="number" min="1" bind:value={targetLong} class="input w-20" />

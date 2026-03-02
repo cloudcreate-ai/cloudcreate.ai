@@ -12,7 +12,11 @@ export const encodeNode = {
   type: 'encode',
   label: 'Encode',
   inputs: [{ name: 'imageData', type: DATA_TYPES.IMAGE_DATA }],
-  outputs: [{ name: 'blob', type: DATA_TYPES.BLOB }],
+  outputs: [
+    { name: 'blob', type: DATA_TYPES.BLOB },
+    { name: 'width', type: DATA_TYPES.NUMBER },
+    { name: 'height', type: DATA_TYPES.NUMBER },
+  ],
   params: {
     targetFormat: { type: 'string', default: '' },
     quality: { type: 'number', default: 75 },
@@ -33,6 +37,10 @@ export const encodeNode = {
     }
     const { buffer, mime } = result;
     const blob = new Blob([buffer], { type: mime });
-    return { blob };
+    return {
+      blob,
+      width: imageData.width,
+      height: imageData.height,
+    };
   },
 };
