@@ -247,6 +247,10 @@ const translations = {
       importSpecs: 'Import specs',
       importError: 'Invalid JSON or format.',
       importErrorNotArray: 'JSON must be an array of spec objects.',
+      editSpecs: 'Edit specs (JSON)',
+      editSpecsApply: 'Apply',
+      editSpecsCancel: 'Cancel',
+      editSpecsPlaceholder: 'JSON array of spec objects (name, width, height, format, quality, quantity, maxSizeKb)',
     },
     rotate: {
       title: 'Image Rotate & Flip',
@@ -748,6 +752,10 @@ const translations = {
       importSpecs: '导入规格',
       importError: 'JSON 无效或格式错误。',
       importErrorNotArray: 'JSON 须为规格对象数组。',
+      editSpecs: '编辑规格 (JSON)',
+      editSpecsApply: '应用',
+      editSpecsCancel: '取消',
+      editSpecsPlaceholder: '规格对象 JSON 数组（name, width, height, format, quality, quantity, maxSizeKb）',
     },
     rotate: {
       title: '图片旋转与镜像',

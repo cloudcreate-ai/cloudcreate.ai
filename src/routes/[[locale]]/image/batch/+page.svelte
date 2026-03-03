@@ -42,6 +42,10 @@
   let pickerOpenForRow = $state(null);
   /** 导入规格用隐藏 file input */
   let importInputEl = $state(/** @type {HTMLInputElement | null} */ (null));
+  /** 在线编辑 spec JSON 弹窗 */
+  let editSpecsOpen = $state(false);
+  let editSpecsJson = $state('');
+  let editSpecsError = $state('');
   /** 下拉层固定定位用（避免被表格 overflow 裁剪） */
   let pickerRect = $state({ top: 0, left: 0 });
   /** 结果 blob 的 object URL，用于缩略图，按索引与 results 对应 */
@@ -289,21 +293,18 @@
     error = '';
   }
 
-  /** 导出当前规格表为 JSON 文件 */
-  function exportSpecs() {
-    const payload = specs.map((s) => {
-      const row = {
-        name: s.name,
-        width: s.width,
-        height: s.height,
-        format: s.format,
-        quality: s.quality ?? 85,
-        quantity: Math.max(1, s.quantity ?? 1),
-      };
+  /** 当前规格转为与导出一致的 JSON 结构 */
+  function specsToExportPayload() {
+    return specs.map((s) => {
+      const row = { name: s.name, width: s.width, height: s.height, format: s.format, quality: s.quality ?? 85, quantity: Math.max(1, s.quantity ?? 1) };
       if (s.maxSizeKb != null && s.maxSizeKb > 0) row.maxSizeKb = s.maxSizeKb;
       return row;
     });
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  }
+
+  /** 导出当前规格表为 JSON 文件 */
+  function exportSpecs() {
+    const blob = new Blob([JSON.stringify(specsToExportPayload(), null, 2)], { type: 'application/json' });
     downloadBlob(blob, 'batch-specs.json');
   }
 
@@ -322,6 +323,29 @@
       error = e?.message || t('batch.importError');
     }
     if (importInputEl) importInputEl.value = '';
+  }
+
+  function openEditSpecs() {
+    editSpecsJson = JSON.stringify(specsToExportPayload(), null, 2);
+    editSpecsError = '';
+    editSpecsOpen = true;
+  }
+
+  function applyEditSpecs() {
+    editSpecsError = '';
+    try {
+      const raw = JSON.parse(editSpecsJson);
+      if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
+      specs = raw.map((row) => normalizeBatchSpecRow(row));
+      editSpecsOpen = false;
+    } catch (e) {
+      editSpecsError = e?.message || t('batch.importError');
+    }
+  }
+
+  function closeEditSpecs() {
+    editSpecsOpen = false;
+    editSpecsError = '';
   }
 
   function dimensionMatch(spec, result) {
@@ -394,7 +418,8 @@
 <svelte:window
   onkeydown={(e) => {
     if (e.key === 'Escape') {
-      if (previewResult) closePreview();
+      if (editSpecsOpen) closeEditSpecs();
+      else if (previewResult) closePreview();
       else if (pickerOpenForRow !== null) pickerOpenForRow = null;
     }
   }}
@@ -450,6 +475,9 @@
           </span>
         </label>
         <div class="flex items-center gap-2">
+          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={openEditSpecs}>
+            {t('batch.editSpecs')}
+          </button>
           <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={exportSpecs}>
             {t('batch.exportSpecs')}
           </button>
@@ -658,6 +686,46 @@
       <button onclick={clearAll} class="btn preset-outlined-surface-200-800">{t('common.clearAll')}</button>
     </section>
 
+  {/if}
+
+  <!-- 在线编辑 spec JSON 弹窗 -->
+  {#if editSpecsOpen}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('batch.editSpecs')}
+      tabindex="-1"
+      onclick={closeEditSpecs}
+      onkeydown={(e) => e.key === 'Escape' && closeEditSpecs()}
+    >
+      <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+      <div
+        class="card preset-outlined-surface-200-800 w-full max-w-2xl max-h-[85vh] flex flex-col p-4 shadow-xl"
+        onclick={(e) => e.stopPropagation()}
+      >
+        <h3 class="text-sm font-medium m-0 mb-3">{t('batch.editSpecs')}</h3>
+        <textarea
+          class="input preset-outlined-surface-200-800 w-full flex-1 min-h-[280px] font-mono text-sm resize-y mb-2"
+          spellcheck="false"
+          bind:value={editSpecsJson}
+          placeholder={t('batch.editSpecsPlaceholder')}
+        ></textarea>
+        {#if editSpecsError}
+          <p class="text-sm text-error-500 mb-3 m-0">{editSpecsError}</p>
+        {/if}
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm" onclick={closeEditSpecs}>
+            {t('batch.editSpecsCancel')}
+          </button>
+          <button type="button" class="btn preset-filled-primary-500 btn-sm" onclick={applyEditSpecs}>
+            {t('batch.editSpecsApply')}
+          </button>
+        </div>
+      </div>
+    </div>
   {/if}
 
   <SliderComparePreview
