@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "gen:batch-specs": "node scripts/xlsx-to-batch-specs.js",
     "build": "vite build",
     "preview": "vite preview",
     "test:e2e": "playwright test",

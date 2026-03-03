@@ -12,6 +12,7 @@ export const TOOL_GROUPS = [
       { id: 'convert', titleKey: 'home.convertTitle', href: '/image/convert', icon: '📄' },
       { id: 'crop', titleKey: 'home.cropTitle', href: '/image/crop', icon: '✂️' },
       { id: 'resize', titleKey: 'home.resizeTitle', href: '/image/resize', icon: '📐' },
+      { id: 'batch', titleKey: 'home.batchTitle', href: '/image/batch', icon: '📋' },
       { id: 'rotate', titleKey: 'home.rotateTitle', href: '/image/rotate', icon: '🔄' },
       { id: 'favicon', titleKey: 'home.faviconTitle', href: '/image/favicon', icon: '🖼️' },
       { id: 'playstore', titleKey: 'home.playstoreTitle', href: '/image/playstore', icon: '📱' },
