@@ -5,8 +5,8 @@
 const BATCH_SPECS_URL = '/specs/batch-specs.json';
 
 /**
- * 规格行结构：name, width, height, format, quality?, maxSizeKb?
- * @typedef {{ name: string, width: number, height: number, format: string, quality?: number, maxSizeKb?: number }} BatchSpecRow
+ * 规格行结构：name, width, height, format, quality?, maxSizeKb?, quantity?
+ * @typedef {{ name: string, width: number, height: number, format: string, quality?: number, maxSizeKb?: number, quantity?: number }} BatchSpecRow
  */
 
 /**
@@ -26,6 +26,7 @@ export async function loadBatchSpecs(url = BATCH_SPECS_URL) {
     format: String(row.format ?? 'webp').toLowerCase().replace('jpg', 'jpeg'),
     quality: Math.min(100, Math.max(0, Number(row.quality) ?? 75)),
     maxSizeKb: row.maxSizeKb != null ? Math.max(0, Number(row.maxSizeKb)) : undefined,
+    quantity: Math.max(1, parseInt(row.quantity, 10) || 1),
   }));
 }
 
@@ -91,12 +92,87 @@ export function assignInputsToSpecs(specs, fileItems) {
   const result = [];
   for (const spec of specs) {
     const key = getAspectRatioKey(spec.width, spec.height);
-    const group = groups.get(key) ?? [spec];
     const chosen = pickBestFileForRatio(fileItems, key);
     result.push({
       spec,
       assignedFile: chosen ? chosen.file : null,
     });
+  }
+  return result;
+}
+
+/**
+ * 按与目标比例接近程度排序文件项（越靠前越适合）
+ * @param {{ width?: number, height?: number, file: File }[]} fileItems
+ * @param {number} targetRatio
+ * @returns {{ width?: number, height?: number, file: File }[]}
+ */
+export function sortFileItemsByRatio(fileItems, targetRatio) {
+  if (!fileItems?.length) return [];
+  return [...fileItems].sort((a, b) => {
+    const ra = (a.height && a.width) ? a.width / a.height : 0;
+    const rb = (b.height && b.width) ? b.width / b.height : 0;
+    return Math.abs(ra - targetRatio) - Math.abs(rb - targetRatio);
+  });
+}
+
+/**
+ * 按尺寸 (宽x高) 分组，同比例同尺寸为一组
+ * @param {{ width?: number, height?: number, file: File }[]} fileItems
+ * @returns {Map<string, { width?: number, height?: number, file: File }[]>}
+ */
+function groupFileItemsBySize(fileItems) {
+  const map = new Map();
+  for (const item of fileItems) {
+    const w = item.width ?? 0;
+    const h = item.height ?? 0;
+    const key = `${w}x${h}`;
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(item);
+  }
+  return map;
+}
+
+/**
+ * 展开规格为多行（按 quantity）；多图规格使用「同比例、同尺寸」的一组图，组内数量不足则后续行无输入
+ * @param {BatchSpecRow[]} specs
+ * @param {{ width?: number, height?: number, file: File }[]} fileItems
+ * @returns {Array<{ spec: BatchSpecRow, quantityIndex: number, quantity: number, assignedFile: File | null, isReused: boolean }>}
+ */
+export function expandSpecsAndAssignInputs(specs, fileItems) {
+  if (!specs.length) return [];
+  const bySize = groupFileItemsBySize(fileItems);
+  const result = [];
+  for (let specIndex = 0; specIndex < specs.length; specIndex++) {
+    const spec = specs[specIndex];
+    const qty = Math.max(1, spec.quantity ?? 1);
+    const targetRatio = spec.height ? spec.width / spec.height : 0;
+    // 找比例最接近且同尺寸的一组
+    let bestGroup = [];
+    let bestDiff = Infinity;
+    for (const [, group] of bySize) {
+      if (!group.length) continue;
+      const w = group[0].width ?? 0;
+      const h = group[0].height ?? 0;
+      const r = h ? w / h : 0;
+      const diff = Math.abs(r - targetRatio);
+      if (diff < bestDiff) {
+        bestDiff = diff;
+        bestGroup = group;
+      }
+    }
+    for (let q = 0; q < qty; q++) {
+      const pick = q < bestGroup.length ? bestGroup[q] : null;
+      const assignedFile = pick ? pick.file : null;
+      result.push({
+        spec,
+        specIndex,
+        quantityIndex: q,
+        quantity: qty,
+        assignedFile,
+        isReused: false,
+      });
+    }
   }
   return result;
 }

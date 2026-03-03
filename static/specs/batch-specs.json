@@ -4,49 +4,56 @@
     "width": 512,
     "height": 512,
     "format": "png",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "ty_banner_720x404",
     "width": 720,
     "height": 404,
     "format": "png",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "ty_banner_1080x422",
     "width": 1080,
     "height": 422,
     "format": "png",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "ty_banner_972x390",
     "width": 972,
     "height": 390,
     "format": "png",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "ty_banner_164x260",
     "width": 164,
     "height": 260,
     "format": "png",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "ty_float_540x300",
     "width": 540,
     "height": 300,
     "format": "webp",
-    "quality": 85
+    "quality": 85,
+    "quantity": 3
   },
   {
     "name": "ty_hotgame_360x480",
     "width": 360,
     "height": 480,
     "format": "png",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "ty_gif_164x260",
@@ -54,6 +61,7 @@
     "height": 260,
     "format": "gif",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 500
   },
   {
@@ -62,6 +70,7 @@
     "height": 520,
     "format": "gif",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 2048
   },
   {
@@ -70,6 +79,7 @@
     "height": 1080,
     "format": "video",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 51200
   },
   {
@@ -77,35 +87,40 @@
     "width": 360,
     "height": 360,
     "format": "webp",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "tc_banner_420x520",
     "width": 420,
     "height": 520,
     "format": "webp",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "tc_banner_504x258",
     "width": 504,
     "height": 258,
     "format": "webp",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "tc_banner_1632x837",
     "width": 1632,
     "height": 837,
     "format": "webp",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "tc_banner_2424x705",
     "width": 2424,
     "height": 705,
     "format": "webp",
-    "quality": 85
+    "quality": 85,
+    "quantity": 1
   },
   {
     "name": "op_icon_150x150",
@@ -113,6 +128,7 @@
     "height": 150,
     "format": "webp",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 40
   },
   {
@@ -121,6 +137,7 @@
     "height": 408,
     "format": "webp",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 100
   },
   {
@@ -129,6 +146,7 @@
     "height": 555,
     "format": "webp",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 150
   },
   {
@@ -137,6 +155,7 @@
     "height": 150,
     "format": "gif",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 400
   },
   {
@@ -145,6 +164,7 @@
     "height": 408,
     "format": "gif",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 1000
   },
   {
@@ -153,6 +173,7 @@
     "height": 555,
     "format": "gif",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 1500
   },
   {
@@ -161,6 +182,7 @@
     "height": 300,
     "format": "png",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 50
   },
   {
@@ -169,6 +191,7 @@
     "height": 684,
     "format": "png",
     "quality": 85,
+    "quantity": 1,
     "maxSizeKb": 200
   }
 ]

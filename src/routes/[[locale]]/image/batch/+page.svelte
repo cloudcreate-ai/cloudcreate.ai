@@ -12,7 +12,7 @@
   } from '$lib/batchHelpers.js';
   import {
     loadBatchSpecs,
-    assignInputsToSpecs,
+    expandSpecsAndAssignInputs,
     specToParamsOverrides,
   } from '$lib/batchSpecHelpers.js';
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
@@ -58,16 +58,27 @@
     };
   });
 
+  /** 按 quantity 展开后的行（每张输出一行），含 quantityIndex、quantity、isReused */
   const autoRows = $derived(
     specs.length && fileItems.length
-      ? assignInputsToSpecs(specs, fileItems)
-      : specs.map((spec) => ({ spec, assignedFile: null }))
+      ? expandSpecsAndAssignInputs(specs, fileItems)
+      : specs.flatMap((spec, specIndex) =>
+          Array.from({ length: Math.max(1, spec.quantity ?? 1) }, (_, q) => ({
+            spec,
+            specIndex,
+            quantityIndex: q,
+            quantity: Math.max(1, spec.quantity ?? 1),
+            assignedFile: null,
+            isReused: false,
+          }))
+        )
   );
 
+  /** 支持用户显式选「无输入」：manualOverrides[i] === null 表示该行不输出 */
   const rows = $derived(
     autoRows.map((r, i) => ({
-      spec: r.spec,
-      assignedFile: manualOverrides[i] ?? r.assignedFile ?? null,
+      ...r,
+      assignedFile: i in manualOverrides ? manualOverrides[i] : r.assignedFile,
     }))
   );
 
@@ -96,6 +107,8 @@
     }
   }
 
+  /** @param {number} rowIndex
+   *  @param {File | null} file - null 表示该行无输入、不输出 */
   function replaceInput(rowIndex, file) {
     manualOverrides = { ...manualOverrides, [rowIndex]: file };
   }
@@ -165,12 +178,14 @@
     return name.slice(0, maxLen) + '…';
   }
 
-  /** 根据当前全局选项与行格式计算最终输出文件名（随选项切换实时更新，统一小写） */
+  /** 根据当前全局选项与行格式计算最终输出文件名（多张时加 _2、_3 后缀，统一小写） */
   function getOutputFilename(row, origIndex) {
     if (isUnsupportedFormat(row.spec)) return '—';
     const fmt = getEffectiveFormat(row);
     const ext = (EXT_BY_FORMAT[fmt] || fmt || 'webp').toLowerCase();
-    const baseName = getOutputBaseName(row.spec.name, globalFilePrefix, includeChannelInFilename);
+    let baseName = getOutputBaseName(row.spec.name, globalFilePrefix, includeChannelInFilename);
+    const qty = row.quantity ?? 1;
+    if (qty > 1 && row.quantityIndex > 0) baseName += `_${row.quantityIndex + 1}`;
     return `${baseName}.${ext}`;
   }
 
@@ -211,9 +226,7 @@
         const [res] = await runWorkflowFromPreset('/workflows/resize.json', [row.assignedFile], {
           paramsOverrides: overrides,
         });
-        const ext = (EXT_BY_FORMAT[fmt] || fmt || 'webp').toLowerCase();
-        const baseName = getOutputBaseName(row.spec.name, globalFilePrefix, includeChannelInFilename);
-        const outputName = `${baseName}.${ext}`;
+        const outputName = getOutputFilename(row, i);
         results = results.map((r, j) =>
           j !== i
             ? r
@@ -319,9 +332,10 @@
 
   /**
    * 输入项与目标规格的匹配程度：完美(绿) / 尚可(黄) / 勉强(红)
-   * 完美：比例一致且不需扩图；尚可：比例与尺寸接近；勉强：比例或尺寸偏差大
+   * 数量不足时重复使用的输入标为勉强
    */
-  function getInputMatchLevel(item, spec) {
+  function getInputMatchLevel(item, spec, isReused) {
+    if (isReused) return 'poor';
     if (!item.width || !item.height || !spec.width || !spec.height) return 'poor';
     const targetRatio = spec.width / spec.height;
     const inputRatio = item.width / item.height;
@@ -440,7 +454,9 @@
             {@const sizeOkRes = res ? sizeOk(row.spec, res) : null}
             <tr class="border-b border-surface-200-800 last:border-b-0 hover:bg-surface-100-900/50 {unsupported ? 'bg-surface-200-800/50' : ''}">
               <td class="p-3">{origIndex + 1}</td>
-              <td class="p-3 font-medium">{row.spec.name}</td>
+              <td class="p-3 font-medium">
+                {row.spec.name}{#if row.quantity > 1} <span class="text-surface-500-500 font-normal">({row.quantityIndex + 1}/{row.quantity})</span>{/if}
+              </td>
               <td class="p-3">{row.spec.width}×{row.spec.height} <span class="text-surface-500-500 text-xs">({aspectRatio(row.spec.width, row.spec.height)})</span></td>
               <td class="p-3 {unsupported ? 'bg-surface-200-800/60' : ''}">
                 <span class="text-surface-700-300 text-xs py-1 block">{row.spec.format?.toUpperCase() ?? '—'}</span>
@@ -452,7 +468,7 @@
               <td class="p-3 align-top">
                 <div class="relative inline-block min-w-0">
                   {#if item}
-                    {@const level = getInputMatchLevel(item, row.spec)}
+                    {@const level = getInputMatchLevel(item, row.spec, row.isReused)}
                     <button
                       type="button"
                       class="flex items-center gap-2 w-full text-left rounded-lg border-l-4 p-1 -m-1 pl-2 cursor-pointer min-w-0 {matchLevelStyles[level]} hover:opacity-90"
@@ -475,10 +491,11 @@
                   {:else}
                     <button
                       type="button"
-                      class="btn preset-outlined-surface-200-800 btn-sm text-xs"
+                      class="w-full min-w-[8rem] flex items-center gap-2 rounded-lg border-l-4 p-1 -m-1 pl-2 text-left text-surface-500-500 bg-surface-200-800/50 border-l-surface-400-600 cursor-pointer hover:opacity-90 text-xs whitespace-nowrap"
                       onclick={(e) => { e.stopPropagation(); openPicker(e, origIndex); }}
                     >
-                      {t('batch.selectInput')}
+                      <span class="shrink-0 w-12 h-12 rounded bg-surface-200-800 flex items-center justify-center text-surface-400-600">—</span>
+                      <span class="truncate">{origIndex in manualOverrides ? t('batch.noInput') : t('batch.selectInput')}</span>
                     </button>
                   {/if}
                 </div>
@@ -546,11 +563,19 @@
         role="presentation"
         onclick={(e) => e.stopPropagation()}
       >
+        <button
+          type="button"
+          class="w-full flex items-center gap-2 px-3 py-2 text-left rounded-none border-none cursor-pointer border-l-4 border-l-surface-400-600 bg-surface-200-800/50 text-surface-500-500 hover:opacity-90 {!currentRow?.assignedFile ? 'ring-2 ring-primary-500' : ''}"
+          onclick={() => chooseInput(rowIndex, null)}
+        >
+          <span class="shrink-0 w-10 h-10 rounded bg-surface-200-800 flex items-center justify-center text-surface-400-600">—</span>
+          <span>{t('batch.noInput')}</span>
+        </button>
         {#each sortedFileItemsForPicker as fi}
           {@const level = getInputMatchLevel(fi, currentRow.spec)}
           <button
             type="button"
-            class="w-full flex items-center gap-2 px-3 py-2 text-left rounded-none border-none cursor-pointer border-l-4 {matchLevelStyles[level]} hover:opacity-90 {currentRow?.assignedFile === fi.file ? 'ring-2 ring-primary-500' : ''}"
+            class="w-full flex items-center gap-2 px-3 py-2 text-left rounded-none border-none cursor-pointer border-l-4 {matchLevelStyles[level]} hover:opacity-90 {currentRow?.assignedFile && currentRow.assignedFile === fi.file ? 'ring-2 ring-primary-500' : ''}"
             onclick={() => chooseInput(rowIndex, fi.file)}
             title={level === 'perfect' ? t('batch.matchPerfect') : level === 'ok' ? t('batch.matchOk') : t('batch.matchPoor')}
           >

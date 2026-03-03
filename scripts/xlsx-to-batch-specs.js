@@ -91,6 +91,7 @@ function run() {
   const colSlot = idx(['素材位', '素材', 'slot'], 1);
   const colSlotId = findColumnIndex(header, ['素材位id', '素材位ID', '素材id', 'slot id', 'slotId']);
   const colSize = idx(['尺寸', 'size'], 2);
+  const colQuantity = findColumnIndex(header, ['数量', 'quantity']);
   const colFormat = idx(['格式', 'format'], 4);
   const colLimit = idx(['大小限制', '限制', 'size limit', 'max'], 5);
 
@@ -122,6 +123,8 @@ function run() {
     if (!dim && format === 'video') dim = { w: 1920, h: 1080 };
     if (!dim) continue;
     const maxSizeKb = parseMaxSizeKb(String(sizeLimitStr || ''));
+    const quantityRaw = colQuantity >= 0 ? row[colQuantity] : undefined;
+    const quantity = Math.max(1, parseInt(quantityRaw, 10) || 1);
     const channelPart = channelId ? channelId : channel;
     const slotPart = (slotIdRaw != null && String(slotIdRaw).trim() !== '') ? String(slotIdRaw).trim() : slot;
     const name = [safeNamePart(channelPart), safeNamePart(slotPart), dim.w + 'x' + dim.h].join('_').toLowerCase();
@@ -134,6 +137,7 @@ function run() {
       height: dim.h,
       format: format === 'jpeg' ? 'jpeg' : format,
       quality: 85,
+      quantity,
       ...(maxSizeKb > 0 && { maxSizeKb }),
     });
   }
