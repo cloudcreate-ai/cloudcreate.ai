@@ -158,6 +158,13 @@
     return UNSUPPORTED_FORMATS.includes(f);
   }
 
+  /** 长文件名截短显示，保留完整名在 title 中 */
+  const DISPLAY_NAME_MAX = 40;
+  function truncateDisplayName(name, maxLen = DISPLAY_NAME_MAX) {
+    if (!name || name.length <= maxLen) return name;
+    return name.slice(0, maxLen) + '…';
+  }
+
   /** 根据当前全局选项与行格式计算最终输出文件名（随选项切换实时更新，统一小写） */
   function getOutputFilename(row, origIndex) {
     if (isUnsupportedFormat(row.spec)) return '—';
@@ -396,7 +403,7 @@
             <div class="flex items-center gap-2 min-w-0 rounded-lg border border-surface-200-800 p-2 bg-surface-50-950/50">
               <img src={item.previewUrl} alt="" class="w-14 h-14 object-cover rounded shrink-0" />
               <div class="min-w-0 text-sm">
-                <p class="font-medium truncate m-0" title={item.name}>{item.name}</p>
+                <p class="font-medium truncate m-0" title={item.name}>{truncateDisplayName(item.name)}</p>
                 <p class="text-surface-600-400 text-xs m-0 mt-0.5">
                   {item.width && item.height ? `${item.width}×${item.height} (${aspectRatio(item.width, item.height)})` : '—'} · {item.format} · {formatFileSize(item.size)}
                 </p>
@@ -455,7 +462,7 @@
                       <img src={item.previewUrl} alt="" class="w-12 h-12 object-cover rounded shrink-0" />
                       <div class="min-w-0 flex-1 text-xs">
                         <p class="truncate font-medium m-0 flex items-center gap-1.5" title={item.name}>
-                          {item.name}
+                          {truncateDisplayName(item.name)}
                           <span class="text-[10px] font-normal text-surface-500-500 shrink-0">
                             {level === 'perfect' ? t('batch.matchPerfect') : level === 'ok' ? t('batch.matchOk') : t('batch.matchPoor')}
                           </span>
@@ -477,7 +484,7 @@
                 </div>
               </td>
               <td class="p-3 align-top">
-                <p class="text-xs font-medium m-0 mb-1 truncate" title={getOutputFilename(row, origIndex)}>{getOutputFilename(row, origIndex)}</p>
+                <p class="text-xs font-medium m-0 mb-1 truncate" title={getOutputFilename(row, origIndex)}>{truncateDisplayName(getOutputFilename(row, origIndex))}</p>
                 {#if res}
                   {#if res.status === 'processing'}
                     <span class="text-surface-600-400 text-xs">{t('common.processing')}</span>
@@ -550,7 +557,7 @@
             <img src={fi.previewUrl} alt="" class="w-10 h-10 object-cover rounded shrink-0" />
             <div class="min-w-0 text-sm flex-1">
               <p class="truncate font-medium m-0 flex items-center gap-1.5" title={fi.name}>
-                {fi.name}
+                {truncateDisplayName(fi.name)}
                 <span class="text-[10px] font-normal text-surface-500-500 shrink-0">
                   {level === 'perfect' ? t('batch.matchPerfect') : level === 'ok' ? t('batch.matchOk') : t('batch.matchPoor')}
                 </span>
