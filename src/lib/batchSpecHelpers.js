@@ -2,7 +2,7 @@
  * 批处理规格表：加载、按比例分组、为每组分配最接近比例的输入图
  */
 
-const BATCH_SPECS_URL = '/tempfiles/batch-specs.json';
+const BATCH_SPECS_URL = '/specs/batch-specs.json';
 
 /**
  * 规格行结构：name, width, height, format, quality?, maxSizeKb?

@@ -1,5 +1,5 @@
 /**
- * 从《渠道素材需求表格.xlsx》生成 static/tempfiles/batch-specs.json
+ * 从《渠道素材需求表格.xlsx》生成 static/specs/batch-specs.json
  * 用法：npm run gen:batch-specs
  * 依赖：xlsx，输入文件 tempfiles/渠道素材需求表格.xlsx
  */
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'tempfiles', '渠道素材需求表格.xlsx');
-const OUTPUT = path.join(ROOT, 'static', 'tempfiles', 'batch-specs.json');
+const OUTPUT = path.join(ROOT, 'static', 'specs', 'batch-specs.json');
 
 const VIDEO_SIZE_MAP = { '1080p': [1920, 1080], '720p': [1280, 720], '480p': [854, 480], '360p': [640, 360] };
 

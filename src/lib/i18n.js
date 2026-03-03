@@ -212,7 +212,7 @@ const translations = {
     batch: {
       title: 'Image Batch (Spec Table)',
       desc: 'Load a spec table, assign inputs by ratio, run resize per row, compare target vs actual dimensions and size.',
-      noSpecs: 'No spec table loaded. Add static/tempfiles/batch-specs.json and redeploy.',
+      noSpecs: 'No spec table loaded. Add static/specs/batch-specs.json and redeploy.',
       globalConfig: 'Global options',
       filePrefix: 'File prefix',
       filePrefixHint: 'If set, output name becomes {prefix}_{channel}_{rest}',
@@ -709,7 +709,7 @@ const translations = {
     batch: {
       title: '图片批处理（标准表）',
       desc: '加载规格表，按比例智能分配输入，按行执行缩放，对比目标与实际尺寸与大小。',
-      noSpecs: '未加载规格表。请添加 static/tempfiles/batch-specs.json 并重新部署。',
+      noSpecs: '未加载规格表。请添加 static/specs/batch-specs.json 并重新部署。',
       globalConfig: '全局配置',
       filePrefix: '文件前缀',
       filePrefixHint: '若填写，输出文件名为 {前缀}_{渠道}_{其余}',
