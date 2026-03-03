@@ -14,6 +14,7 @@
     loadBatchSpecs,
     expandSpecsAndAssignInputs,
     specToParamsOverrides,
+    normalizeBatchSpecRow,
   } from '$lib/batchSpecHelpers.js';
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -39,6 +40,8 @@
   let idCounter = 0;
   /** 当前打开“选择输入”下拉的行索引，null 表示未打开 */
   let pickerOpenForRow = $state(null);
+  /** 导入规格用隐藏 file input */
+  let importInputEl = $state(/** @type {HTMLInputElement | null} */ (null));
   /** 下拉层固定定位用（避免被表格 overflow 裁剪） */
   let pickerRect = $state({ top: 0, left: 0 });
   /** 结果 blob 的 object URL，用于缩略图，按索引与 results 对应 */
@@ -286,6 +289,41 @@
     error = '';
   }
 
+  /** 导出当前规格表为 JSON 文件 */
+  function exportSpecs() {
+    const payload = specs.map((s) => {
+      const row = {
+        name: s.name,
+        width: s.width,
+        height: s.height,
+        format: s.format,
+        quality: s.quality ?? 85,
+        quantity: Math.max(1, s.quantity ?? 1),
+      };
+      if (s.maxSizeKb != null && s.maxSizeKb > 0) row.maxSizeKb = s.maxSizeKb;
+      return row;
+    });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, 'batch-specs.json');
+  }
+
+  /** 从 JSON 文件导入规格表（替换当前规格） */
+  async function importSpecsFromFile(file) {
+    if (!file) return;
+    error = '';
+    try {
+      const text = await file.text();
+      const raw = JSON.parse(text);
+      if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
+      const next = raw.map((row) => normalizeBatchSpecRow(row));
+      specs = next;
+      specLoadError = '';
+    } catch (e) {
+      error = e?.message || t('batch.importError');
+    }
+    if (importInputEl) importInputEl.value = '';
+  }
+
   function dimensionMatch(spec, result) {
     if (result.newWidth == null || result.newHeight == null) return null;
     return result.newWidth === spec.width && result.newHeight === spec.height;
@@ -370,7 +408,12 @@
     <p class="text-sm text-error-500 mb-4">{specLoadError}</p>
   {:else if !specs.length}
     <p class="text-sm text-surface-600-400 mb-4">{t('batch.noSpecs')}</p>
+    <p class="mb-4">
+      <button type="button" class="btn preset-outlined-surface-200-800 btn-sm" onclick={() => importInputEl?.click()}>{t('batch.importSpecs')}</button>
+    </p>
   {/if}
+
+  <input type="file" accept=".json,application/json" class="hidden" bind:this={importInputEl} onchange={(e) => { const f = e.currentTarget?.files?.[0]; if (f) importSpecsFromFile(f); }} />
 
   {#if specs.length > 0}
     <section class="mb-4">
@@ -406,6 +449,14 @@
             <span class="text-xs text-surface-600-400">{t('batch.hideUnsupported')}</span>
           </span>
         </label>
+        <div class="flex items-center gap-2">
+          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={exportSpecs}>
+            {t('batch.exportSpecs')}
+          </button>
+          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={() => importInputEl?.click()}>
+            {t('batch.importSpecs')}
+          </button>
+        </div>
       </div>
     </section>
 

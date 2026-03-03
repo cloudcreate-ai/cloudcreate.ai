@@ -10,6 +10,24 @@ const BATCH_SPECS_URL = '/specs/batch-specs.json';
  */
 
 /**
+ * 单条规格标准化（用于加载与导入）
+ * @param {unknown} row
+ * @returns {BatchSpecRow}
+ */
+export function normalizeBatchSpecRow(row) {
+  const r = /** @type {Record<string, unknown>} */ (row || {});
+  return {
+    name: String(r.name ?? ''),
+    width: Math.max(1, Number(r.width) || 1),
+    height: Math.max(1, Number(r.height) || 1),
+    format: String(r.format ?? 'webp').toLowerCase().replace('jpg', 'jpeg'),
+    quality: Math.min(100, Math.max(0, Number(r.quality) ?? 75)),
+    maxSizeKb: r.maxSizeKb != null ? Math.max(0, Number(r.maxSizeKb)) : undefined,
+    quantity: Math.max(1, parseInt(r.quantity, 10) || 1),
+  };
+}
+
+/**
  * 加载规格表 JSON
  * @param {string} [url]
  * @returns {Promise<BatchSpecRow[]>}
@@ -19,15 +37,7 @@ export async function loadBatchSpecs(url = BATCH_SPECS_URL) {
   if (!res.ok) throw new Error('Failed to load batch specs');
   const raw = await res.json();
   if (!Array.isArray(raw)) return [];
-  return raw.map((row) => ({
-    name: String(row.name ?? ''),
-    width: Math.max(1, Number(row.width) || 1),
-    height: Math.max(1, Number(row.height) || 1),
-    format: String(row.format ?? 'webp').toLowerCase().replace('jpg', 'jpeg'),
-    quality: Math.min(100, Math.max(0, Number(row.quality) ?? 75)),
-    maxSizeKb: row.maxSizeKb != null ? Math.max(0, Number(row.maxSizeKb)) : undefined,
-    quantity: Math.max(1, parseInt(row.quantity, 10) || 1),
-  }));
+  return raw.map(normalizeBatchSpecRow);
 }
 
 /**

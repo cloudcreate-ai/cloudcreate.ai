@@ -243,6 +243,10 @@ const translations = {
       matchPerfect: 'Perfect',
       matchOk: 'OK',
       matchPoor: 'Poor',
+      exportSpecs: 'Export specs',
+      importSpecs: 'Import specs',
+      importError: 'Invalid JSON or format.',
+      importErrorNotArray: 'JSON must be an array of spec objects.',
     },
     rotate: {
       title: 'Image Rotate & Flip',
@@ -740,6 +744,10 @@ const translations = {
       matchPerfect: '完美',
       matchOk: '尚可',
       matchPoor: '勉强',
+      exportSpecs: '导出规格',
+      importSpecs: '导入规格',
+      importError: 'JSON 无效或格式错误。',
+      importErrorNotArray: 'JSON 须为规格对象数组。',
     },
     rotate: {
       title: '图片旋转与镜像',
