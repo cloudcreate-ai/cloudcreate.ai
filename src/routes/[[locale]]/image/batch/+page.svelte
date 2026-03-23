@@ -190,7 +190,20 @@
     if (isUnsupportedFormat(row.spec)) return '—';
     const fmt = getEffectiveFormat(row);
     const ext = (EXT_BY_FORMAT[fmt] || fmt || 'webp').toLowerCase();
-    let baseName = getOutputBaseName(row.spec.name, globalFilePrefix, includeChannelInFilename);
+    const renameRule = row?.spec?.renameRule;
+    let baseName;
+    if (renameRule) {
+      const slug = slugifyPrefix(globalFilePrefix);
+      // 重命名规则启用后：不再考虑 spec.name 以及 includeChannelInFilename 等参数
+      baseName = String(renameRule)
+        .toLowerCase()
+        .replace(/\{prefix\}/g, slug)
+        .replace(/__+/g, '_')
+        .replace(/^[_-]+|[_-]+$/g, '');
+      if (!baseName) baseName = 'output';
+    } else {
+      baseName = getOutputBaseName(row.spec.name, globalFilePrefix, includeChannelInFilename);
+    }
     const qty = row.quantity ?? 1;
     if (qty > 1 && row.quantityIndex > 0) baseName += `_${row.quantityIndex + 1}`;
     return `${baseName}.${ext}`;
@@ -298,6 +311,7 @@
     return specs.map((s) => {
       const row = { name: s.name, width: s.width, height: s.height, format: s.format, quality: s.quality ?? 85, quantity: Math.max(1, s.quantity ?? 1) };
       if (s.maxSizeKb != null && s.maxSizeKb > 0) row.maxSizeKb = s.maxSizeKb;
+      if (s.renameRule) row.renameRule = s.renameRule;
       return row;
     });
   }
@@ -570,7 +584,7 @@
                   {:else}
                     <button
                       type="button"
-                      class="w-full min-w-[8rem] flex items-center gap-2 rounded-lg border-l-4 p-1 -m-1 pl-2 text-left text-surface-500-500 bg-surface-200-800/50 border-l-surface-400-600 cursor-pointer hover:opacity-90 text-xs whitespace-nowrap"
+                      class="w-full min-w-32 flex items-center gap-2 rounded-lg border-l-4 p-1 -m-1 pl-2 text-left text-surface-500-500 bg-surface-200-800/50 border-l-surface-400-600 cursor-pointer hover:opacity-90 text-xs whitespace-nowrap"
                       onclick={(e) => { e.stopPropagation(); openPicker(e, origIndex); }}
                     >
                       <span class="shrink-0 w-12 h-12 rounded bg-surface-200-800 flex items-center justify-center text-surface-400-600">—</span>
@@ -693,7 +707,7 @@
     <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+      class="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/50"
       role="dialog"
       aria-modal="true"
       aria-label={t('batch.editSpecs')}

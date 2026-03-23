@@ -250,7 +250,7 @@ const translations = {
       editSpecs: 'Edit specs (JSON)',
       editSpecsApply: 'Apply',
       editSpecsCancel: 'Cancel',
-      editSpecsPlaceholder: 'JSON array of spec objects (name, width, height, format, quality, quantity, maxSizeKb)',
+      editSpecsPlaceholder: '[{"name":"op_flash_312x555","width":312,"height":555,"format":"webp","quality":85,"quantity":1,"renameRule":"{prefix}_vertical"},{"name":"op_banner_732x408","width":732,"height":408,"format":"webp","quality":85,"quantity":1,"renameRule":"{prefix}_horizontal"},{"name":"op_icon_150x150","width":150,"height":150,"format":"webp","quality":85,"quantity":1,"renameRule":"{prefix}_icon1"}]',
     },
     rotate: {
       title: 'Image Rotate & Flip',
@@ -755,7 +755,7 @@ const translations = {
       editSpecs: '编辑规格 (JSON)',
       editSpecsApply: '应用',
       editSpecsCancel: '取消',
-      editSpecsPlaceholder: '规格对象 JSON 数组（name, width, height, format, quality, quantity, maxSizeKb）',
+      editSpecsPlaceholder: '[{"name":"op_flash_312x555","width":312,"height":555,"format":"webp","quality":85,"quantity":1,"renameRule":"{prefix}_vertical"},{"name":"op_banner_732x408","width":732,"height":408,"format":"webp","quality":85,"quantity":1,"renameRule":"{prefix}_horizontal"},{"name":"op_icon_150x150","width":150,"height":150,"format":"webp","quality":85,"quantity":1,"renameRule":"{prefix}_icon1"}]',
     },
     rotate: {
       title: '图片旋转与镜像',

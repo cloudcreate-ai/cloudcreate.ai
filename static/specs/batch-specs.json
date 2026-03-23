@@ -129,7 +129,8 @@
     "format": "webp",
     "quality": 85,
     "quantity": 1,
-    "maxSizeKb": 40
+    "maxSizeKb": 40,
+    "renameRule": "{prefix}_icon1"
   },
   {
     "name": "op_banner_732x408",
@@ -138,7 +139,8 @@
     "format": "webp",
     "quality": 85,
     "quantity": 1,
-    "maxSizeKb": 100
+    "maxSizeKb": 100,
+    "renameRule": "{prefix}_horizontal"
   },
   {
     "name": "op_flash_312x555",
@@ -147,7 +149,8 @@
     "format": "webp",
     "quality": 85,
     "quantity": 1,
-    "maxSizeKb": 150
+    "maxSizeKb": 150,
+    "renameRule": "{prefix}_vertical"
   },
   {
     "name": "op_gif_150x150",

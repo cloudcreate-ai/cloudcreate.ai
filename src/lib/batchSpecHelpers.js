@@ -5,8 +5,10 @@
 const BATCH_SPECS_URL = '/specs/batch-specs.json';
 
 /**
- * 规格行结构：name, width, height, format, quality?, maxSizeKb?, quantity?
- * @typedef {{ name: string, width: number, height: number, format: string, quality?: number, maxSizeKb?: number, quantity?: number }} BatchSpecRow
+ * 规格行结构：
+ * name, width, height, format, quality?, maxSizeKb?, quantity?
+ * renameRule?: 当存在时启用“自定义命名”，如 "{prefix}_vertical"（忽略 spec.name 与界面 includeChannelInFilename）
+ * @typedef {{ name: string, width: number, height: number, format: string, quality?: number, maxSizeKb?: number, quantity?: number, renameRule?: string }} BatchSpecRow
  */
 
 /**
@@ -24,6 +26,7 @@ export function normalizeBatchSpecRow(row) {
     quality: Math.min(100, Math.max(0, Number(r.quality) ?? 75)),
     maxSizeKb: r.maxSizeKb != null ? Math.max(0, Number(r.maxSizeKb)) : undefined,
     quantity: Math.max(1, parseInt(r.quantity, 10) || 1),
+    renameRule: r.renameRule != null && String(r.renameRule).trim() ? String(r.renameRule).trim() : undefined,
   };
 }
 
