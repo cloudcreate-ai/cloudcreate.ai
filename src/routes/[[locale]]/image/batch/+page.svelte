@@ -456,6 +456,9 @@
     ok: 'bg-warning-500/15 border-l-warning-500',
     poor: 'bg-error-500/15 border-l-error-500',
   };
+
+  /** 任务列表底部预留空白行，提升容错与可视缓冲 */
+  const BLANK_TASK_ROWS = 3;
 </script>
 
 <svelte:window
@@ -664,6 +667,18 @@
                   <span class="text-surface-500-500 text-xs">—</span>
                 {/if}
               </td>
+            </tr>
+          {/each}
+          {#each Array.from({ length: BLANK_TASK_ROWS }) as _, i}
+            <tr class="border-b border-surface-200-800 last:border-b-0">
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
+              <td class="p-3">&nbsp;</td>
             </tr>
           {/each}
         </tbody>
