@@ -47,7 +47,9 @@
   let editSpecsJson = $state('');
   let editSpecsError = $state('');
   /** 下拉层固定定位用（避免被表格 overflow 裁剪） */
-  let pickerRect = $state({ top: 0, left: 0 });
+  let pickerRect = $state({ top: 0, left: 0, maxHeight: 420 });
+  /** 下拉层元素引用：用于滚动到当前选中项 */
+  let pickerEl = $state(/** @type {HTMLDivElement | null} */ (null));
   /** 结果 blob 的 object URL，用于缩略图，按索引与 results 对应 */
   let resultBlobUrls = $state([]);
   let _prevResultUrls = [];
@@ -134,10 +136,37 @@
     const isClosing = pickerOpenForRow === rowIndex;
     if (!isClosing) {
       const rect = e.currentTarget.getBoundingClientRect();
-      pickerRect = { top: rect.bottom + 4, left: rect.left };
+      const gap = 8;
+      const viewportH = window.innerHeight || 800;
+      const viewportW = window.innerWidth || 1200;
+      const desiredHeight = 420;
+      const minHeight = 140;
+      const panelWidth = 420;
+      const spaceBelow = Math.max(0, viewportH - rect.bottom - gap);
+      const spaceAbove = Math.max(0, rect.top - gap);
+      // 仅当下方空间明显不够且上方更充足时，才向上展开，避免“跑到顶部”
+      const openUpward = spaceBelow < 180 && spaceAbove > spaceBelow + 60;
+      const available = openUpward ? spaceAbove : spaceBelow;
+      const maxHeight = Math.max(minHeight, Math.min(desiredHeight, Math.floor(available)));
+      const rawTop = openUpward ? rect.top - maxHeight - 4 : rect.bottom + 4;
+      const top = Math.max(gap, Math.min(rawTop, viewportH - gap - maxHeight));
+      const rawLeft = rect.left;
+      const left = Math.max(gap, Math.min(rawLeft, viewportW - gap - panelWidth));
+      pickerRect = { top, left, maxHeight };
     }
     pickerOpenForRow = isClosing ? null : rowIndex;
   }
+
+  $effect(() => {
+    if (pickerOpenForRow === null || !pickerEl) return;
+    queueMicrotask(() => {
+      if (!pickerEl) return;
+      const selected = pickerEl.querySelector('[data-selected="true"]');
+      if (selected && typeof selected.scrollIntoView === 'function') {
+        selected.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  });
 
   /** 将文件前缀转为 slug：小写、空格与特殊字符替换为连字符 */
   function slugifyPrefix(str) {
@@ -651,14 +680,16 @@
       {@const rowIndex = pickerOpenForRow}
       {@const currentRow = rows[rowIndex]}
       <div
-        class="fixed z-50 min-w-[320px] max-w-[420px] max-h-[70vh] overflow-auto rounded-lg border border-surface-200-800 bg-surface-50-950 shadow-xl py-1"
-        style="top: {pickerRect.top}px; left: {pickerRect.left}px;"
+        class="fixed z-50 min-w-[320px] max-w-[420px] overflow-auto rounded-lg border border-surface-200-800 bg-surface-50-950 shadow-xl py-1"
+        style="top: {pickerRect.top}px; left: {pickerRect.left}px; max-height: {pickerRect.maxHeight}px;"
         role="presentation"
+        bind:this={pickerEl}
         onclick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           class="w-full flex items-center gap-2 px-3 py-2 text-left rounded-none border-none cursor-pointer border-l-4 border-l-surface-400-600 bg-surface-200-800/50 text-surface-500-500 hover:opacity-90 {!currentRow?.assignedFile ? 'ring-2 ring-primary-500' : ''}"
+          data-selected={!currentRow?.assignedFile ? 'true' : 'false'}
           onclick={() => chooseInput(rowIndex, null)}
         >
           <span class="shrink-0 w-10 h-10 rounded bg-surface-200-800 flex items-center justify-center text-surface-400-600">—</span>
@@ -669,6 +700,7 @@
           <button
             type="button"
             class="w-full flex items-center gap-2 px-3 py-2 text-left rounded-none border-none cursor-pointer border-l-4 {matchLevelStyles[level]} hover:opacity-90 {currentRow?.assignedFile && currentRow.assignedFile === fi.file ? 'ring-2 ring-primary-500' : ''}"
+            data-selected={currentRow?.assignedFile && currentRow.assignedFile === fi.file ? 'true' : 'false'}
             onclick={() => chooseInput(rowIndex, fi.file)}
             title={level === 'perfect' ? t('batch.matchPerfect') : level === 'ok' ? t('batch.matchOk') : t('batch.matchPoor')}
           >
@@ -686,6 +718,7 @@
             </div>
           </button>
         {/each}
+        <div class="h-2 shrink-0" aria-hidden="true"></div>
       </div>
     {/if}
 
