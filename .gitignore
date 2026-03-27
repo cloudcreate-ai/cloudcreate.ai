@@ -32,3 +32,6 @@ playwright/.cache
 
 # Temporary files
 tempfiles/
+
+# Local scratch workspace
+ai-workspace/

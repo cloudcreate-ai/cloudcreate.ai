@@ -20,22 +20,35 @@
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
+  import { onMount } from 'svelte';
+  import {
+    MAX_CUSTOM_PRESETS,
+    ensureUniquePresetName,
+    formatBuiltinKey,
+    formatPresetKey,
+    loadCustomPresetsFromStorage,
+    normalizeStoredProfileKey,
+    parseProfileStorageKey,
+    persistCustomPresets,
+  } from '$lib/batchCustomPresets.js';
 
   const EXT_BY_FORMAT = { jpeg: 'jpg', jpg: 'jpg', webp: 'webp', png: 'png', avif: 'avif' };
+  /** 内置配置 id 与静态表 URL；新增内置时只需在此扩展 */
   const PROFILE_DEFAULT = 'default-channels';
   const PROFILE_CHROME = 'chrome-store';
-  const PROFILE_CUSTOM = 'custom';
-  const PROFILE_OPTIONS = [PROFILE_DEFAULT, PROFILE_CHROME, PROFILE_CUSTOM];
+  const BUILTIN_ORDER = [PROFILE_DEFAULT, PROFILE_CHROME];
   const PROFILE_URLS = {
     [PROFILE_DEFAULT]: '/specs/batch-specs.json',
     [PROFILE_CHROME]: '/specs/chrome-store-specs.json',
   };
   const LS_BATCH_PROFILE_KEY = 'batch-profile-selected';
-  const LS_BATCH_CUSTOM_SPECS_KEY = 'batch-profile-custom-specs';
 
   let specs = $state([]);
   let specLoadError = $state('');
-  let selectedProfile = $state(PROFILE_DEFAULT);
+  /** 形如 builtin:default-channels 或 preset:<uuid> */
+  let selectedProfileKey = $state(formatBuiltinKey(PROFILE_DEFAULT));
+  /** 自定义规则集列表（最多 {MAX_CUSTOM_PRESETS} 条） */
+  let customPresets = $state([]);
   let fileItems = $state([]);
   let manualOverrides = $state({});
   /** 全局配置：文件前缀、是否在文件名中含渠道id（勾选）。格式与质量均从 spec 读取，不可修改 */
@@ -57,6 +70,11 @@
   let editSpecsOpen = $state(false);
   let editSpecsJson = $state('');
   let editSpecsError = $state('');
+  /** 另存为时的规则集名称 */
+  let editSpecsSaveAsName = $state('');
+  let renamePresetOpen = $state(false);
+  let renamePresetInput = $state('');
+  let renamePresetError = $state('');
   /** 下拉层固定定位用（避免被表格 overflow 裁剪） */
   let pickerRect = $state({ top: 0, left: 0, maxHeight: 420 });
   /** 下拉层元素引用：用于滚动到当前选中项 */
@@ -105,55 +123,87 @@
   /** 不支持的格式：不参与批处理，表格中灰底只读 */
   const UNSUPPORTED_FORMATS = ['gif', 'video'];
 
-  async function loadProfileSpecs(profile) {
+  function getCurrentPresetId() {
+    const { kind, presetId } = parseProfileStorageKey(selectedProfileKey);
+    return kind === 'preset' ? presetId : null;
+  }
+
+  /** 根据存储 key 加载 specs（自定义为空时回退默认内置表） */
+  async function loadSpecsForKey(key) {
     try {
-      if (profile === PROFILE_CUSTOM) {
-        const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(LS_BATCH_CUSTOM_SPECS_KEY) : '';
-        if (!raw) {
-          // custom 尚未创建时，回退到默认规格，避免页面进入空白不可操作态
+      const parsed = parseProfileStorageKey(key);
+      if (parsed.kind === 'builtin' && parsed.builtinId) {
+        const url = PROFILE_URLS[parsed.builtinId] || PROFILE_URLS[PROFILE_DEFAULT];
+        specs = await loadBatchSpecs(url);
+        specLoadError = '';
+        return;
+      }
+      if (parsed.kind === 'preset' && parsed.presetId) {
+        const preset = customPresets.find((p) => p.id === parsed.presetId);
+        if (!preset?.specs?.length) {
           specs = await loadBatchSpecs(PROFILE_URLS[PROFILE_DEFAULT]);
           specLoadError = '';
           return;
         }
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) throw new Error(t('batch.importErrorNotArray'));
-        specs = parsed.map((row) => normalizeBatchSpecRow(row));
+        specs = preset.specs.map((row) => normalizeBatchSpecRow(row));
         specLoadError = '';
         return;
       }
-      const url = PROFILE_URLS[profile] || PROFILE_URLS[PROFILE_DEFAULT];
-      specs = await loadBatchSpecs(url);
-      specLoadError = '';
+      await loadSpecsForKey(formatBuiltinKey(PROFILE_DEFAULT));
     } catch (e) {
       specLoadError = e?.message || 'Failed to load specs';
       specs = [];
     }
   }
 
-  async function switchProfile(profile) {
-    const next = PROFILE_OPTIONS.includes(profile) ? profile : PROFILE_DEFAULT;
-    selectedProfile = next;
-    if (typeof localStorage !== 'undefined') localStorage.setItem(LS_BATCH_PROFILE_KEY, next);
-    await loadProfileSpecs(next);
+  async function switchProfileKey(key) {
+    selectedProfileKey = key;
+    if (typeof localStorage !== 'undefined') localStorage.setItem(LS_BATCH_PROFILE_KEY, key);
+    await loadSpecsForKey(key);
   }
 
-  function setCustomSpecs(nextSpecs) {
+  /** 解析/写入 JSON 后的规格数组 */
+  function applyNormalizedSpecs(nextSpecs) {
     specs = nextSpecs;
     specLoadError = '';
-    selectedProfile = PROFILE_CUSTOM;
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem(LS_BATCH_PROFILE_KEY, PROFILE_CUSTOM);
-      localStorage.setItem(LS_BATCH_CUSTOM_SPECS_KEY, JSON.stringify(nextSpecs));
-    }
   }
 
-  $effect(() => {
-    const initProfile = async () => {
-      const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(LS_BATCH_PROFILE_KEY) : '';
-      const initial = PROFILE_OPTIONS.includes(saved) ? saved : PROFILE_DEFAULT;
-      await switchProfile(initial);
-    };
-    initProfile();
+  /** 更新当前选中的自定义规则集的规格并持久化 */
+  function persistCurrentPresetSpecs(nextSpecs) {
+    const pid = getCurrentPresetId();
+    if (!pid) return;
+    const nextPresets = customPresets.map((p) =>
+      p.id === pid ? { ...p, specs: nextSpecs, updatedAt: Date.now() } : p
+    );
+    customPresets = nextPresets;
+    persistCustomPresets(nextPresets);
+  }
+
+  /** 新建自定义规则集并选中 */
+  async function addCustomPresetAndSelect(displayName, nextSpecs) {
+    if (customPresets.length >= MAX_CUSTOM_PRESETS) {
+      throw new Error(t('batch.presetLimit'));
+    }
+    const name = ensureUniquePresetName(displayName, customPresets, null);
+    const id =
+      typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `p-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+    const entry = { id, name, updatedAt: Date.now(), specs: nextSpecs };
+    const nextPresets = [...customPresets, entry];
+    customPresets = nextPresets;
+    persistCustomPresets(nextPresets);
+    await switchProfileKey(formatPresetKey(id));
+  }
+
+  onMount(async () => {
+    if (typeof localStorage === 'undefined') return;
+    customPresets = loadCustomPresetsFromStorage();
+    const saved = localStorage.getItem(LS_BATCH_PROFILE_KEY);
+    const key = normalizeStoredProfileKey(saved, customPresets, PROFILE_DEFAULT, BUILTIN_ORDER);
+    selectedProfileKey = key;
+    localStorage.setItem(LS_BATCH_PROFILE_KEY, key);
+    await loadSpecsForKey(key);
   });
 
   async function addFiles(fileList) {
@@ -401,7 +451,7 @@
     downloadBlob(blob, 'batch-specs.json');
   }
 
-  /** 从 JSON 文件导入规格表（替换当前规格） */
+  /** 从 JSON 文件导入规格表：当前为自定义规则则写入该规则；内置则另存为新规则 */
   async function importSpecsFromFile(file) {
     if (!file) return;
     error = '';
@@ -410,25 +460,66 @@
       const raw = JSON.parse(text);
       if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
       const next = raw.map((row) => normalizeBatchSpecRow(row));
-      setCustomSpecs(next);
+      const pid = getCurrentPresetId();
+      if (pid) {
+        persistCurrentPresetSpecs(next);
+        applyNormalizedSpecs(next);
+      } else {
+        const baseName = t('batch.presetImportName');
+        await addCustomPresetAndSelect(baseName, next);
+      }
     } catch (e) {
       error = e?.message || t('batch.importError');
     }
     if (importInputEl) importInputEl.value = '';
   }
 
+  function presetNameForSaveAsDefault() {
+    const pid = getCurrentPresetId();
+    if (pid) {
+      const p = customPresets.find((x) => x.id === pid);
+      const n = `${p?.name ?? ''}`.trim();
+      return n ? `${n} copy` : t('batch.presetNewNameDefault');
+    }
+    return t('batch.presetNewNameDefault');
+  }
+
   function openEditSpecs() {
     editSpecsJson = JSON.stringify(specsToExportPayload(), null, 2);
     editSpecsError = '';
+    editSpecsSaveAsName = presetNameForSaveAsDefault();
     editSpecsOpen = true;
   }
 
-  function applyEditSpecs() {
+  function parseEditSpecsPayload() {
+    const raw = JSON.parse(editSpecsJson);
+    if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
+    return raw.map((row) => normalizeBatchSpecRow(row));
+  }
+
+  function saveEditSpecs() {
+    editSpecsError = '';
+    const pid = getCurrentPresetId();
+    if (!pid) {
+      editSpecsError = t('batch.savePresetOnlyBuiltin');
+      return;
+    }
+    try {
+      const next = parseEditSpecsPayload();
+      persistCurrentPresetSpecs(next);
+      applyNormalizedSpecs(next);
+      editSpecsOpen = false;
+    } catch (e) {
+      editSpecsError = e?.message || t('batch.importError');
+    }
+  }
+
+  async function saveAsEditSpecs() {
     editSpecsError = '';
     try {
-      const raw = JSON.parse(editSpecsJson);
-      if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
-      setCustomSpecs(raw.map((row) => normalizeBatchSpecRow(row)));
+      const next = parseEditSpecsPayload();
+      const base = editSpecsSaveAsName.trim() || t('batch.presetNewNameDefault');
+      await addCustomPresetAndSelect(base, next);
       editSpecsOpen = false;
     } catch (e) {
       editSpecsError = e?.message || t('batch.importError');
@@ -438,6 +529,49 @@
   function closeEditSpecs() {
     editSpecsOpen = false;
     editSpecsError = '';
+  }
+
+  function openRenamePreset() {
+    const pid = getCurrentPresetId();
+    if (!pid) return;
+    const p = customPresets.find((x) => x.id === pid);
+    renamePresetInput = p?.name ?? '';
+    renamePresetError = '';
+    renamePresetOpen = true;
+  }
+
+  function closeRenamePreset() {
+    renamePresetOpen = false;
+    renamePresetError = '';
+  }
+
+  function applyRenamePreset() {
+    renamePresetError = '';
+    const pid = getCurrentPresetId();
+    if (!pid) {
+      closeRenamePreset();
+      return;
+    }
+    const name = ensureUniquePresetName(renamePresetInput, customPresets, pid);
+    const nextPresets = customPresets.map((p) => (p.id === pid ? { ...p, name, updatedAt: Date.now() } : p));
+    customPresets = nextPresets;
+    persistCustomPresets(nextPresets);
+    renamePresetOpen = false;
+  }
+
+  /** 删除当前选中的自定义规则；无剩余时切回默认内置 */
+  async function deleteCurrentPreset() {
+    const pid = getCurrentPresetId();
+    if (!pid) return;
+    if (typeof window !== 'undefined' && !window.confirm(t('batch.presetDeleteConfirm'))) return;
+    const nextPresets = customPresets.filter((p) => p.id !== pid);
+    customPresets = nextPresets;
+    persistCustomPresets(nextPresets);
+    if (nextPresets.length > 0) {
+      await switchProfileKey(formatPresetKey(nextPresets[0].id));
+    } else {
+      await switchProfileKey(formatBuiltinKey(PROFILE_DEFAULT));
+    }
   }
 
   function dimensionMatch(spec, result) {
@@ -513,7 +647,8 @@
 <svelte:window
   onkeydown={(e) => {
     if (e.key === 'Escape') {
-      if (editSpecsOpen) closeEditSpecs();
+      if (renamePresetOpen) closeRenamePreset();
+      else if (editSpecsOpen) closeEditSpecs();
       else if (previewResult) closePreview();
       else if (pickerOpenForRow !== null) pickerOpenForRow = null;
     }
@@ -545,52 +680,89 @@
 
     <section class="card preset-outlined-surface-200-800 p-4 mb-4">
       <h3 class="text-sm font-medium m-0 mb-3">{t('batch.globalConfig')}</h3>
-      <div class="flex flex-wrap gap-4 items-end">
-        <label class="flex flex-col gap-1">
-          <span class="text-xs text-surface-600-400">{t('batch.configProfile')}</span>
-          <select
-            class="select preset-outlined-surface-200-800 text-sm min-w-44"
-            bind:value={selectedProfile}
-            onchange={() => switchProfile(selectedProfile)}
-          >
-            <option value={PROFILE_DEFAULT}>{t('batch.profileDefaultChannels')}</option>
-            <option value={PROFILE_CHROME}>{t('batch.profileChromeStore')}</option>
-            <option value={PROFILE_CUSTOM}>{t('batch.profileCustom')}</option>
-          </select>
-        </label>
-        <label class="flex flex-col gap-1">
-          <span class="text-xs text-surface-600-400">{t('batch.filePrefix')}</span>
-          <input
-            type="text"
-            class="input preset-outlined-surface-200-800 w-32 text-sm"
-            placeholder=""
-            bind:value={globalFilePrefix}
-          />
-          <span class="text-[10px] text-surface-500-500">{t('batch.filePrefixHint')}</span>
-        </label>
-        <label class="flex flex-col gap-1">
-          <span class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" class="rounded border-surface-300-700" bind:checked={includeChannelInFilename} />
-            <span class="text-xs text-surface-600-400">{t('batch.includeChannel')}</span>
-          </span>
-          <span class="text-[10px] text-surface-500-500">{t('batch.includeChannelHint')}</span>
-        </label>
-        <label class="flex flex-col gap-1">
-          <span class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" class="rounded border-surface-300-700" bind:checked={hideUnsupported} />
-            <span class="text-xs text-surface-600-400">{t('batch.hideUnsupported')}</span>
-          </span>
-        </label>
-        <div class="flex items-center gap-2">
-          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={openEditSpecs}>
-            {t('batch.editSpecs')}
-          </button>
-          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={exportSpecs}>
-            {t('batch.exportSpecs')}
-          </button>
-          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={() => importInputEl?.click()}>
-            {t('batch.importSpecs')}
-          </button>
+      <div class="flex flex-col gap-4">
+        <div>
+          <p class="text-xs font-medium text-surface-600-400 m-0 mb-2">{t('batch.sectionRules')}</p>
+          <div class="flex flex-wrap gap-4 items-end">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs text-surface-600-400">{t('batch.configProfile')}</span>
+              <select
+                class="select preset-outlined-surface-200-800 text-sm min-w-56"
+                bind:value={selectedProfileKey}
+                onchange={() => switchProfileKey(selectedProfileKey)}
+              >
+                <optgroup label={t('batch.profileBuiltinGroup')}>
+                  {#each BUILTIN_ORDER as bid}
+                    {#if PROFILE_URLS[bid]}
+                      <option value={formatBuiltinKey(bid)}>{bid === PROFILE_DEFAULT ? t('batch.profileDefaultChannels') : bid === PROFILE_CHROME ? t('batch.profileChromeStore') : bid}</option>
+                    {/if}
+                  {/each}
+                </optgroup>
+                {#if customPresets.length > 0}
+                  <optgroup label={t('batch.profileCustomGroup')}>
+                    {#each customPresets as p}
+                      <option value={formatPresetKey(p.id)}>{p.name}</option>
+                    {/each}
+                  </optgroup>
+                {/if}
+              </select>
+            </label>
+            <button
+              type="button"
+              class="btn preset-outlined-surface-200-800 btn-sm text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!getCurrentPresetId()}
+              onclick={openRenamePreset}
+            >
+              {t('batch.presetRename')}
+            </button>
+            <button
+              type="button"
+              class="btn preset-outlined-surface-200-800 btn-sm text-sm text-error-500 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:text-surface-500-500 disabled:hover:opacity-50"
+              disabled={!getCurrentPresetId()}
+              onclick={() => deleteCurrentPreset()}
+            >
+              {t('batch.presetDelete')}
+            </button>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={openEditSpecs}>
+                {t('batch.editSpecs')}
+              </button>
+              <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={exportSpecs}>
+                {t('batch.exportSpecs')}
+              </button>
+              <button type="button" class="btn preset-outlined-surface-200-800 btn-sm text-sm" onclick={() => importInputEl?.click()}>
+                {t('batch.importSpecs')}
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-surface-200-800 pt-4">
+          <p class="text-xs font-medium text-surface-600-400 m-0 mb-2">{t('batch.sectionOther')}</p>
+          <div class="flex flex-wrap gap-4 items-end">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs text-surface-600-400">{t('batch.filePrefix')}</span>
+              <input
+                type="text"
+                class="input preset-outlined-surface-200-800 w-32 text-sm"
+                placeholder=""
+                bind:value={globalFilePrefix}
+              />
+              <span class="text-[10px] text-surface-500-500">{t('batch.filePrefixHint')}</span>
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="rounded border-surface-300-700" bind:checked={includeChannelInFilename} />
+                <span class="text-xs text-surface-600-400">{t('batch.includeChannel')}</span>
+              </span>
+              <span class="text-[10px] text-surface-500-500">{t('batch.includeChannelHint')}</span>
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" class="rounded border-surface-300-700" bind:checked={hideUnsupported} />
+                <span class="text-xs text-surface-600-400">{t('batch.hideUnsupported')}</span>
+              </span>
+            </label>
+          </div>
         </div>
       </div>
     </section>
@@ -839,12 +1011,67 @@
         {#if editSpecsError}
           <p class="text-sm text-error-500 mb-3 m-0">{editSpecsError}</p>
         {/if}
-        <div class="flex justify-end gap-2">
+        <label class="flex flex-col gap-1 mb-3">
+          <span class="text-xs text-surface-600-400">{t('batch.editSpecsSaveAsHint')}</span>
+          <input
+            type="text"
+            class="input preset-outlined-surface-200-800 bg-surface-50-950 w-full text-sm"
+            bind:value={editSpecsSaveAsName}
+            placeholder={t('batch.presetRenamePlaceholder')}
+          />
+        </label>
+        <div class="flex flex-wrap justify-end gap-2">
           <button type="button" class="btn preset-outlined-surface-200-800 btn-sm" onclick={closeEditSpecs}>
             {t('batch.editSpecsCancel')}
           </button>
-          <button type="button" class="btn preset-filled-primary-500 btn-sm" onclick={applyEditSpecs}>
-            {t('batch.editSpecsApply')}
+          <button
+            type="button"
+            class="btn preset-outlined-surface-200-800 btn-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!getCurrentPresetId()}
+            onclick={saveEditSpecs}
+          >
+            {t('batch.editSpecsSave')}
+          </button>
+          <button type="button" class="btn preset-filled-primary-500 btn-sm" onclick={() => saveAsEditSpecs()}>
+            {t('batch.editSpecsSaveAs')}
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  {#if renamePresetOpen}
+    <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="fixed inset-0 z-100 flex items-center justify-center p-4 bg-black/50"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('batch.presetRenameTitle')}
+      tabindex="-1"
+      onclick={closeRenamePreset}
+    >
+      <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+      <div
+        class="card preset-outlined-surface-200-800 bg-surface-50-950 w-full max-w-md flex flex-col p-4 shadow-xl"
+        onclick={(e) => e.stopPropagation()}
+      >
+        <h3 class="text-sm font-medium m-0 mb-3">{t('batch.presetRenameTitle')}</h3>
+        <input
+          type="text"
+          class="input preset-outlined-surface-200-800 bg-surface-50-950 w-full text-sm mb-2"
+          bind:value={renamePresetInput}
+          placeholder={t('batch.presetRenamePlaceholder')}
+        />
+        {#if renamePresetError}
+          <p class="text-sm text-error-500 mb-3 m-0">{renamePresetError}</p>
+        {/if}
+        <div class="flex justify-end gap-2">
+          <button type="button" class="btn preset-outlined-surface-200-800 btn-sm" onclick={closeRenamePreset}>
+            {t('batch.editSpecsCancel')}
+          </button>
+          <button type="button" class="btn preset-filled-primary-500 btn-sm" onclick={applyRenamePreset}>
+            {t('batch.editSpecsSave')}
           </button>
         </div>
       </div>
