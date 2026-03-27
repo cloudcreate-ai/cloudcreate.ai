@@ -1,0 +1,42 @@
+[
+  {
+    "name": "1280*800-1",
+    "width": 1280,
+    "height": 800,
+    "format": "png",
+    "quality": 100,
+    "quantity": 1
+  },
+  {
+    "name": "1280*800-2",
+    "width": 1280,
+    "height": 800,
+    "format": "png",
+    "quality": 100,
+    "quantity": 1
+  },
+  {
+    "name": "1280*800-3",
+    "width": 1280,
+    "height": 800,
+    "format": "png",
+    "quality": 100,
+    "quantity": 1
+  },
+  {
+    "name": "440*280",
+    "width": 440,
+    "height": 280,
+    "format": "png",
+    "quality": 100,
+    "quantity": 1
+  },
+  {
+    "name": "1400*560",
+    "width": 1400,
+    "height": 560,
+    "format": "png",
+    "quality": 100,
+    "quantity": 1
+  }
+]

@@ -22,9 +22,20 @@
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
 
   const EXT_BY_FORMAT = { jpeg: 'jpg', jpg: 'jpg', webp: 'webp', png: 'png', avif: 'avif' };
+  const PROFILE_DEFAULT = 'default-channels';
+  const PROFILE_CHROME = 'chrome-store';
+  const PROFILE_CUSTOM = 'custom';
+  const PROFILE_OPTIONS = [PROFILE_DEFAULT, PROFILE_CHROME, PROFILE_CUSTOM];
+  const PROFILE_URLS = {
+    [PROFILE_DEFAULT]: '/specs/batch-specs.json',
+    [PROFILE_CHROME]: '/specs/chrome-store-specs.json',
+  };
+  const LS_BATCH_PROFILE_KEY = 'batch-profile-selected';
+  const LS_BATCH_CUSTOM_SPECS_KEY = 'batch-profile-custom-specs';
 
   let specs = $state([]);
   let specLoadError = $state('');
+  let selectedProfile = $state(PROFILE_DEFAULT);
   let fileItems = $state([]);
   let manualOverrides = $state({});
   /** 全局配置：文件前缀、是否在文件名中含渠道id（勾选）。格式与质量均从 spec 读取，不可修改 */
@@ -94,16 +105,55 @@
   /** 不支持的格式：不参与批处理，表格中灰底只读 */
   const UNSUPPORTED_FORMATS = ['gif', 'video'];
 
-  $effect(() => {
-    loadBatchSpecs()
-      .then((list) => {
-        specs = list;
+  async function loadProfileSpecs(profile) {
+    try {
+      if (profile === PROFILE_CUSTOM) {
+        const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(LS_BATCH_CUSTOM_SPECS_KEY) : '';
+        if (!raw) {
+          // custom 尚未创建时，回退到默认规格，避免页面进入空白不可操作态
+          specs = await loadBatchSpecs(PROFILE_URLS[PROFILE_DEFAULT]);
+          specLoadError = '';
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) throw new Error(t('batch.importErrorNotArray'));
+        specs = parsed.map((row) => normalizeBatchSpecRow(row));
         specLoadError = '';
-      })
-      .catch((e) => {
-        specLoadError = e?.message || 'Failed to load specs';
-        specs = [];
-      });
+        return;
+      }
+      const url = PROFILE_URLS[profile] || PROFILE_URLS[PROFILE_DEFAULT];
+      specs = await loadBatchSpecs(url);
+      specLoadError = '';
+    } catch (e) {
+      specLoadError = e?.message || 'Failed to load specs';
+      specs = [];
+    }
+  }
+
+  async function switchProfile(profile) {
+    const next = PROFILE_OPTIONS.includes(profile) ? profile : PROFILE_DEFAULT;
+    selectedProfile = next;
+    if (typeof localStorage !== 'undefined') localStorage.setItem(LS_BATCH_PROFILE_KEY, next);
+    await loadProfileSpecs(next);
+  }
+
+  function setCustomSpecs(nextSpecs) {
+    specs = nextSpecs;
+    specLoadError = '';
+    selectedProfile = PROFILE_CUSTOM;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(LS_BATCH_PROFILE_KEY, PROFILE_CUSTOM);
+      localStorage.setItem(LS_BATCH_CUSTOM_SPECS_KEY, JSON.stringify(nextSpecs));
+    }
+  }
+
+  $effect(() => {
+    const initProfile = async () => {
+      const saved = typeof localStorage !== 'undefined' ? localStorage.getItem(LS_BATCH_PROFILE_KEY) : '';
+      const initial = PROFILE_OPTIONS.includes(saved) ? saved : PROFILE_DEFAULT;
+      await switchProfile(initial);
+    };
+    initProfile();
   });
 
   async function addFiles(fileList) {
@@ -360,8 +410,7 @@
       const raw = JSON.parse(text);
       if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
       const next = raw.map((row) => normalizeBatchSpecRow(row));
-      specs = next;
-      specLoadError = '';
+      setCustomSpecs(next);
     } catch (e) {
       error = e?.message || t('batch.importError');
     }
@@ -379,7 +428,7 @@
     try {
       const raw = JSON.parse(editSpecsJson);
       if (!Array.isArray(raw)) throw new Error(t('batch.importErrorNotArray'));
-      specs = raw.map((row) => normalizeBatchSpecRow(row));
+      setCustomSpecs(raw.map((row) => normalizeBatchSpecRow(row)));
       editSpecsOpen = false;
     } catch (e) {
       editSpecsError = e?.message || t('batch.importError');
@@ -497,6 +546,18 @@
     <section class="card preset-outlined-surface-200-800 p-4 mb-4">
       <h3 class="text-sm font-medium m-0 mb-3">{t('batch.globalConfig')}</h3>
       <div class="flex flex-wrap gap-4 items-end">
+        <label class="flex flex-col gap-1">
+          <span class="text-xs text-surface-600-400">{t('batch.configProfile')}</span>
+          <select
+            class="select preset-outlined-surface-200-800 text-sm min-w-44"
+            bind:value={selectedProfile}
+            onchange={() => switchProfile(selectedProfile)}
+          >
+            <option value={PROFILE_DEFAULT}>{t('batch.profileDefaultChannels')}</option>
+            <option value={PROFILE_CHROME}>{t('batch.profileChromeStore')}</option>
+            <option value={PROFILE_CUSTOM}>{t('batch.profileCustom')}</option>
+          </select>
+        </label>
         <label class="flex flex-col gap-1">
           <span class="text-xs text-surface-600-400">{t('batch.filePrefix')}</span>
           <input
@@ -765,12 +826,12 @@
     >
       <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
       <div
-        class="card preset-outlined-surface-200-800 w-full max-w-2xl max-h-[85vh] flex flex-col p-4 shadow-xl"
+        class="card preset-outlined-surface-200-800 bg-surface-50-950 w-full max-w-2xl max-h-[85vh] flex flex-col p-4 shadow-xl"
         onclick={(e) => e.stopPropagation()}
       >
         <h3 class="text-sm font-medium m-0 mb-3">{t('batch.editSpecs')}</h3>
         <textarea
-          class="input preset-outlined-surface-200-800 w-full flex-1 min-h-[280px] font-mono text-sm resize-y mb-2"
+          class="input preset-outlined-surface-200-800 bg-surface-50-950 w-full flex-1 min-h-[280px] font-mono text-sm resize-y mb-2"
           spellcheck="false"
           bind:value={editSpecsJson}
           placeholder={t('batch.editSpecsPlaceholder')}
