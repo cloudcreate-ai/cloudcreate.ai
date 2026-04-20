@@ -52,6 +52,7 @@ const translations = {
     pageTitle: 'CloudCreate Workspace - Browser Utility Collection',
     sidebar: {
       image: 'Image',
+      watermark: 'Watermark',
       css: 'CSS',
       archive: 'Archive',
       other: 'Other',
@@ -112,6 +113,24 @@ const translations = {
       gifToolDesc: 'Compress heavy GIFs with frame-rate, size, palette, and background strategies.',
       batchTitle: 'Image Batch (Spec Table)',
       batchDesc: 'Load spec table, assign inputs by ratio, run per row, compare target vs actual.',
+      watermarkGeminiTitle: 'Gemini Watermark Remover',
+      watermarkGeminiDesc:
+        'Remove the visible Gemini corner watermark locally (reverse alpha blending). Nothing is uploaded.',
+    },
+    watermarkGemini: {
+      title: 'Gemini Watermark Remover',
+      desc: 'Remove the visible Gemini AI corner watermark in your browser. Uses the open-source reverse alpha blending engine; images stay on your device.',
+      source: 'Image',
+      remove: 'Remove watermark',
+      disclaimer:
+        'Only for standard Gemini visible watermarks. Use at your own risk. If processing fails, try disabling canvas fingerprint-blocking extensions.',
+      credits: 'Engine:',
+      upstreamLink: 'GargantuaX/gemini-watermark-remover (MIT)',
+      loadImageFailed: 'Could not load image.',
+      encodeFailed: 'Could not encode result.',
+      metaHint: 'Engine:',
+      metaApplied: 'Removal applied',
+      metaSkipped: 'No removal applied',
     },
     compress: {
       title: 'Image Compress',
@@ -578,6 +597,7 @@ const translations = {
     pageTitle: 'CloudCreate Workspace - 浏览器实用工具集',
     sidebar: {
       image: '图片',
+      watermark: '去水印',
       css: 'CSS',
       archive: '压缩包',
       other: '其他',
@@ -638,6 +658,23 @@ const translations = {
       gifToolDesc: '通过帧率、尺寸、调色板与背景优化组合策略压缩 GIF。',
       batchTitle: '图片批处理（标准表）',
       batchDesc: '加载规格表、按比例分配输入、按行执行、对比目标与实际。',
+      watermarkGeminiTitle: 'Gemini 去水印',
+      watermarkGeminiDesc: '在本地去除 Gemini 右下角可见水印（反向 Alpha 混合），图片不上传。',
+    },
+    watermarkGemini: {
+      title: 'Gemini 去水印',
+      desc: '在浏览器内去除 Gemini AI 图片右下角的可见水印，基于开源反向 Alpha 混合算法，图片不离开本机。',
+      source: '图片',
+      remove: '去除水印',
+      disclaimer:
+        '仅适用于 Gemini 标准可见水印。请自担风险；若处理失败，可尝试关闭 Canvas 指纹拦截类扩展。',
+      credits: '引擎来源：',
+      upstreamLink: 'GargantuaX/gemini-watermark-remover（MIT）',
+      loadImageFailed: '无法加载图片。',
+      encodeFailed: '无法编码输出。',
+      metaHint: '引擎状态：',
+      metaApplied: '已尝试去除水印',
+      metaSkipped: '未应用去除',
     },
     compress: {
       title: '图片压缩',

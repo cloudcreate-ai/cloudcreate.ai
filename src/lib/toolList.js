@@ -20,6 +20,18 @@ export const TOOL_GROUPS = [
     ],
   },
   {
+    id: 'watermark',
+    labelKey: 'sidebar.watermark',
+    items: [
+      {
+        id: 'watermarkGemini',
+        titleKey: 'home.watermarkGeminiTitle',
+        href: '/remove-watermark/gemini',
+        icon: '✨',
+      },
+    ],
+  },
+  {
     id: 'css',
     labelKey: 'sidebar.css',
     items: [
