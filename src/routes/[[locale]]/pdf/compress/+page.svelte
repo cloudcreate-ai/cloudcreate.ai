@@ -1,6 +1,7 @@
 <script>
   /**
-   * PDF「压缩」：PDF.js 栅格化页面 + jsPDF 打包为以 JPEG 为主的 PDF（纯前端）
+   * PDF「压缩」：PDF.js 栅格化页面 + jsPDF 回写 PDF（纯前端）。
+   * 注意：PDF 默认 72pt≈72dpi，scale=1 时栅格极糊；默认约 2×≈144dpi 才适合阅读。
    */
   import { onMount } from 'svelte';
   import { ACCEPT_PDF } from '$lib/fileConstants.js';
@@ -20,10 +21,12 @@
 
   let sourceFile = $state(/** @type {File | null} */ (null));
   let sourceBuffer = $state(/** @type {ArrayBuffer | null} */ (null));
-  /** 渲染倍率：相对 PDF 默认坐标系，越低体积越小、画质越差 */
-  let renderScale = $state(0.85);
-  /** JPEG 质量 45–100（百分数），对应编码时除以 100 */
-  let jpegQualityPercent = $state(82);
+  /** 渲染倍率：相对 PDF 用户空间；1≈72dpi，2≈144dpi，3≈216dpi（越高越清晰、越慢、越大） */
+  let renderScale = $state(2);
+  /** JPEG 质量（百分数）；仅在选择 JPEG 时生效 */
+  let jpegQualityPercent = $state(92);
+  /** 页面位图编码：jpeg 体积小；png 栅格无损、文件明显更大 */
+  let pageImageFormat = $state(/** @type {'jpeg' | 'png'} */ ('jpeg'));
   let processing = $state(false);
   let progressLabel = $state('');
   let error = $state('');
@@ -175,14 +178,15 @@
         ctx.fillRect(0, 0, rw, rh);
         await page.render({ canvasContext: ctx, viewport }).promise;
 
-        const imgData = canvas.toDataURL('image/jpeg', jpegQ);
+        const isPng = pageImageFormat === 'png';
+        const imgData = isPng ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', jpegQ);
         const orientation = wPt >= hPt ? 'landscape' : 'portrait';
         if (doc === null) {
           doc = new jsPDF({ unit: 'pt', format: [wPt, hPt], orientation });
         } else {
           doc.addPage([wPt, hPt], orientation);
         }
-        doc.addImage(imgData, 'JPEG', 0, 0, wPt, hPt, undefined, 'FAST');
+        doc.addImage(imgData, isPng ? 'PNG' : 'JPEG', 0, 0, wPt, hPt, undefined, 'MEDIUM');
         await new Promise((r) => requestAnimationFrame(r));
       }
 
@@ -268,23 +272,37 @@
           <SliderWithInput
             id="pdf-compress-scale"
             value={renderScale}
-            min={0.35}
-            max={1.5}
-            step={0.05}
+            min={0.75}
+            max={3}
+            step={0.1}
             oninput={(v) => (renderScale = v)}
             inputWidth="64px"
           />
         </div>
-        <span class="text-[10px] text-surface-500-500 tabular-nums whitespace-nowrap w-9 text-right">{renderScale.toFixed(2)}×</span>
+        <span
+          class="text-[10px] text-surface-500-500 tabular-nums whitespace-nowrap w-10 text-right"
+          title={t('pdfCompress.scaleDpiHint')}>{renderScale.toFixed(1)}×</span>
       </div>
-      <div class="flex items-center gap-2 shrink-0 min-w-[200px]">
+      <div class="flex items-center gap-1.5 shrink-0">
+        <label for="pdf-compress-format" class="text-xs text-surface-600-400 whitespace-nowrap">{t('pdfCompress.pageFormat')}</label>
+        <select
+          id="pdf-compress-format"
+          class="select select-sm preset-outlined-surface-200-800 text-xs py-1 px-2 min-w-0 max-w-32"
+          bind:value={pageImageFormat}
+          disabled={processing || !sourceBuffer}
+        >
+          <option value="jpeg">{t('pdfCompress.formatJpeg')}</option>
+          <option value="png">{t('pdfCompress.formatPng')}</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 min-w-[200px] {pageImageFormat === 'png' ? 'opacity-45 pointer-events-none' : ''}">
         <label for="pdf-compress-jpeg" class="text-xs text-surface-600-400 whitespace-nowrap">{t('pdfCompress.jpegQuality')}</label>
         <div class="w-36 min-w-24 max-w-44">
           <SliderWithInput
             id="pdf-compress-jpeg"
             value={jpegQualityPercent}
-            min={45}
-            max={95}
+            min={75}
+            max={98}
             step={1}
             oninput={(v) => (jpegQualityPercent = v)}
             inputWidth="52px"
