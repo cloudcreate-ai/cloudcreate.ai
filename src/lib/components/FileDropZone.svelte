@@ -9,7 +9,8 @@
     multiple = true,
     onFilesAdd = () => {},
     onDropRaw = undefined,
-    /** @type {string} */ accept = ACCEPT_IMAGES,
+    /** 文件 input 的 accept；不传则默认仅图片 */
+    accept: acceptProp,
     webkitdirectory = false,
     disabled = false,
     hintKey = 'common.fileSelectHint',
@@ -19,6 +20,8 @@
     showClear = false,
     idPrefix = 'fdz',
   } = $props();
+
+  const accept = $derived(typeof acceptProp === 'string' && acceptProp.length > 0 ? acceptProp : ACCEPT_IMAGES);
 
   let inputRef = $state(null);
   let dropActive = $state(false);

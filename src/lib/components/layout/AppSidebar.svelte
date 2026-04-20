@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
-  import { TOOL_GROUPS } from '$lib/toolList.js';
+  import { TOOL_GROUPS, TOOL_HREFS } from '$lib/toolList.js';
 
   let collapsedGroups = $state({});
 
@@ -15,10 +15,21 @@
     return m ? (m[2] === '/' ? path.slice(m[1].length + 1) : '/') : path || '/';
   }
 
+  /**
+   * 当前路径是否属于该工具项。
+   * 前缀匹配时若存在更长的已注册工具 href 与路径一致或是其前缀，则父路径不激活（避免 /pdf 与 /pdf/compress 同时高亮）。
+   */
   function isActive(href) {
     const logical = getLogicalPath($page.url.pathname);
-    const target = href === '/' ? '/' : href;
-    return logical === target || (target !== '/' && logical.startsWith(target + '/'));
+    const norm = href === '/' ? '/' : href;
+    if (logical === norm) return true;
+    if (norm === '/' || !logical.startsWith(norm + '/')) return false;
+    for (const h of TOOL_HREFS) {
+      if (h.length <= norm.length) continue;
+      if (!h.startsWith(norm + '/')) continue;
+      if (logical === h || logical.startsWith(h + '/')) return false;
+    }
+    return true;
   }
 </script>
 

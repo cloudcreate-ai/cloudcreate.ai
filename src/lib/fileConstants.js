@@ -3,6 +3,9 @@
  */
 export const ACCEPT_IMAGES = 'image/jpeg,image/png,image/webp,image/avif';
 
+/** PDF 选择：HTML input accept */
+export const ACCEPT_PDF = 'application/pdf,.pdf';
+
 /**
  * 过滤出图片类型的文件
  * @param {FileList|File[]} fileList

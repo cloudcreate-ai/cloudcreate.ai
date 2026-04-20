@@ -48,12 +48,19 @@ export const TOOL_GROUPS = [
     ],
   },
   {
+    id: 'pdf',
+    labelKey: 'sidebar.pdf',
+    items: [
+      { id: 'pdfViewer', titleKey: 'home.pdfViewerTitle', href: '/pdf', icon: '📄' },
+      { id: 'pdfCompress', titleKey: 'home.pdfCompressTitle', href: '/pdf/compress', icon: '🗜️' },
+    ],
+  },
+  {
     id: 'other',
     labelKey: 'sidebar.other',
     items: [
       { id: 'styleGuide', titleKey: 'home.styleGuideTitle', href: '/styleguide', icon: '🎨' },
       { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', href: '/markdown', icon: '📝' },
-      { id: 'pdfViewer', titleKey: 'home.pdfViewerTitle', href: '/pdf', icon: '📄' },
       { id: 'tableTools', titleKey: 'home.tableToolsTitle', href: '/table', icon: '📊' },
       { id: 'workflow', titleKey: 'home.workflowTitle', href: '/workflow', icon: '🔀' },
     ],

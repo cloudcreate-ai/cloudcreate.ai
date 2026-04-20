@@ -1,6 +1,7 @@
 <script>
   import { onDestroy, onMount } from 'svelte';
   import { browser } from '$app/environment';
+  import { ACCEPT_PDF } from '$lib/fileConstants.js';
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
@@ -163,7 +164,7 @@
 
   <section class="mb-4">
     <FileDropZone
-      accept="application/pdf,.pdf"
+      accept={ACCEPT_PDF}
       multiple={false}
       onFilesAdd={handleFiles}
       disabled={!pdfReady}
