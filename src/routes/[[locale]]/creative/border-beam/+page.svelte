@@ -48,7 +48,7 @@
           <option value="auto">{t('creative.themeAuto')}</option>
         </select>
       </div>
-      <div class="flex flex-col gap-0.5 flex-1 min-w-[min(100%,220px)]">
+      <div class="flex flex-col gap-0.5 w-[min(100%,220px)] shrink-0">
         <label for="beam-strength" class="text-xs text-surface-600-400">
           {t('creative.controlStrength')} ({strengthPercent}%)
         </label>
