@@ -2,22 +2,21 @@
   import { page } from '$app/stores';
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
-  import { getSidebarGroupsForPath, resolveCategoryId } from '$lib/navRegistry.js';
-  import { isSidebarItemActive, isWorkspaceShortcutActive } from '$lib/navActive.js';
+  import { getSidebarGroupsForPath } from '$lib/navRegistry.js';
+  import { isSidebarItemActive, isPathPrefixNavActive } from '$lib/navActive.js';
 
   let collapsedGroups = $state({});
 
   const sidebarGroups = $derived(getSidebarGroupsForPath($page.url.pathname));
-  const categoryId = $derived(resolveCategoryId($page.url.pathname));
 
   function toggleGroup(id) {
     collapsedGroups = { ...collapsedGroups, [id]: !collapsedGroups[id] };
   }
 
-  /** @param {{ href: string, hash?: string }} item */
+  /** @param {{ href: string, hash?: string, role?: string }} item */
   function itemActive(item) {
-    if (categoryId === 'workspace' && (item.href === '/tools' || item.href === '/creative')) {
-      return isWorkspaceShortcutActive($page.url.pathname, item.href);
+    if (item.role === 'categoryRootShortcut') {
+      return isPathPrefixNavActive($page.url.pathname, item.href);
     }
     return isSidebarItemActive($page.url.pathname, $page.url.hash || '', item);
   }
@@ -25,40 +24,47 @@
 
 <aside class="app-sidebar">
   <nav class="app-sidebar-nav">
-    <a
-      href={localePath($page.url.pathname, '/')}
-      class="app-sidebar-item"
-      class:active={$page.url.pathname === '/en' || $page.url.pathname === '/zh' || $page.url.pathname === '/'}
-    >
-      <span class="app-sidebar-icon">🏠</span>
-      <span class="app-sidebar-label">{t('common.workspace')}</span>
-    </a>
     {#each sidebarGroups as group}
-      <div class="app-sidebar-group">
-        <button
-          type="button"
-          class="app-sidebar-group-toggle"
-          onclick={() => toggleGroup(group.id)}
-          aria-expanded={!collapsedGroups[group.id]}
-        >
-          <span class="app-sidebar-group-chevron">{collapsedGroups[group.id] ? '▶' : '▼'}</span>
-          <span>{t(group.labelKey)}</span>
-        </button>
-        {#if !collapsedGroups[group.id]}
-          <div class="app-sidebar-group-items">
-            {#each group.items as item}
-              <a
-                href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
-                class="app-sidebar-item"
-                class:active={itemActive(item)}
-              >
-                <span class="app-sidebar-icon">{item.icon}</span>
-                <span class="app-sidebar-label">{t(item.titleKey)}</span>
-              </a>
-            {/each}
-          </div>
-        {/if}
-      </div>
+      {#if group.flat}
+        <div class="app-sidebar-flat" aria-label={t(group.labelKey)}>
+          {#each group.items as item}
+            <a
+              href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
+              class="app-sidebar-item"
+              class:active={itemActive(item)}
+            >
+              <span class="app-sidebar-icon">{item.icon}</span>
+              <span class="app-sidebar-label">{t(item.titleKey)}</span>
+            </a>
+          {/each}
+        </div>
+      {:else}
+        <div class="app-sidebar-group">
+          <button
+            type="button"
+            class="app-sidebar-group-toggle"
+            onclick={() => toggleGroup(group.id)}
+            aria-expanded={!collapsedGroups[group.id]}
+          >
+            <span class="app-sidebar-group-chevron">{collapsedGroups[group.id] ? '▶' : '▼'}</span>
+            <span>{t(group.labelKey)}</span>
+          </button>
+          {#if !collapsedGroups[group.id]}
+            <div class="app-sidebar-group-items">
+              {#each group.items as item}
+                <a
+                  href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
+                  class="app-sidebar-item"
+                  class:active={itemActive(item)}
+                >
+                  <span class="app-sidebar-icon">{item.icon}</span>
+                  <span class="app-sidebar-label">{t(item.titleKey)}</span>
+                </a>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      {/if}
     {/each}
   </nav>
 </aside>
@@ -135,6 +141,9 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .app-sidebar-flat {
+    margin-top: 0.35rem;
   }
   .app-sidebar-group {
     margin-top: 0.35rem;

@@ -5,7 +5,12 @@
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
   import { page } from '$app/stores';
-  import { TOOL_GROUPS, CREATIVE_SIDEBAR_ITEMS, findToolByHref } from '$lib/toolList.js';
+  import {
+    TOOL_GROUPS,
+    CREATIVE_CARD_ITEMS,
+    findToolByHref,
+    isLandingNoPrefsPath,
+  } from '$lib/toolList.js';
   import { favorites, recentlyUsed, toggleFavorite } from '$lib/stores/userPrefsStore.js';
 
   /** @type {'workspace' | 'tools' | 'creative'} */
@@ -36,10 +41,18 @@
     variant === 'creative' ? 'creative.commonShortcutsTitle' : 'home.commonToolsTitle',
   );
 
+  /** @param {string} storedHref */
+  function pathOnlyForFilter(storedHref) {
+    const i = storedHref.indexOf('#');
+    const pathOnly = i >= 0 ? storedHref.slice(0, i) : storedHref;
+    return pathOnly.startsWith('/') ? pathOnly : `/${pathOnly}`;
+  }
+
   const favoriteEntries = $derived(
     $favorites
       .map((storedHref) => {
         if (!matchesVariant(storedHref)) return null;
+        if (isLandingNoPrefsPath(pathOnlyForFilter(storedHref))) return null;
         const tool = findToolByHref(storedHref);
         return tool ? { storedHref, tool } : null;
       })
@@ -50,6 +63,7 @@
     $recentlyUsed
       .map((entry) => {
         if (!matchesVariant(entry.href)) return null;
+        if (isLandingNoPrefsPath(pathOnlyForFilter(entry.href))) return null;
         const tool = findToolByHref(entry.href);
         return tool ? { storedHref: entry.href, tool } : null;
       })
@@ -142,7 +156,7 @@
     <h2 class="home-section-title">{t(commonSectionTitleKey)}</h2>
     {#if variant === 'creative'}
       <div class="home-tool-grid">
-        {#each CREATIVE_SIDEBAR_ITEMS as item (item.id)}
+        {#each CREATIVE_CARD_ITEMS as item (item.id)}
           {@const href = item.href + (item.hash ?? '')}
           {@const fav = isFavorite(href)}
           <a

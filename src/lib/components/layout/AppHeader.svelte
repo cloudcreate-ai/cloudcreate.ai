@@ -43,22 +43,24 @@
     {/each}
   </nav>
   <div class="app-header-actions">
-    <button
-      type="button"
-      class="app-header-locale {$locale === 'en' ? 'is-active' : ''}"
-      onclick={() => switchLocale('en')}
-      aria-pressed={$locale === 'en'}
-    >
-      EN
-    </button>
-    <button
-      type="button"
-      class="app-header-locale {$locale === 'zh' ? 'is-active' : ''}"
-      onclick={() => switchLocale('zh')}
-      aria-pressed={$locale === 'zh'}
-    >
-      中文
-    </button>
+    <div class="app-header-locale-group" role="group" aria-label={t('layout.localeSwitcher')}>
+      <button
+        type="button"
+        class="app-header-locale {$locale === 'en' ? 'is-active' : ''}"
+        onclick={() => switchLocale('en')}
+        aria-pressed={$locale === 'en'}
+      >
+        EN
+      </button>
+      <button
+        type="button"
+        class="app-header-locale {$locale === 'zh' ? 'is-active' : ''}"
+        onclick={() => switchLocale('zh')}
+        aria-pressed={$locale === 'zh'}
+      >
+        中文
+      </button>
+    </div>
   </div>
 </header>
 
@@ -107,63 +109,98 @@
   }
   .app-header-categories {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
-    gap: 0.35rem;
+    gap: 0.1rem;
     flex: 1 1 auto;
     min-width: 0;
   }
+  /* 主导航：文字 + 底部高亮条，与右侧语言分段控件区分 */
   .app-header-category {
-    border: 1px solid var(--ccw-border-soft);
-    border-radius: var(--ccw-radius-pill);
-    font-size: 0.75rem;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    border-radius: 0;
+    font-size: 0.8125rem;
     font-weight: 500;
-    padding: 0.2rem 0.7rem;
+    padding: 0.35rem 0.5rem 0.4rem;
+    margin: 0 0.12rem;
     background: transparent;
     color: var(--ccw-text-secondary);
     cursor: pointer;
     text-decoration: none;
     white-space: nowrap;
-    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease,
-      box-shadow 150ms ease;
+    transition: color 150ms ease, font-weight 150ms ease;
   }
   a.app-header-category:hover:not(.is-active) {
     color: var(--ccw-text-primary);
-    border-color: var(--ccw-border-contrast);
-    background: var(--ccw-bg-elevated);
+  }
+  .app-header-category:focus-visible {
+    outline: 2px solid var(--ccw-accent);
+    outline-offset: 3px;
+    border-radius: var(--ccw-radius-card);
   }
   .app-header-category.is-active {
-    background: var(--ccw-accent-strong);
-    color: #fff;
-    border-color: var(--ccw-accent-strong);
-    box-shadow: 0 0 0 3px var(--ccw-focus-ring);
+    color: var(--ccw-text-primary);
+    font-weight: 600;
+  }
+  .app-header-category.is-active::after {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    right: 0.15rem;
+    bottom: 0.05rem;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--ccw-accent);
   }
   a.app-header-category.is-active:hover {
-    color: #fff;
+    color: var(--ccw-text-primary);
   }
   .app-header-actions {
     display: flex;
+    align-items: center;
     gap: 0.25rem;
   }
-  .app-header-locale {
+  /* 语言：单框分段，选中态用表面色块区分（不用主色实心，避免与导航混淆） */
+  .app-header-locale-group {
+    display: inline-flex;
+    align-items: stretch;
     border: 1px solid var(--ccw-border-soft);
-    border-radius: var(--ccw-radius-pill);
-    font-size: 0.75rem;
-    padding: 0.15rem 0.65rem;
-    background: transparent;
-    color: var(--ccw-text-secondary);
-    cursor: pointer;
-    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+    border-radius: var(--ccw-radius-card);
+    background: var(--ccw-bg-base);
+    overflow: hidden;
   }
-  .app-header-locale:hover {
-    color: var(--ccw-text-primary);
-    border-color: var(--ccw-border-contrast);
-    background: rgba(255, 255, 255, 0.04);
+  .app-header-locale {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.28rem 0.6rem;
+    min-width: 2.5rem;
+    background: transparent;
+    color: var(--ccw-text-muted);
+    cursor: pointer;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .app-header-locale + .app-header-locale {
+    border-left: 1px solid var(--ccw-border-soft);
+  }
+  .app-header-locale:hover:not(.is-active) {
+    color: var(--ccw-text-secondary);
+    background: var(--ccw-bg-elevated);
+  }
+  .app-header-locale:focus-visible {
+    outline: 2px solid var(--ccw-accent);
+    outline-offset: 2px;
+    position: relative;
+    z-index: 1;
   }
   .app-header-locale.is-active {
-    background: var(--ccw-accent-strong);
-    color: #fff;
-    border-color: var(--ccw-accent-strong);
-    box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+    background: var(--ccw-bg-elevated);
+    color: var(--ccw-text-primary);
   }
 </style>

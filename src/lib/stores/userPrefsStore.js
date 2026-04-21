@@ -3,7 +3,7 @@
  */
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import { ALL_REGISTERED_HREFS } from '$lib/toolList.js';
+import { ALL_REGISTERED_HREFS, isLandingNoPrefsPath } from '$lib/toolList.js';
 import { getLogicalPath } from '$lib/localePath.js';
 
 const STORAGE_KEY_FAV = 'freetools-favorites';
@@ -69,9 +69,9 @@ export function toggleFavorite(href) {
 /** 记录工具使用（在进入工具页时调用）；hash 用于区分同页多入口（如 /table#convert） */
 export function recordToolUsed(pathname, hash = '') {
   const logical = getLogicalPath(pathname);
-  if (logical === '/' || logical === '') return;
+  if (isLandingNoPrefsPath(logical)) return;
   const href = logical.startsWith('/') ? logical : '/' + logical;
-  if (!ALL_REGISTERED_HREFS.has(href) && href !== '/tools') return;
+  if (!ALL_REGISTERED_HREFS.has(href)) return;
 
   const fullHref = hash ? `${href}${hash}` : href;
   recentlyUsed.update((arr) => {

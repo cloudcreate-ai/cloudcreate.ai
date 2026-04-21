@@ -84,6 +84,9 @@ export const CREATIVE_GROUPS = [
 /** 创意区左侧栏扁平列表（与 CREATIVE_GROUPS[0].items 一致） */
 export const CREATIVE_SIDEBAR_ITEMS = CREATIVE_GROUPS[0].items;
 
+/** 概览页「常用」网格：仅具体演示页，不含分类概览（不入侧栏注入之重复逻辑） */
+export const CREATIVE_CARD_ITEMS = CREATIVE_SIDEBAR_ITEMS.filter((i) => i.id !== 'overview');
+
 /** 侧边栏分组顺序：工具 → 创意（用于解析收藏、href 等） */
 export const ALL_SIDEBAR_GROUPS = [...TOOL_GROUPS, ...CREATIVE_GROUPS];
 
@@ -95,6 +98,14 @@ export const CREATIVE_HREFS = new Set(CREATIVE_GROUPS.flatMap((g) => g.items.map
 
 /** 已登记的工具 + 创意路径（用于侧边栏激活时的前缀排除） */
 export const ALL_REGISTERED_HREFS = new Set([...TOOL_HREFS, ...CREATIVE_HREFS]);
+
+/** 工作区首页与分类概览页：不参与收藏/最近使用键 */
+export function isLandingNoPrefsPath(logicalPath) {
+  if (logicalPath == null) return false;
+  let p = String(logicalPath).split('?')[0];
+  if (!p.startsWith('/')) p = p ? `/${p}` : '';
+  return p === '' || p === '/' || p === '/tools' || p === '/creative';
+}
 
 /** 按 href（可含 #hash）查找工具；同一路径多项时按 hash 区分 */
 export function findToolByHref(href) {
@@ -126,10 +137,9 @@ export function findToolByHref(href) {
  */
 export function getFavoriteKeyForCurrentPage(pathname, urlHash = '') {
   const logical = getLogicalPath(pathname);
-  if (!logical || logical === '/') return null;
-
   let base = logical.split('?')[0];
   if (!base.startsWith('/')) base = '/' + base;
+  if (isLandingNoPrefsPath(base)) return null;
   const hash = urlHash || '';
 
   const t0 = findToolByHref(hash ? `${base}${hash}` : base);

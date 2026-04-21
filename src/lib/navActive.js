@@ -31,13 +31,13 @@ export function isSidebarItemActive(pathname, urlHash, item) {
 }
 
 /**
- * 工作区侧栏「工具概览」「创意概览」：在对应分区下整条路径高亮。
+ * 侧栏「指向某分类根」的条目（如工作区快捷入口）：该分类下所有子路径均视为选中。
  * @param {string} pathname
- * @param {string} itemHref `/tools` 或 `/creative`
+ * @param {string} rootHref 逻辑路径，如 `/tools`、`/creative`
  */
-export function isWorkspaceShortcutActive(pathname, itemHref) {
+export function isPathPrefixNavActive(pathname, rootHref) {
   const logical = getLogicalPath(pathname);
-  if (itemHref === '/tools') return logical === '/tools' || logical.startsWith('/tools/');
-  if (itemHref === '/creative') return logical === '/creative' || logical.startsWith('/creative/');
-  return false;
+  if (rootHref === '/' || !rootHref.startsWith('/')) return false;
+  return logical === rootHref || logical.startsWith(rootHref + '/');
 }
+
