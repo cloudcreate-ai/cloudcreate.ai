@@ -2,43 +2,15 @@
   import { page } from '$app/stores';
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
-  import { TOOL_GROUPS, TOOL_HREFS } from '$lib/toolList.js';
+  import { getSidebarGroupsForPath } from '$lib/navRegistry.js';
+  import { isSidebarItemActive } from '$lib/navActive.js';
 
   let collapsedGroups = $state({});
 
+  const sidebarGroups = $derived(getSidebarGroupsForPath($page.url.pathname));
+
   function toggleGroup(id) {
     collapsedGroups = { ...collapsedGroups, [id]: !collapsedGroups[id] };
-  }
-
-  function getLogicalPath(path) {
-    const m = path.match(/^\/(en|zh)(\/|$)/);
-    return m ? (m[2] === '/' ? path.slice(m[1].length + 1) : '/') : path || '/';
-  }
-
-  /**
-   * 当前路径是否属于该工具项。
-   * 前缀匹配时若存在更长的已注册工具 href 与路径一致或是其前缀，则父路径不激活（避免 /pdf 与 /pdf/compress 同时高亮）。
-   * 同一 pathname 下多项（如 /table#preview 与 /table#convert）通过 hash 区分，仅一项高亮。
-   */
-  function isActive(item) {
-    const href = item.href;
-    const logical = getLogicalPath($page.url.pathname);
-    const norm = href === '/' ? '/' : href;
-    if (logical === norm) {
-      if (item.hash) {
-        const h = $page.url.hash || '';
-        if (item.hash === '#table-preview') return h === '' || h === '#table-preview';
-        return h === item.hash;
-      }
-      return true;
-    }
-    if (norm === '/' || !logical.startsWith(norm + '/')) return false;
-    for (const x of TOOL_HREFS) {
-      if (x.length <= norm.length) continue;
-      if (!x.startsWith(norm + '/')) continue;
-      if (logical === x || logical.startsWith(x + '/')) return false;
-    }
-    return true;
   }
 </script>
 
@@ -52,7 +24,7 @@
       <span class="app-sidebar-icon">🏠</span>
       <span class="app-sidebar-label">{t('common.workspace')}</span>
     </a>
-    {#each TOOL_GROUPS as group}
+    {#each sidebarGroups as group}
       <div class="app-sidebar-group">
         <button
           type="button"
@@ -69,7 +41,7 @@
               <a
                 href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
                 class="app-sidebar-item"
-                class:active={isActive(item)}
+                class:active={isSidebarItemActive($page.url.pathname, $page.url.hash || '', item)}
               >
                 <span class="app-sidebar-icon">{item.icon}</span>
                 <span class="app-sidebar-label">{t(item.titleKey)}</span>

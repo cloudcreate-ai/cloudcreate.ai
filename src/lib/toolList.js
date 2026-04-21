@@ -64,8 +64,39 @@ export const TOOL_GROUPS = [
   },
 ];
 
+/** 创意类页面分组（供 findToolByHref / 收藏等使用） */
+export const CREATIVE_GROUPS = [
+  {
+    id: 'creative',
+    labelKey: 'sidebar.creative',
+    items: [
+      {
+        id: 'borderBeam',
+        titleKey: 'creative.borderBeamTitle',
+        href: '/creative/border-beam',
+        icon: '✨',
+      },
+    ],
+  },
+];
+
+/** 创意区左侧栏扁平列表：概览 + 各演示（与工具页侧栏同一套信息架构） */
+export const CREATIVE_SIDEBAR_ITEMS = [
+  { id: 'overview', titleKey: 'creative.sidebarOverview', href: '/creative', icon: '📋' },
+  ...CREATIVE_GROUPS[0].items,
+];
+
+/** 侧边栏分组顺序：工具 → 创意（用于解析收藏、href 等） */
+export const ALL_SIDEBAR_GROUPS = [...TOOL_GROUPS, ...CREATIVE_GROUPS];
+
 /** 所有工具的 href 集合（用于判断是否为工具页） */
 export const TOOL_HREFS = new Set(TOOL_GROUPS.flatMap((g) => g.items.map((i) => i.href)));
+
+/** 创意类入口 href */
+export const CREATIVE_HREFS = new Set(CREATIVE_GROUPS.flatMap((g) => g.items.map((i) => i.href)));
+
+/** 已登记的工具 + 创意路径（用于侧边栏激活时的前缀排除） */
+export const ALL_REGISTERED_HREFS = new Set([...TOOL_HREFS, ...CREATIVE_HREFS]);
 
 /** 按 href（可含 #hash）查找工具；同一路径多项时按 hash 区分 */
 export function findToolByHref(href) {
@@ -75,7 +106,7 @@ export function findToolByHref(href) {
   const hash = hashIdx >= 0 ? href.slice(hashIdx) : '';
 
   const candidates = [];
-  for (const g of TOOL_GROUPS) {
+  for (const g of ALL_SIDEBAR_GROUPS) {
     for (const item of g.items) {
       if (item.href === pathOnly) candidates.push(item);
     }
@@ -108,7 +139,7 @@ export function getFavoriteKeyForCurrentPage(pathname, urlHash = '') {
 
   let best = null;
   let bestLen = -1;
-  for (const h of TOOL_HREFS) {
+  for (const h of ALL_REGISTERED_HREFS) {
     if (!base.startsWith(`${h}/`)) continue;
     if (h.length > bestLen) {
       bestLen = h.length;

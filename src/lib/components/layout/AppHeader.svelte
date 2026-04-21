@@ -4,12 +4,15 @@
   import { locale, setLocale, t } from '$lib/i18n.js';
   import { pathForLocale } from '$lib/localePath.js';
   import { isCompactMode, leftSidebarOpen } from '$lib/stores/layoutStore.js';
+  import { NAV_CATEGORIES, resolveCategoryId } from '$lib/navRegistry.js';
 
   function switchLocale(lang) {
     setLocale(lang);
     const target = pathForLocale(lang, $page.url.pathname);
     goto(target, { replaceState: true });
   }
+
+  const currentCategoryId = $derived(resolveCategoryId($page.url.pathname));
 </script>
 
 <header class="app-header">
@@ -27,6 +30,18 @@
     {/if}
     <a href={pathForLocale($locale, '/')} class="app-header-title">{t('home.title')}</a>
   </div>
+  <nav class="app-header-categories" aria-label={t('layout.categoryNav')}>
+    {#each NAV_CATEGORIES as cat}
+      <a
+        href={pathForLocale($locale, cat.navHomeLogicalPath)}
+        class="app-header-category"
+        class:is-active={currentCategoryId === cat.id}
+        aria-current={currentCategoryId === cat.id ? 'page' : undefined}
+      >
+        {t(cat.labelKey)}
+      </a>
+    {/each}
+  </nav>
   <div class="app-header-actions">
     <button
       type="button"
@@ -52,6 +67,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.75rem;
     height: 46px;
     padding: 0 1rem;
     flex-shrink: 0;
@@ -88,6 +104,42 @@
   }
   .app-header-title:hover {
     color: var(--ccw-accent);
+  }
+  .app-header-categories {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .app-header-category {
+    border: 1px solid var(--ccw-border-soft);
+    border-radius: var(--ccw-radius-pill);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.7rem;
+    background: transparent;
+    color: var(--ccw-text-secondary);
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  a.app-header-category:hover:not(.is-active) {
+    color: var(--ccw-text-primary);
+    border-color: var(--ccw-border-contrast);
+    background: var(--ccw-bg-elevated);
+  }
+  .app-header-category.is-active {
+    background: var(--ccw-accent-strong);
+    color: #fff;
+    border-color: var(--ccw-accent-strong);
+    box-shadow: 0 0 0 3px var(--ccw-focus-ring);
+  }
+  a.app-header-category.is-active:hover {
+    color: #fff;
   }
   .app-header-actions {
     display: flex;

@@ -1,6 +1,7 @@
 <script>
   import { t } from '$lib/i18n.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
+  import WorkspacePageShell from '$lib/components/layout/WorkspacePageShell.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
   import ZoomControls from '$lib/components/common/ZoomControls.svelte';
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
@@ -9,10 +10,10 @@
   let sliderDemoValue = $state(50);
 </script>
 
-<div class="workspace-content workspace-content-wide styleguide">
+<WorkspacePageShell wide={true} class="styleguide">
   <ToolPageHeader titleKey="styleGuide.title" descKey="styleGuide.desc" />
 
-  <p class="intro">{t('styleGuide.intro')}</p>
+  <p class="page-intro">{t('styleGuide.intro')}</p>
 
   <section class="card section">
     <h3>{t('styleGuide.sectionButtons')}</h3>
@@ -85,13 +86,9 @@
       <li>{t('styleGuide.note3')}</li>
     </ul>
   </section>
-</div>
+</WorkspacePageShell>
 
 <style>
-  .styleguide .intro {
-    margin: 0 0 1.5rem 0;
-    color: var(--ccw-text-muted);
-  }
   .section {
     margin-bottom: 1.25rem;
   }

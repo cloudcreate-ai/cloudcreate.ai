@@ -143,6 +143,14 @@ body,
   margin: 0 auto;
 }
 
+/* 工具页/创意页标题下的说明段落（与 styleguide 一致） */
+:global(.page-intro) {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ccw-text-muted);
+}
+
 /* 统一输入组件字体 */
 input, select, textarea {
   font-family: inherit;
