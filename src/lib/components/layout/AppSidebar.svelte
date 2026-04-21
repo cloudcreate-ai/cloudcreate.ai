@@ -2,15 +2,24 @@
   import { page } from '$app/stores';
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
-  import { getSidebarGroupsForPath } from '$lib/navRegistry.js';
-  import { isSidebarItemActive } from '$lib/navActive.js';
+  import { getSidebarGroupsForPath, resolveCategoryId } from '$lib/navRegistry.js';
+  import { isSidebarItemActive, isWorkspaceShortcutActive } from '$lib/navActive.js';
 
   let collapsedGroups = $state({});
 
   const sidebarGroups = $derived(getSidebarGroupsForPath($page.url.pathname));
+  const categoryId = $derived(resolveCategoryId($page.url.pathname));
 
   function toggleGroup(id) {
     collapsedGroups = { ...collapsedGroups, [id]: !collapsedGroups[id] };
+  }
+
+  /** @param {{ href: string, hash?: string }} item */
+  function itemActive(item) {
+    if (categoryId === 'workspace' && (item.href === '/tools' || item.href === '/creative')) {
+      return isWorkspaceShortcutActive($page.url.pathname, item.href);
+    }
+    return isSidebarItemActive($page.url.pathname, $page.url.hash || '', item);
   }
 </script>
 
@@ -41,7 +50,7 @@
               <a
                 href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
                 class="app-sidebar-item"
-                class:active={isSidebarItemActive($page.url.pathname, $page.url.hash || '', item)}
+                class:active={itemActive(item)}
               >
                 <span class="app-sidebar-icon">{item.icon}</span>
                 <span class="app-sidebar-label">{t(item.titleKey)}</span>

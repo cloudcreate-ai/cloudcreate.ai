@@ -3,7 +3,7 @@
  */
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import { TOOL_HREFS } from '$lib/toolList.js';
+import { ALL_REGISTERED_HREFS } from '$lib/toolList.js';
 import { getLogicalPath } from '$lib/localePath.js';
 
 const STORAGE_KEY_FAV = 'freetools-favorites';
@@ -71,7 +71,7 @@ export function recordToolUsed(pathname, hash = '') {
   const logical = getLogicalPath(pathname);
   if (logical === '/' || logical === '') return;
   const href = logical.startsWith('/') ? logical : '/' + logical;
-  if (!TOOL_HREFS.has(href)) return;
+  if (!ALL_REGISTERED_HREFS.has(href) && href !== '/tools') return;
 
   const fullHref = hash ? `${href}${hash}` : href;
   recentlyUsed.update((arr) => {

@@ -29,3 +29,15 @@ export function isSidebarItemActive(pathname, urlHash, item) {
   }
   return true;
 }
+
+/**
+ * 工作区侧栏「工具概览」「创意概览」：在对应分区下整条路径高亮。
+ * @param {string} pathname
+ * @param {string} itemHref `/tools` 或 `/creative`
+ */
+export function isWorkspaceShortcutActive(pathname, itemHref) {
+  const logical = getLogicalPath(pathname);
+  if (itemHref === '/tools') return logical === '/tools' || logical.startsWith('/tools/');
+  if (itemHref === '/creative') return logical === '/creative' || logical.startsWith('/creative/');
+  return false;
+}

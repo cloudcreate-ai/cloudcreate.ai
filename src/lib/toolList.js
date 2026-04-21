@@ -70,6 +70,7 @@ export const CREATIVE_GROUPS = [
     id: 'creative',
     labelKey: 'sidebar.creative',
     items: [
+      { id: 'overview', titleKey: 'creative.sidebarOverview', href: '/creative', icon: '📋' },
       {
         id: 'borderBeam',
         titleKey: 'creative.borderBeamTitle',
@@ -80,11 +81,8 @@ export const CREATIVE_GROUPS = [
   },
 ];
 
-/** 创意区左侧栏扁平列表：概览 + 各演示（与工具页侧栏同一套信息架构） */
-export const CREATIVE_SIDEBAR_ITEMS = [
-  { id: 'overview', titleKey: 'creative.sidebarOverview', href: '/creative', icon: '📋' },
-  ...CREATIVE_GROUPS[0].items,
-];
+/** 创意区左侧栏扁平列表（与 CREATIVE_GROUPS[0].items 一致） */
+export const CREATIVE_SIDEBAR_ITEMS = CREATIVE_GROUPS[0].items;
 
 /** 侧边栏分组顺序：工具 → 创意（用于解析收藏、href 等） */
 export const ALL_SIDEBAR_GROUPS = [...TOOL_GROUPS, ...CREATIVE_GROUPS];
