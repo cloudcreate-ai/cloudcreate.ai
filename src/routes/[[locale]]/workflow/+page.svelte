@@ -17,6 +17,7 @@
   import StepBar from '$lib/components/workflow/StepBar.svelte';
   import StepDetailPanel from '$lib/components/workflow/StepDetailPanel.svelte';
   import CropModal from '$lib/components/workflow/CropModal.svelte';
+  import ToolPageFavoriteButton from '$lib/components/ToolPageFavoriteButton.svelte';
 
   const DEFAULT_STEPS = [
     { type: 'input' },
@@ -301,6 +302,7 @@
   <header class="workflow-header">
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
     <div class="header-actions">
+      <ToolPageFavoriteButton />
       <button class="btn preset-outlined-surface-200-800 btn-sm" onclick={openViewJson}>
         {t('workflow.viewJson')}
       </button>

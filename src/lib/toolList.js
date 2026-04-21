@@ -1,3 +1,5 @@
+import { getLogicalPath } from '$lib/localePath.js';
+
 /**
  * 工具分组列表 - 供侧边栏与首页共用
  */
@@ -87,4 +89,33 @@ export function findToolByHref(href) {
     if (item.hash === hash) return item;
   }
   return candidates[0];
+}
+
+/**
+ * 当前 URL 对应的收藏键（与首页星标相同：`href`，必要时带 `#hash`）。
+ * 工作区首页或非工具页返回 null；子路径（如 /workflow/advanced）归属到已登记工具路径。
+ */
+export function getFavoriteKeyForCurrentPage(pathname, urlHash = '') {
+  const logical = getLogicalPath(pathname);
+  if (!logical || logical === '/') return null;
+
+  let base = logical.split('?')[0];
+  if (!base.startsWith('/')) base = '/' + base;
+  const hash = urlHash || '';
+
+  const t0 = findToolByHref(hash ? `${base}${hash}` : base);
+  if (t0) return t0.href + (t0.hash ?? '');
+
+  let best = null;
+  let bestLen = -1;
+  for (const h of TOOL_HREFS) {
+    if (!base.startsWith(`${h}/`)) continue;
+    if (h.length > bestLen) {
+      bestLen = h.length;
+      best = h;
+    }
+  }
+  if (!best) return null;
+  const t1 = findToolByHref(best);
+  return t1 ? t1.href + (t1.hash ?? '') : null;
 }

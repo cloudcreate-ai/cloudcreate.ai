@@ -27,6 +27,7 @@
   import EncodeNode from '$lib/components/workflow/nodes/EncodeNode.svelte';
   import OutputNode from '$lib/components/workflow/nodes/OutputNode.svelte';
   import CropModal from '$lib/components/workflow/CropModal.svelte';
+  import ToolPageFavoriteButton from '$lib/components/ToolPageFavoriteButton.svelte';
 
   const nodeTypes = {
     input: InputNode,
@@ -285,6 +286,7 @@
     <a href={workflowHref} class="text-surface-600-400 text-sm no-underline hover:text-primary-500">← {t('workflow.simpleMode')}</a>
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
     <div class="header-actions">
+      <ToolPageFavoriteButton />
       <input
         type="text"
         class="input text-sm w-32"

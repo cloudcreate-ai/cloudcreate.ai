@@ -7,17 +7,32 @@
 
   const allTools = $derived(TOOL_GROUPS.flatMap((g) => g.items));
 
-  const favoriteTools = $derived(
+  /** 收藏/最近条目用存储的 href 作 key，避免 /table 与 /table#... 解析成同一 tool.id 时 each 重复 */
+  const favoriteEntries = $derived(
     $favorites
-      .map((href) => findToolByHref(href))
+      .map((storedHref) => {
+        const tool = findToolByHref(storedHref);
+        return tool ? { storedHref, tool } : null;
+      })
       .filter(Boolean)
   );
 
-  const recentTools = $derived(
+  const recentEntries = $derived(
     $recentlyUsed
-      .map(({ href }) => findToolByHref(href))
+      .map((entry) => {
+        const tool = findToolByHref(entry.href);
+        return tool ? { storedHref: entry.href, tool } : null;
+      })
       .filter(Boolean)
   );
+
+  /** @param {string} stored */
+  function localeLinkFromStored(stored) {
+    const i = stored.indexOf('#');
+    const pathOnly = i >= 0 ? stored.slice(0, i) : stored;
+    const hash = i >= 0 ? stored.slice(i) : '';
+    return localePath($page.url.pathname, pathOnly) + hash;
+  }
 
   function isFavorite(href) {
     return $favorites.includes(href);
@@ -30,12 +45,12 @@
   <!-- 1. 我的收藏 -->
   <section class="home-section">
     <h2 class="home-section-title">{t('home.favoritesTitle')}</h2>
-    {#if favoriteTools.length > 0}
+    {#if favoriteEntries.length > 0}
       <div class="home-tool-grid">
-        {#each favoriteTools as tool (tool.id)}
-          {@const fav = isFavorite(tool.href + (tool.hash ?? ''))}
+        {#each favoriteEntries as { storedHref, tool } (storedHref)}
+          {@const fav = isFavorite(storedHref)}
           <a
-            href={localePath($page.url.pathname, tool.href) + (tool.hash ?? '')}
+            href={localeLinkFromStored(storedHref)}
             class="home-tool-card card block p-4 no-underline text-inherit"
           >
             <button
@@ -44,7 +59,7 @@
               onclick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleFavorite(tool.href + (tool.hash ?? ''));
+                toggleFavorite(storedHref);
               }}
               aria-label={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
               title={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
@@ -64,12 +79,12 @@
   <!-- 2. 最近使用 -->
   <section class="home-section">
     <h2 class="home-section-title">{t('home.recentlyUsedTitle')}</h2>
-    {#if recentTools.length > 0}
+    {#if recentEntries.length > 0}
       <div class="home-tool-grid">
-        {#each recentTools as tool (tool.id)}
-          {@const fav = isFavorite(tool.href + (tool.hash ?? ''))}
+        {#each recentEntries as { storedHref, tool } (storedHref)}
+          {@const fav = isFavorite(storedHref)}
           <a
-            href={localePath($page.url.pathname, tool.href) + (tool.hash ?? '')}
+            href={localeLinkFromStored(storedHref)}
             class="home-tool-card card block p-4 no-underline text-inherit"
           >
             <button
@@ -78,7 +93,7 @@
               onclick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleFavorite(tool.href + (tool.hash ?? ''));
+                toggleFavorite(storedHref);
               }}
               aria-label={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
               title={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
