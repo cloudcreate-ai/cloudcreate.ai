@@ -30,10 +30,11 @@
     leftSidebarOpen.set(false);
   });
 
-  // 记录最近使用的工具
+  // 记录最近使用的工具（含 hash，便于表格工具区分入口）
   $effect(() => {
     if (!browser) return;
-    recordToolUsed($page.url.pathname);
+    $page.url.hash;
+    recordToolUsed($page.url.pathname, $page.url.hash || '');
   });
 
 </script>

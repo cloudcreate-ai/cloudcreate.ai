@@ -6,6 +6,8 @@ const config = {
   preprocess: vitePreprocess(),
   kit: {
     prerender: {
+      /** /table 为客户端渲染（+layout.js ssr:false），预渲染 HTML 中无锚点 id，链向 #table-* 时需忽略校验 */
+      handleMissingId: 'ignore',
       entries: [
         '/',
         '/en',

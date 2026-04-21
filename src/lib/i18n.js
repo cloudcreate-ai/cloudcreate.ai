@@ -53,9 +53,8 @@ const translations = {
     sidebar: {
       image: 'Image',
       watermark: 'Watermark',
-      css: 'CSS',
-      archive: 'Archive',
       pdf: 'PDF',
+      table: 'Table tools',
       other: 'Other',
     },
     layout: {
@@ -106,6 +105,10 @@ const translations = {
       markdownPreviewDesc: 'Preview Markdown online. Upload or paste, edit on the left, preview on the right.',
       tableToolsTitle: 'Table Preview & Convert',
       tableToolsDesc: 'Preview CSV, TSV, XLSX, JSON. Convert between formats and download.',
+      tablePreviewTitle: 'Table preview',
+      tablePreviewDesc: 'Preview CSV, TSV, XLSX, JSON in the browser.',
+      tableConvertTitle: 'Table format conversion',
+      tableConvertDesc: 'Convert between CSV, TSV, XLSX, JSON and download.',
       pdfViewerTitle: 'PDF Preview',
       pdfViewerDesc: 'Upload local PDFs and browse pages directly in the browser.',
       pdfCompressTitle: 'PDF Compress (browser)',
@@ -582,6 +585,8 @@ const translations = {
       rows: 'rows',
       rowsPage: 'Rows',
       colsPage: 'Cols',
+      resetColWidths: 'Reset column widths',
+      colResizeHint: 'Drag to resize column',
     },
     archive: {
       errEmptyInput: 'Please add files.',
@@ -632,9 +637,8 @@ const translations = {
     sidebar: {
       image: '图片',
       watermark: '去水印',
-      css: 'CSS',
-      archive: '压缩包',
       pdf: 'PDF 工具',
+      table: '表格工具',
       other: '其他',
     },
     layout: {
@@ -685,6 +689,10 @@ const translations = {
       markdownPreviewDesc: '在线预览 Markdown。上传或粘贴，左侧编辑，右侧预览。',
       tableToolsTitle: '表格预览与格式转换',
       tableToolsDesc: '预览 CSV、TSV、XLSX、JSON，支持格式互转并下载。',
+      tablePreviewTitle: '表格预览',
+      tablePreviewDesc: '在浏览器中预览 CSV、TSV、XLSX、JSON。',
+      tableConvertTitle: '表格格式转换',
+      tableConvertDesc: '在 CSV、TSV、XLSX、JSON 间互转并下载。',
       pdfViewerTitle: 'PDF 预览',
       pdfViewerDesc: '上传本地 PDF，在浏览器内直接翻页预览。',
       pdfCompressTitle: 'PDF 压缩（浏览器）',
@@ -1158,6 +1166,8 @@ const translations = {
       rows: '行',
       rowsPage: '行',
       colsPage: '列',
+      resetColWidths: '重置列宽',
+      colResizeHint: '拖动边界调整列宽',
     },
     archive: {
       errEmptyInput: '请添加文件。',

@@ -66,16 +66,17 @@ export function toggleFavorite(href) {
   });
 }
 
-/** 记录工具使用（在进入工具页时调用） */
-export function recordToolUsed(pathname) {
+/** 记录工具使用（在进入工具页时调用）；hash 用于区分同页多入口（如 /table#convert） */
+export function recordToolUsed(pathname, hash = '') {
   const logical = getLogicalPath(pathname);
   if (logical === '/' || logical === '') return;
   const href = logical.startsWith('/') ? logical : '/' + logical;
   if (!TOOL_HREFS.has(href)) return;
 
+  const fullHref = hash ? `${href}${hash}` : href;
   recentlyUsed.update((arr) => {
     const now = Date.now();
-    const filtered = arr.filter((x) => x.href !== href);
-    return [{ href, usedAt: now }, ...filtered].slice(0, RECENT_MAX);
+    const filtered = arr.filter((x) => x.href !== fullHref);
+    return [{ href: fullHref, usedAt: now }, ...filtered].slice(0, RECENT_MAX);
   });
 }

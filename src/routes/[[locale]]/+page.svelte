@@ -32,10 +32,10 @@
     <h2 class="home-section-title">{t('home.favoritesTitle')}</h2>
     {#if favoriteTools.length > 0}
       <div class="home-tool-grid">
-        {#each favoriteTools as tool (tool.href)}
-          {@const fav = isFavorite(tool.href)}
+        {#each favoriteTools as tool (tool.id)}
+          {@const fav = isFavorite(tool.href + (tool.hash ?? ''))}
           <a
-            href={localePath($page.url.pathname, tool.href)}
+            href={localePath($page.url.pathname, tool.href) + (tool.hash ?? '')}
             class="home-tool-card card block p-4 no-underline text-inherit"
           >
             <button
@@ -44,7 +44,7 @@
               onclick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleFavorite(tool.href);
+                toggleFavorite(tool.href + (tool.hash ?? ''));
               }}
               aria-label={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
               title={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
@@ -66,10 +66,10 @@
     <h2 class="home-section-title">{t('home.recentlyUsedTitle')}</h2>
     {#if recentTools.length > 0}
       <div class="home-tool-grid">
-        {#each recentTools as tool (tool.href)}
-          {@const fav = isFavorite(tool.href)}
+        {#each recentTools as tool (tool.id)}
+          {@const fav = isFavorite(tool.href + (tool.hash ?? ''))}
           <a
-            href={localePath($page.url.pathname, tool.href)}
+            href={localePath($page.url.pathname, tool.href) + (tool.hash ?? '')}
             class="home-tool-card card block p-4 no-underline text-inherit"
           >
             <button
@@ -78,7 +78,7 @@
               onclick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                toggleFavorite(tool.href);
+                toggleFavorite(tool.href + (tool.hash ?? ''));
               }}
               aria-label={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
               title={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
@@ -99,10 +99,10 @@
   <section class="home-section">
     <h2 class="home-section-title">{t('home.commonToolsTitle')}</h2>
     <div class="home-tool-grid">
-      {#each allTools as tool (tool.href)}
-        {@const fav = isFavorite(tool.href)}
+      {#each allTools as tool (tool.id)}
+        {@const fav = isFavorite(tool.href + (tool.hash ?? ''))}
         <a
-          href={localePath($page.url.pathname, tool.href)}
+          href={localePath($page.url.pathname, tool.href) + (tool.hash ?? '')}
           class="home-tool-card card block p-4 no-underline text-inherit"
         >
           <button
@@ -111,7 +111,7 @@
             onclick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              toggleFavorite(tool.href);
+              toggleFavorite(tool.href + (tool.hash ?? ''));
             }}
             aria-label={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}
             title={fav ? t('home.removeFromFavorites') : t('home.addToFavorites')}

@@ -18,16 +18,25 @@
   /**
    * 当前路径是否属于该工具项。
    * 前缀匹配时若存在更长的已注册工具 href 与路径一致或是其前缀，则父路径不激活（避免 /pdf 与 /pdf/compress 同时高亮）。
+   * 同一 pathname 下多项（如 /table#preview 与 /table#convert）通过 hash 区分，仅一项高亮。
    */
-  function isActive(href) {
+  function isActive(item) {
+    const href = item.href;
     const logical = getLogicalPath($page.url.pathname);
     const norm = href === '/' ? '/' : href;
-    if (logical === norm) return true;
+    if (logical === norm) {
+      if (item.hash) {
+        const h = $page.url.hash || '';
+        if (item.hash === '#table-preview') return h === '' || h === '#table-preview';
+        return h === item.hash;
+      }
+      return true;
+    }
     if (norm === '/' || !logical.startsWith(norm + '/')) return false;
-    for (const h of TOOL_HREFS) {
-      if (h.length <= norm.length) continue;
-      if (!h.startsWith(norm + '/')) continue;
-      if (logical === h || logical.startsWith(h + '/')) return false;
+    for (const x of TOOL_HREFS) {
+      if (x.length <= norm.length) continue;
+      if (!x.startsWith(norm + '/')) continue;
+      if (logical === x || logical.startsWith(x + '/')) return false;
     }
     return true;
   }
@@ -58,9 +67,9 @@
           <div class="app-sidebar-group-items">
             {#each group.items as item}
               <a
-                href={localePath($page.url.pathname, item.href)}
+                href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
                 class="app-sidebar-item"
-                class:active={isActive(item.href)}
+                class:active={isActive(item)}
               >
                 <span class="app-sidebar-icon">{item.icon}</span>
                 <span class="app-sidebar-label">{t(item.titleKey)}</span>
