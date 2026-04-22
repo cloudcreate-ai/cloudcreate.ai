@@ -3,6 +3,9 @@
    * 压缩包压缩 - ZIP, GZIP, TAR.GZ, BROTLI
    */
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import { formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -29,6 +32,19 @@
   const singleFileFormats = [FMT_GZIP, FMT_BROTLI];
 
   const isSingleFormat = $derived(singleFileFormats.includes(format));
+
+  $effect(() => {
+    void format;
+    void files;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.archiveCompress',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        format,
+        fileCount: String(files.length),
+      }),
+    });
+  });
 
   const fileStats = $derived.by(() => {
     if (!files.length) return null;

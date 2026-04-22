@@ -8,6 +8,9 @@
   import { t } from '$lib/i18n.js';
   import { formatFileSize } from '$lib/imageProcessor.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -38,6 +41,21 @@
   let previewW = $state(0);
   let previewH = $state(0);
   let previewError = $state('');
+
+  $effect(() => {
+    void renderScale;
+    void jpegQualityPercent;
+    void pageImageFormat;
+    void sourceFile;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.pdfCompress',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        fileName: sourceFile?.name || '—',
+        settingsSummary: `rasterScale=${renderScale} pageImg=${pageImageFormat} jpegQ%=${jpegQualityPercent}`,
+      }),
+    });
+  });
 
   const compareItem = $derived(
     sourceFile && previewOriginalUrl && previewResultUrl && outputBlob

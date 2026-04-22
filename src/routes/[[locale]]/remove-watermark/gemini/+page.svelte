@@ -4,6 +4,9 @@
    */
   import { browser } from '$app/environment';
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { filterImageFiles, downloadBlob } from '$lib/batchHelpers.js';
   import { getImageDimensions, formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -23,6 +26,17 @@
   let processing = $state(false);
   let error = $state('');
   let previewOpen = $state(false);
+
+  $effect(() => {
+    void sourceFile;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.watermarkGemini',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        fileName: sourceFile?.name || '—',
+      }),
+    });
+  });
 
   function revokeResult() {
     if (resultPreviewUrl) URL.revokeObjectURL(resultPreviewUrl);

@@ -3,8 +3,10 @@
   import '@xyflow/svelte/dist/style.css';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
   import { afterNavigate } from '$app/navigation';
   import { t } from '$lib/i18n.js';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { localePath } from '$lib/localePath.js';
   import { getNodeDef, getAllNodeDefs } from '$lib/workflow/registry.js';
   import { validateWorkflow, runWorkflow } from '$lib/workflow/runner.js';
@@ -86,6 +88,17 @@
   }
 
   let nodes = $state.raw(toSvelteFlowNodes(getPreset('compress').nodes));
+
+  $effect(() => {
+    void nodes;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.workflowAdvanced',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        nodeCount: String((nodes || []).length),
+      }),
+    });
+  });
   let edges = $state.raw(getPreset('compress').edges || []);
 
   $effect(() => {

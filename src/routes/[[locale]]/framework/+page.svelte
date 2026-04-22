@@ -3,7 +3,16 @@
    * 框架测试页 - 用于验证布局结构，便于调试和后续填充实际内容
    * 布局结构：app-shell (上|中|下) -> app-shell-main (左|中|右)
    */
-  import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+
+  $effect(() => {
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.framework',
+      getParams: () => ({ currentUrl: get(page).url.href }),
+    });
+  });
 </script>
 
 <div class="framework-test">

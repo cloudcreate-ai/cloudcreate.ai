@@ -1,6 +1,8 @@
 <script>
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
   import { t } from '$lib/i18n.js';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { localePath } from '$lib/localePath.js';
   import { validateWorkflow, runWorkflow } from '$lib/workflow/runner.js';
   import { buildGraphFromSteps } from '$lib/workflow/buildGraph.js';
@@ -30,6 +32,17 @@
   let workflowDescription = $state('');
 
   const advancedHref = $derived(localePath($page.url.pathname, '/workflow/advanced'));
+
+  $effect(() => {
+    void steps;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.workflow',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        stepCount: String(steps.length),
+      }),
+    });
+  });
 
   function addStep(index, type) {
     const params = { ...DEFAULT_STEP_PARAMS[type] };

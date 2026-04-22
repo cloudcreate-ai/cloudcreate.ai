@@ -3,8 +3,17 @@
    * CSS 工具索引 - 链接到压缩、解压
    */
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
   import { t } from '$lib/i18n.js';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { localePath } from '$lib/localePath.js';
+
+  $effect(() => {
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.cssIndex',
+      getParams: () => ({ currentUrl: get(page).url.href }),
+    });
+  });
 </script>
 
 <div class="workspace-content">

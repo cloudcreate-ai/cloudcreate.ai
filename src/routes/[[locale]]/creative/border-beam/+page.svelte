@@ -1,5 +1,8 @@
 <script>
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import WorkspacePageShell from '$lib/components/layout/WorkspacePageShell.svelte';
   import BorderBeam from '$lib/components/BorderBeam.svelte';
@@ -14,6 +17,23 @@
   let strength = $state(1);
 
   const strengthPercent = $derived(Math.round(strength * 100));
+
+  $effect(() => {
+    void beamSize;
+    void colorVariant;
+    void beamTheme;
+    void strength;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.creativeBorderBeam',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        size: beamSize,
+        variant: colorVariant,
+        theme: beamTheme,
+        strength: String(strengthPercent),
+      }),
+    });
+  });
 </script>
 
 <WorkspacePageShell wide={true} class="creative-border-beam">

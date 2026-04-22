@@ -5,6 +5,8 @@
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import {
     TOOL_GROUPS,
     CREATIVE_CARD_ITEMS,
@@ -15,6 +17,20 @@
 
   /** @type {'workspace' | 'tools' | 'creative'} */
   let { variant = 'workspace' } = $props();
+
+  $effect(() => {
+    void variant;
+    const key =
+      variant === 'workspace'
+        ? 'agentPrompt.genericWorkspace'
+        : variant === 'tools'
+          ? 'agentPrompt.genericTools'
+          : 'agentPrompt.genericCreative';
+    return registerAgentPrompt({
+      templateKey: key,
+      getParams: () => ({ currentUrl: get(page).url.href }),
+    });
+  });
 
   const allTools = $derived(TOOL_GROUPS.flatMap((g) => g.items));
 

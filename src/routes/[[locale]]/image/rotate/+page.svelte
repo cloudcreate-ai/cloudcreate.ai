@@ -18,6 +18,9 @@
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
 
   const ROTATE_OPTIONS = [
     { value: 0, labelKey: 'rotate.0deg' },
@@ -41,6 +44,23 @@
   let idCounter = 0;
 
   $effect(() => saveToolConfig('rotate', { rotate, flipH, flipV, targetFormat, quality }));
+
+  $effect(() => {
+    void rotate;
+    void flipH;
+    void flipV;
+    void targetFormat;
+    void items;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageRotate',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        transformSummary: `rotate ${rotate}° flipH=${flipH} flipV=${flipV}`,
+        outputFormat: targetFormat || t('common.sameAsOriginal'),
+        fileCount: String(items.length),
+      }),
+    });
+  });
 
   async function addFiles(fileList) {
     const filtered = filterImageFiles(fileList);

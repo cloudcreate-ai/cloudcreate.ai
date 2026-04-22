@@ -3,6 +3,9 @@
    * CSS 解压/美化 - 支持上传、粘贴，格式化输出
    */
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { beautify } from '$lib/cssTools.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -61,6 +64,14 @@
     inputFileName = '';
     error = '';
   }
+
+  $effect(() => {
+    void inputText;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.cssBeautify',
+      getParams: () => ({ currentUrl: get(page).url.href }),
+    });
+  });
 </script>
 
 <div class="workspace-content">

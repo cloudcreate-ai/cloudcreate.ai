@@ -3,6 +3,9 @@
    * Markdown 在线预览 - 左编辑右预览
    */
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { markdownToHtml } from '$lib/markdownTools.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
@@ -29,6 +32,17 @@
     text = '';
     selectedFileName = '';
   }
+
+  $effect(() => {
+    void text;
+    void selectedFileName;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.markdown',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+      }),
+    });
+  });
 </script>
 
 <div class="workspace-content workspace-content-wide">

@@ -9,6 +9,9 @@
   import { getImageDimensions, formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import JSZip from 'jszip';
 
@@ -30,6 +33,23 @@
   $effect(() => {
     const arr = Array.from(selectedSizes).sort((a, b) => a - b);
     saveToolConfig('favicon', { sizes: arr, includeIco });
+  });
+
+  $effect(() => {
+    void selectedSizes;
+    void includeIco;
+    void sourceFile;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageFavicon',
+      getParams: () => {
+        const sizes = Array.from(selectedSizes).sort((a, b) => a - b).join(',');
+        return {
+          currentUrl: get(page).url.href,
+          optionsSummary: `PNG sizes [${sizes}] ico=${includeIco}`,
+          fileCount: sourceFile ? '1' : '0',
+        };
+      },
+    });
   });
 
   function toggleSize(size) {

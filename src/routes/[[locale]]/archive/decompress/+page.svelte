@@ -3,6 +3,9 @@
    * 压缩包解压 - ZIP, GZIP, TAR.GZ, BROTLI
    */
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
@@ -32,6 +35,17 @@
   function handleFiles(files) {
     if (files?.[0]) handleFile(files[0]);
   }
+
+  $effect(() => {
+    void archiveFile;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.archiveDecompress',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        fileName: archiveFile?.name || '—',
+      }),
+    });
+  });
 
   async function decompress() {
     if (!archiveFile) {

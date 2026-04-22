@@ -14,6 +14,9 @@
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
 
   const VALID_MODES = ['percent', 'max', 'width', 'height', 'long', 'exact'];
   const resizeDefaults = {
@@ -58,6 +61,31 @@
   let processing = $state(false);
   let error = $state('');
   let idCounter = 0;
+
+  $effect(() => {
+    void scaleMode;
+    void scalePercent;
+    void maxWidth;
+    void maxHeight;
+    void targetWidth;
+    void targetHeight;
+    void targetLong;
+    void targetFormat;
+    void quality;
+    void items;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageResize',
+      getParams: () => {
+        const paramsSummary = `mode=${scaleMode} pct=${scalePercent} maxW=${maxWidth} maxH=${maxHeight} exact=${targetWidth}x${targetHeight} long=${targetLong} fmt=${targetFormat || 'orig'} q=${quality}`;
+        return {
+          currentUrl: get(page).url.href,
+          mode: scaleMode,
+          paramsSummary,
+          fileCount: String(items.length),
+        };
+      },
+    });
+  });
 
   async function addFiles(fileList) {
     const filtered = filterImageFiles(fileList);

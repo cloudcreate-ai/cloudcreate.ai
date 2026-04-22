@@ -9,6 +9,9 @@
   import { formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
 
   let sourceFile = $state(null);
@@ -19,6 +22,18 @@
   let processing = $state(false);
   let error = $state('');
   let previewOpen = $state(false);
+
+  $effect(() => {
+    void sourceFile;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageAppstore',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        optionsSummary: '1024×1024 PNG square no transparency',
+        fileCount: sourceFile ? '1' : '0',
+      }),
+    });
+  });
 
   async function handleFiles(files) {
     const filtered = filterImageFiles(files);

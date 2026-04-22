@@ -2,6 +2,9 @@
   import { browser } from '$app/environment';
   import { onDestroy } from 'svelte';
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ZoomControls from '$lib/components/common/ZoomControls.svelte';
@@ -9,6 +12,17 @@
   let images = $state([]);
   let selectedIndex = $state(0);
   let zoom = $state(1);
+
+  $effect(() => {
+    void images;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imagePreview',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        fileCount: String(images.length),
+      }),
+    });
+  });
 
   const acceptedTypes =
     'image/png,image/jpeg,image/webp,image/gif,image/avif,image/bmp,image/svg+xml';

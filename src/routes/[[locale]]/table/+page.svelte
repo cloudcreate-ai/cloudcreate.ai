@@ -4,7 +4,9 @@
    */
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
+  import { get } from 'svelte/store';
   import { t } from '$lib/i18n.js';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { getLogicalPath } from '$lib/localePath.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import { parseTableFile, tableToBlob, FORMATS } from '$lib/tableTools.js';
@@ -56,6 +58,25 @@
   const rowEnd = $derived(Math.min((rowPageClamped + 1) * ROW_PAGE_SIZE, totalRows));
   const colStart = $derived(colPageClamped * COL_PAGE_SIZE + 1);
   const colEnd = $derived(Math.min((colPageClamped + 1) * COL_PAGE_SIZE, totalCols));
+
+  $effect(() => {
+    void table;
+    void selectedSheetIndex;
+    void outputFormat;
+    void fileName;
+    void $page.url.hash;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.table',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        section: get(page).url.hash || '#table-preview',
+        outputFormat,
+        fileName: fileName || '—',
+        rows: String(totalRows),
+        cols: String(totalCols),
+      }),
+    });
+  });
 
   const ACCEPT = '.csv,.tsv,.xlsx,.xls,application/json,text/csv,text/tab-separated-values';
 

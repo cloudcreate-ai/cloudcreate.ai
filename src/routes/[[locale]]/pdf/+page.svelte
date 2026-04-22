@@ -3,6 +3,9 @@
   import { browser } from '$app/environment';
   import { ACCEPT_PDF } from '$lib/fileConstants.js';
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -24,6 +27,17 @@
   let pdfReady = $state(false);
   let getDocumentRef = null;
   let docLoading = $state(false);
+
+  $effect(() => {
+    void fileName;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.pdf',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        fileName: fileName || '—',
+      }),
+    });
+  });
 
   onMount(async () => {
     if (!browser) return;

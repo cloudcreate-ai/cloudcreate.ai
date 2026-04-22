@@ -3,6 +3,9 @@
    * CSS 压缩 - 支持上传、粘贴，基础/激进模式
    */
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { minifyBasic, minifyAggressive } from '$lib/cssTools.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -65,6 +68,17 @@
     inputFileName = '';
     error = '';
   }
+
+  $effect(() => {
+    void minifyLevel;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.cssMinify',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        aggressive: minifyLevel === MINIFY_AGGRESSIVE ? 'yes' : 'no',
+      }),
+    });
+  });
 </script>
 
 <div class="workspace-content">

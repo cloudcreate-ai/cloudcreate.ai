@@ -1,6 +1,9 @@
 <script>
   import { onDestroy } from 'svelte';
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -60,6 +63,21 @@
   onDestroy(() => {
     clearTimeout(playbackTimer);
     gifEditorStore.reset();
+  });
+
+  $effect(() => {
+    void gifState;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageGif',
+      getParams: () => {
+        const st = get(gifEditorStore);
+        const comp = st.compression ?? {};
+        const opt = st.options ?? {};
+        const fr = st.frames?.length ?? 0;
+        const summary = `name=${st.fileName || '—'} frames=${fr} scale%=${opt.scalePercent ?? 100} targetFps=${st.targetFps ?? '—'} mergeBg=${opt.mergeBackground ? 'Y' : 'N'} compReady=${!comp.dirty && !comp.running && (comp.frames?.length > 0)}`;
+        return { currentUrl: get(page).url.href, summary };
+      },
+    });
   });
 
   async function handleFiles(files) {

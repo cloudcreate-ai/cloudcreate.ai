@@ -13,6 +13,9 @@
   } from '$lib/batchHelpers.js';
   import { loadToolConfig, saveToolConfig } from '$lib/toolConfig.js';
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
@@ -45,6 +48,22 @@
   let processing = $state(false);
   let error = $state('');
   let idCounter = 0;
+
+  $effect(() => {
+    const tk = configKey === 'compress' ? 'agentPrompt.imageCompress' : 'agentPrompt.imageConvert';
+    void targetFormat;
+    void quality;
+    void items;
+    return registerAgentPrompt({
+      templateKey: tk,
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        targetFormat: targetFormat || '',
+        quality: String(quality),
+        fileCount: String(items.length),
+      }),
+    });
+  });
 
   const actionKey = $derived(configKey === 'compress' ? 'common.compress' : 'common.convert');
   const zipName = $derived(

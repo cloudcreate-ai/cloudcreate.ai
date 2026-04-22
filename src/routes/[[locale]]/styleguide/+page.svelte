@@ -1,5 +1,8 @@
 <script>
   import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import WorkspacePageShell from '$lib/components/layout/WorkspacePageShell.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -8,6 +11,13 @@
 
   let controlZoom = $state(1);
   let sliderDemoValue = $state(50);
+
+  $effect(() => {
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.styleGuide',
+      getParams: () => ({ currentUrl: get(page).url.href }),
+    });
+  });
 </script>
 
 <WorkspacePageShell wide={true} class="styleguide">

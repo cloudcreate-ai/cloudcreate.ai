@@ -1,6 +1,51 @@
 <script>
-  import { t } from '$lib/i18n.js';
+  import { page } from '$app/stores';
+  import { t, locale } from '$lib/i18n.js';
   import { aiPanelOpen } from '$lib/stores/layoutStore.js';
+  import { agentPromptStore } from '$lib/stores/agentPromptStore.js';
+  import { interpolateTemplate } from '$lib/agentPrompt/interpolate.js';
+  import { resolveAgentPromptFallbackTemplateKey } from '$lib/agentPrompt/fallbackKey.js';
+  import { getLogicalPath } from '$lib/localePath.js';
+
+  let copied = $state(false);
+  let copyTimer = /** @type {ReturnType<typeof setTimeout> | null} */ (null);
+
+  const compiledPrompt = $derived.by(() => {
+    void $locale;
+    const pathname = $page.url.pathname;
+    const href = $page.url.href;
+    const logical = getLogicalPath(pathname);
+    const reg = $agentPromptStore;
+    if (reg?.templateKey && typeof reg.getParams === 'function') {
+      const raw = t(reg.templateKey);
+      const p = { currentUrl: href, ...reg.getParams() };
+      return interpolateTemplate(raw, p);
+    }
+    const sub = resolveAgentPromptFallbackTemplateKey(logical, pathname);
+    const raw = t(`agentPrompt.${sub}`);
+    return interpolateTemplate(raw, { currentUrl: href });
+  });
+
+  const introText = $derived.by(() => {
+    void $locale;
+    return interpolateTemplate(t('agentPrompt.intro'), { currentUrl: $page.url.href });
+  });
+
+  async function copyPrompt() {
+    const text = compiledPrompt;
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+      if (copyTimer) clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => {
+        copied = false;
+        copyTimer = null;
+      }, 2000);
+    } catch {
+      copied = false;
+    }
+  }
 </script>
 
 {#if $aiPanelOpen}
@@ -17,7 +62,25 @@
       </button>
     </div>
     <div class="ai-panel-content">
-      <p class="ai-panel-placeholder">{t('layout.aiChatPlaceholder')}</p>
+      <p class="ai-panel-intro">{introText}</p>
+      <div class="ai-panel-copy-wrap">
+        <button
+          type="button"
+          class="btn preset-filled-primary-500 ai-panel-copy-btn"
+          class:ai-panel-copy-btn--done={copied}
+          onclick={() => copyPrompt()}
+          aria-label={copied ? t('agentPrompt.copied') : t('agentPrompt.copy')}
+        >
+          {copied ? t('agentPrompt.copied') : t('agentPrompt.copy')}
+        </button>
+      </div>
+      <textarea
+        class="ai-panel-prompt"
+        readonly
+        rows="14"
+        value={compiledPrompt}
+        aria-label={t('layout.aiChat')}
+      ></textarea>
     </div>
   </aside>
 {:else}
@@ -46,7 +109,6 @@
     overflow: hidden;
     color: var(--ccw-text-secondary);
   }
-  /* 与侧栏、工作区标题对齐（0.5rem） */
   .ai-panel-header {
     display: flex;
     align-items: center;
@@ -76,19 +138,63 @@
   .ai-panel-close:hover {
     color: var(--ccw-text-primary);
     border-color: var(--ccw-border-soft);
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in oklab, var(--ccw-bg-elevated) 80%, transparent);
   }
   .ai-panel-content {
     flex: 1;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 0.75rem;
     background: var(--ccw-bg-elevated);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 0;
   }
-  .ai-panel-placeholder {
-    font-size: 0.8125rem;
+  .ai-panel-intro {
+    font-size: 0.75rem;
     color: var(--ccw-text-muted);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.45;
+  }
+  .ai-panel-copy-wrap {
+    width: 100%;
+    flex-shrink: 0;
+  }
+  .ai-panel-copy-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    border-radius: var(--ccw-radius-button);
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease,
+      box-shadow 150ms ease;
+  }
+  .ai-panel-copy-btn--done {
+    box-shadow: 0 0 0 1px var(--ccw-border-contrast);
+  }
+  .ai-panel-prompt {
+    width: 100%;
+    flex: 1;
+    min-height: 8rem;
+    box-sizing: border-box;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.7rem;
+    line-height: 1.4;
+    font-family: var(--ccw-font-mono, ui-monospace, monospace);
+    color: var(--ccw-text-primary);
+    background: var(--ccw-bg-base);
+    border: 1px solid var(--ccw-border-soft);
+    border-radius: var(--ccw-radius-card);
+    resize: vertical;
+  }
+  .ai-panel-prompt:focus {
+    outline: 1px solid var(--ccw-border-contrast);
+    outline-offset: 1px;
   }
   .ai-panel-collapsed {
     width: 36px;
@@ -116,7 +222,7 @@
     transition: color 150ms ease, background-color 150ms ease;
   }
   .ai-panel-expand:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in oklab, var(--ccw-bg-elevated) 60%, transparent);
     color: var(--ccw-accent);
   }
 </style>

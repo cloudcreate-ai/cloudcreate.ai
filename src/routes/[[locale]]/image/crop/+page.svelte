@@ -15,6 +15,9 @@
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
 
   const ASPECT_OPTIONS = [
     { labelKey: 'crop.free', value: 0 },
@@ -62,6 +65,39 @@
   let error = $state('');
   let cropRequest = $state(null);
   let idCounter = 0;
+
+  $effect(() => {
+    void aspectRatio;
+    void customWidth;
+    void customHeight;
+    void targetFormat;
+    void items;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageCrop',
+      getParams: () => {
+        const aspectMode =
+          aspectRatio === 'custom'
+            ? 'custom'
+            : aspectRatio === 0
+              ? 'free'
+              : `fixed(${String(aspectRatio)})`;
+        let sizeLabel = 'free';
+        if (aspectRatio === 'custom') {
+          sizeLabel = `${customWidth}x${customHeight}`;
+        } else if (typeof aspectRatio === 'number' && aspectRatio > 0) {
+          const eff = (Number(aspectRatio) || 0).toFixed(3);
+          sizeLabel = `ratio~${eff}`;
+        }
+        return {
+          currentUrl: get(page).url.href,
+          aspectMode,
+          sizeLabel,
+          outputFormat: targetFormat || t('common.sameAsOriginal'),
+          fileCount: String(items.length),
+        };
+      },
+    });
+  });
 
   function createRequestCropRegion() {
     return (imageData, params) =>

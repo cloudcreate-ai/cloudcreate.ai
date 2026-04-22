@@ -19,6 +19,9 @@
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
+  import { page } from '$app/stores';
+  import { get } from 'svelte/store';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import { onMount } from 'svelte';
   import {
@@ -119,6 +122,19 @@
       assignedFile: i in manualOverrides ? manualOverrides[i] : r.assignedFile,
     }))
   );
+
+  $effect(() => {
+    void rows;
+    void fileItems;
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.imageBatch',
+      getParams: () => ({
+        currentUrl: get(page).url.href,
+        rowCount: String(rows.length),
+        fileCount: String(fileItems.length),
+      }),
+    });
+  });
 
   /** 不支持的格式：不参与批处理，表格中灰底只读 */
   const UNSUPPORTED_FORMATS = ['gif', 'video'];

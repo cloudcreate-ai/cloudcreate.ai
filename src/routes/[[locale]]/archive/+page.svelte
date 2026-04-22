@@ -3,8 +3,17 @@
    * 压缩包工具索引
    */
   import { page } from '$app/stores';
+  import { get } from 'svelte/store';
   import { t } from '$lib/i18n.js';
+  import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { localePath } from '$lib/localePath.js';
+
+  $effect(() => {
+    return registerAgentPrompt({
+      templateKey: 'agentPrompt.archiveIndex',
+      getParams: () => ({ currentUrl: get(page).url.href }),
+    });
+  });
 </script>
 
 <div class="workspace-content">
