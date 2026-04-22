@@ -59,7 +59,6 @@ export const TOOL_GROUPS = [
       { id: 'archiveCompress', titleKey: 'home.archiveCompressTitle', href: '/archive/compress', icon: '📦' },
       { id: 'styleGuide', titleKey: 'home.styleGuideTitle', href: '/styleguide', icon: '🎨' },
       { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', href: '/markdown', icon: '📝' },
-      { id: 'workflow', titleKey: 'home.workflowTitle', href: '/workflow', icon: '🔀' },
     ],
   },
 ];
@@ -133,7 +132,7 @@ export function findToolByHref(href) {
 
 /**
  * 当前 URL 对应的收藏键（与首页星标相同：`href`，必要时带 `#hash`）。
- * 工作区首页或非工具页返回 null；子路径（如 /workflow/advanced）归属到已登记工具路径。
+ * 工作区首页或非工具页返回 null；子路径按已登记工具 href 最长前缀归属。
  */
 export function getFavoriteKeyForCurrentPage(pathname, urlHash = '') {
   const logical = getLogicalPath(pathname);

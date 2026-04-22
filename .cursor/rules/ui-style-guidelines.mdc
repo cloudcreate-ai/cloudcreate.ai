@@ -1,5 +1,5 @@
 ---
-description: 统一 CloudCreate Workspace 交互控件样式，避免再次出现不一致按钮或内联色值
+description: 统一 CloudCreate.ai 工具站交互控件样式，避免再次出现不一致按钮或内联色值
 globs: src/**/*.svelte
 alwaysApply: false
 ---

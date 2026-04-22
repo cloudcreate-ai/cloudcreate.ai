@@ -49,7 +49,15 @@ const translations = {
       changeImage: 'Change image',
       sameAsOriginal: 'Same as original',
     },
-    pageTitle: 'CloudCreate Workspace - Browser Utility Collection',
+    pageTitle: 'CloudCreate.ai – Creative toolkit for the AI era',
+    seo: {
+      siteBrand: 'CloudCreate.ai',
+      defaultDescription:
+        'A creative toolkit for people and AI—tools, examples, and demos in your browser, ready to use. Images, PDF, tables, workflows, and more; processing stays on your device.',
+      workflowAdvancedTitle: 'Advanced workflow editor',
+      workflowAdvancedDesc:
+        'Full canvas for custom creative pipelines: edit steps, import/export JSON, run image workflows locally—no install, private to your device.',
+    },
     sidebar: {
       workspaceSection: 'Home',
       workspaceHome: 'Home',
@@ -66,14 +74,16 @@ const translations = {
     creative: {
       sidebarOverview: 'Overview',
       landingTitle: 'Creative',
-      landingDesc: 'Visual demos and experimental UI. More entries will be added over time.',
-      landingHint: 'Choose a demo from the list on the left. Layout matches tool pages: list, main area, and AI panel on the right.',
+      landingDesc:
+        'Visual demos and UI experiments—open, tweak, and reuse in your own creative work. More examples coming.',
+      landingHint:
+        'Pick an entry on the left; same layout as tools (list, workspace, AI panel)—built for quick exploration.',
       overviewIntro:
-        'Favorites, recent, and shortcuts below are limited to creative entries. Open a demo from the list on the left.',
+        'Favorites, recents, and shortcuts below are creative-only. Open a demo from the list to try it in-browser.',
       commonShortcutsTitle: 'Creative demos',
       borderBeamTitle: 'Border Beam',
       borderBeamDesc:
-        'Animated traveling glow around a card — same technique as the open-source border-beam-vue project (CSS conic-gradient + @property).',
+        'Traveling glow along a card edge—CSS conic-gradient sample you can drop into landing pages and prototypes.',
       borderBeamGithub: 'View project on GitHub',
       borderBeamNpmNote: 'The original ships as the npm package border-beam-vue3 for Vue 3; this page uses a Svelte wrapper over the same style generator.',
       demoCardText: 'Content inside the beam',
@@ -100,15 +110,16 @@ const translations = {
       categoryWorkspace: 'Home',
       categoryTools: 'Tools',
       categoryCreative: 'Creative',
-      toolsOverview: 'Tools overview',
-      creativeOverview: 'Creative overview',
+      toolsOverview: 'Tool collection',
+      creativeOverview: 'Creative demos',
       categoryComingSoon: 'Coming soon',
       localeSwitcher: 'Display language',
     },
     home: {
-      title: 'CloudCreate Workspace',
-      subtitle: 'Browser-based utility collection',
-      toolsOverviewIntro: 'Tool-related favorites, recent usage, and the full tool grid. Use the top bar to switch to Workspace or Creative.',
+      title: 'CloudCreate.ai',
+      subtitle: 'Creative toolkit for the AI era',
+      toolsOverviewIntro:
+        'Favorites, recents, and the full tool grid. Use the top bar for Home, Tools, or Creative—everything runs in your browser, ready to use.',
       favoritesTitle: 'My Favorites',
       recentlyUsedTitle: 'Recently Used',
       commonToolsTitle: 'Common Tools',
@@ -117,59 +128,84 @@ const translations = {
       emptyFavorites: 'No favorites yet. Click the star on a tool to add.',
       emptyRecentlyUsed: 'No recently used tools.',
       frameworkTitle: 'Framework Test',
+      frameworkDesc:
+        'Internal layout preview for developers—workspace, sidebar, and AI panel shell (not a user-facing tool).',
       workflowTitle: 'Workflow Editor',
-      workflowDesc: 'Visual workflow editor. Compose image processing steps (decode, crop, resize, encode). Presets and custom workflows.',
+      workflowDesc:
+        'Build image pipelines visually—decode, crop, resize, encode. Presets or custom flows with JSON import/export; runs locally in your browser.',
       imagePreviewTitle: 'Image Preview',
-      imagePreviewDesc: 'Upload multiple images, inspect metadata, zoom and pan in the viewer.',
+      imagePreviewDesc:
+        'Review creative assets in-browser—metadata at a glance, zoom and pan; files stay on your device.',
       compressTitle: 'Image Compress',
-      compressDesc: 'Reduce file size. Keep original format or convert. Quality adjustable. Batch supported.',
+      compressDesc:
+        'Shrink images for web and sharing without installing apps. Keep format or convert; quality and batch control, all local.',
       convertTitle: 'Image Format Convert',
-      convertDesc: 'Convert between JPEG, PNG, WebP, AVIF. Default WebP. Quality adjustable. Batch supported.',
+      convertDesc:
+        'Switch between JPEG, PNG, WebP, AVIF for sites, apps, and AI-ready assets. Batch-friendly; processing stays in the browser.',
       cropTitle: 'Image Crop',
-      cropDesc: 'Crop by drag or exact size. Free/fixed ratio. Output format selectable.',
+      cropDesc:
+        'Frame shots, thumbnails, and social crops with free or fixed ratios; pick output format. Fast, in-browser.',
       resizeTitle: 'Image Resize',
-      resizeDesc: 'Scale by percentage or max dimension. Output format selectable. Batch supported.',
+      resizeDesc:
+        'Scale for social, stores, or specs—by percent or max edge—with batch export and local processing.',
       rotateTitle: 'Image Rotate & Flip',
-      rotateDesc: 'Rotate (90°, 180°, 270°) and mirror (horizontal, vertical). Batch supported.',
+      rotateDesc:
+        'Fix orientation and mirror batches in one pass—quick browser-side prep for publishing.',
       faviconTitle: 'Favicon Generator',
-      faviconDesc: 'Generate multi-size favicon icons from image. Center crop to square, output PNG.',
+      faviconDesc:
+        'Turn artwork into multi-size favicons for sites and side projects—center crop to square, export PNG.',
       playstoreTitle: 'Play Store Icon',
-      playstoreDesc: 'Generate 512×512 PNG icon for Google Play. Center crop to square.',
+      playstoreDesc:
+        'Export a Google Play–ready 512×512 PNG from any image—no desktop toolchain required.',
       appstoreTitle: 'App Store Icon',
-      appstoreDesc: 'Generate 1024×1024 PNG icon for Apple App Store. Center crop to square, no transparency.',
+      appstoreDesc:
+        'Generate App Store–compliant 1024×1024 icons (square crop, no transparency) straight in the browser.',
       cssMinifyTitle: 'CSS Minify',
-      cssMinifyDesc: 'Compress CSS. Upload or paste, basic/aggressive mode, online preview.',
+      cssMinifyDesc:
+        'Ship lighter stylesheets—paste or upload CSS, basic or aggressive minify, with instant preview.',
       cssBeautifyTitle: 'CSS Beautify',
-      cssBeautifyDesc: 'Unminify CSS. Format minified CSS for readability. Upload or paste.',
+      cssBeautifyDesc:
+        'Make minified CSS readable again—great for debugging, teaching, and quick edits.',
       archiveDecompressTitle: 'Archive Decompress',
-      archiveDecompressDesc: 'Extract ZIP, GZIP, TAR.GZ, BROTLI. Upload and download files.',
+      archiveDecompressDesc:
+        'Unpack ZIP, GZIP, TAR.GZ, BROTLI locally—grab files without extra desktop apps.',
       archiveCompressTitle: 'Archive Compress',
-      archiveCompressDesc: 'Create ZIP, GZIP, TAR.GZ, BROTLI. Upload files and download.',
+      archiveCompressDesc:
+        'Bundle files into common archive formats in the browser—handy for sharing and backups.',
       markdownPreviewTitle: 'Markdown Preview',
-      markdownPreviewDesc: 'Preview Markdown online. Upload or paste, edit on the left, preview on the right.',
+      markdownPreviewDesc:
+        'Write and preview side by side—docs, notes, READMEs, and content drafts; no server round-trip.',
       tableToolsTitle: 'Table Preview & Convert',
-      tableToolsDesc: 'Preview CSV, TSV, XLSX, JSON. Convert between formats and download.',
+      tableToolsDesc:
+        'Open CSV, TSV, XLSX, JSON and convert formats—useful for data checks, reports, and lightweight ETL.',
       tablePreviewTitle: 'Table preview',
-      tablePreviewDesc: 'Preview CSV, TSV, XLSX, JSON in the browser.',
+      tablePreviewDesc:
+        'Inspect spreadsheets and JSON tables locally—scroll, paginate, and validate before you ship data.',
       tableConvertTitle: 'Table format conversion',
-      tableConvertDesc: 'Convert between CSV, TSV, XLSX, JSON and download.',
+      tableConvertDesc:
+        'Convert between CSV, TSV, XLSX, JSON and download—ready for pipelines and handoffs.',
       pdfViewerTitle: 'PDF Preview',
-      pdfViewerDesc: 'Upload local PDFs and browse pages directly in the browser.',
+      pdfViewerDesc:
+        'Read PDFs with paging and zoom—client-side viewing for review, reference, and creative handoffs.',
       pdfCompressTitle: 'PDF Compress (browser)',
-      pdfCompressDesc: 'Rasterize with PDF.js + JPEG; see tool page for trade-offs.',
+      pdfCompressDesc:
+        'Make smaller PDFs via page rasterization—best for sharable previews; see on-page limits before you rely on it.',
       styleGuideTitle: 'Style & Components',
-      styleGuideDesc: 'Browse shared UI components and styles. Update this page when adding new patterns.',
+      styleGuideDesc:
+        'Internal design gallery for CloudCreate.ai—shared UI tokens and components for consistent creative tools.',
       gifToolTitle: 'GIF Compression',
-      gifToolDesc: 'Compress heavy GIFs with frame-rate, size, palette, and background strategies.',
+      gifToolDesc:
+        'Trim heavy GIFs for the web—tune frame rate, dimensions, palette, and background merge; all client-side.',
       batchTitle: 'Image Batch (Spec Table)',
-      batchDesc: 'Load spec table, assign inputs by ratio, run per row, compare target vs actual.',
+      batchDesc:
+        'Batch-resize from a spec table—ideal for multi-channel creatives and store listing dimensions with per-row targets.',
       watermarkGeminiTitle: 'Gemini Watermark Remover',
       watermarkGeminiDesc:
-        'Remove the visible Gemini corner watermark locally (reverse alpha blending). Nothing is uploaded.',
+        'Remove the visible Gemini corner watermark locally (reverse alpha)—images never leave your device.',
     },
     watermarkGemini: {
       title: 'Gemini Watermark Remover',
-      desc: 'Remove the visible Gemini AI corner watermark in your browser. Uses the open-source reverse alpha blending engine; images stay on your device.',
+      desc: 'Clean Gemini-visible watermarks in-browser with the open-source reverse-alpha engine—private, no upload, built for AI-era image hygiene.',
       source: 'Image',
       remove: 'Remove watermark',
       disclaimer:
@@ -184,17 +220,17 @@ const translations = {
     },
     compress: {
       title: 'Image Compress',
-      desc: 'Reduce file size. Keep original format or convert to JPEG, PNG, WebP, AVIF.',
+      desc: 'Shrink images locally—keep format or convert to JPEG, PNG, WebP, AVIF with quality you control.',
       outputFormat: 'Output format',
     },
     convert: {
       title: 'Image Format Convert',
-      desc: 'Convert images between JPEG, PNG, WebP, AVIF. Default WebP.',
+      desc: 'Convert images between JPEG, PNG, WebP, AVIF (default WebP)—ready for web, apps, and downstream AI use.',
       targetFormat: 'Target format',
     },
     crop: {
       title: 'Image Crop',
-      desc: 'Crop image by drag or enter exact size. Free ratio and fixed ratios supported. Output format selectable.',
+      desc: 'Crop by drag or exact pixels—free or fixed ratios, pick output format; instant creative framing in the browser.',
       aspectRatio: 'Aspect Ratio',
       widthPx: 'Width (px)',
       heightPx: 'Height (px)',
@@ -261,7 +297,7 @@ const translations = {
     },
     resize: {
       title: 'Image Resize',
-      desc: 'Scale images by percentage or max dimension. Output format selectable.',
+      desc: 'Scale by percentage or max edge—choose output format; batch-friendly resizing without leaving the tab.',
       byPercent: 'By percentage',
       byMax: 'Limit width and height',
       byWidth: 'By width',
@@ -280,7 +316,7 @@ const translations = {
     },
     batch: {
       title: 'Image Batch (Spec Table)',
-      desc: 'Load a spec table, assign inputs by ratio, run resize per row, compare target vs actual dimensions and size.',
+      desc: 'Drive batch resizes from a spec table—match channel and store dimensions row by row, compare targets vs actuals.',
       noSpecs: 'No spec table loaded. Add static/specs/batch-specs.json and redeploy.',
       globalConfig: 'Global options',
       sectionRules: 'Rules',
@@ -344,7 +380,7 @@ const translations = {
     },
     rotate: {
       title: 'Image Rotate & Flip',
-      desc: 'Rotate (90°, 180°, 270°) and mirror (horizontal, vertical). Batch supported.',
+      desc: 'Rotate and mirror in bulk—fast orientation fixes for publishing and asset prep, all local.',
       rotation: 'Rotation',
       '0deg': '0°',
       '90right': '90° right',
@@ -357,7 +393,7 @@ const translations = {
     },
     favicon: {
       title: 'Favicon Generator',
-      desc: 'Generate multi-size favicon icons from image. Center crop to square, output PNG.',
+      desc: 'From one image, export multi-size PNG favicons—center square crop, ready to drop into your site.',
       steps: 'Steps:',
       step1: 'Upload a source image (any ratio, will be center-cropped to square)',
       step2: 'Select output sizes (16, 32, 48, 180, 192, 512 px)',
@@ -375,7 +411,7 @@ const translations = {
     },
     playstore: {
       title: 'Play Store Icon',
-      desc: 'Generate 512×512 PNG icon for Google Play. Center crop to square.',
+      desc: '512×512 Play Store icon from any artwork—square crop, compliant export in the browser.',
       steps: 'Steps:',
       step1: 'Upload source image (any ratio, will be center-cropped to square)',
       step2: 'Generate and download 512×512 PNG',
@@ -386,7 +422,7 @@ const translations = {
     },
     appstore: {
       title: 'App Store Icon',
-      desc: 'Generate 1024×1024 PNG icon for Apple App Store. Center crop to square, no transparency.',
+      desc: '1024×1024 App Store icon—square crop, no transparency, sRGB-friendly workflow without Xcode.',
       steps: 'Steps:',
       step1: 'Upload source image (any ratio, will be center-cropped to square)',
       step2: 'Generate and download 1024×1024 PNG',
@@ -397,15 +433,15 @@ const translations = {
     },
     cssIndex: {
       title: 'CSS Tools',
-      desc: 'Compress or beautify CSS.',
+      desc: 'Minify or beautify stylesheets—front-end creative helpers, in-browser.',
       minify: 'Minify',
-      minifyDesc: 'Compress CSS, basic or aggressive.',
+      minifyDesc: 'Smaller CSS for shipping—basic or aggressive modes.',
       beautify: 'Beautify',
-      beautifyDesc: 'Format minified CSS for readability.',
+      beautifyDesc: 'Readable CSS from minified bundles.',
     },
     cssMinify: {
       title: 'CSS Minify',
-      desc: 'Compress CSS. Upload or paste, basic/aggressive mode, online preview.',
+      desc: 'Compress CSS—paste or upload, pick mode, preview minified output instantly.',
       basic: 'Basic',
       aggressive: 'Aggressive',
       input: 'Input',
@@ -417,7 +453,7 @@ const translations = {
     },
     cssBeautify: {
       title: 'CSS Beautify',
-      desc: 'Unminify CSS. Format minified CSS for readability.',
+      desc: 'Format minified CSS for reading, diffing, and teaching—no install.',
       input: 'Input',
       uploadHint: 'Click or drag .css file here',
       orPaste: 'Or paste CSS below',
@@ -427,15 +463,15 @@ const translations = {
     },
     archiveIndex: {
       title: 'Archive Tools',
-      desc: 'Compress or decompress archives.',
+      desc: 'Package or unpack archives—ZIP, GZIP, TAR.GZ, BROTLI—right in the browser.',
       decompress: 'Decompress',
-      decompressDesc: 'Extract ZIP, GZIP, TAR.GZ, BROTLI.',
+      decompressDesc: 'Extract common archives locally.',
       compress: 'Compress',
-      compressDesc: 'Create ZIP, GZIP, TAR.GZ, BROTLI.',
+      compressDesc: 'Build archives from your files without desktop utilities.',
     },
     archiveDecompress: {
       title: 'Archive Decompress',
-      desc: 'Extract ZIP, GZIP, TAR.GZ, BROTLI. Upload and download files.',
+      desc: 'Extract ZIP, GZIP, TAR.GZ, BROTLI—upload, unpack, download; data stays on-device.',
       input: 'Input',
       uploadHint: 'Click or drag archive file here',
       formats: 'ZIP, GZIP (.gz), TAR.GZ (.tgz), BROTLI (.br)',
@@ -446,7 +482,7 @@ const translations = {
     },
     archiveCompress: {
       title: 'Archive Compress',
-      desc: 'Create ZIP, GZIP, TAR.GZ, BROTLI. Upload files and download.',
+      desc: 'Create ZIP, GZIP, TAR.GZ, or BROTLI from uploads—quick packaging for sharing.',
       format: 'Format',
       input: 'Files',
       uploadHint: 'Click or drag files/folders here',
@@ -461,7 +497,7 @@ const translations = {
     },
     markdownPreview: {
       title: 'Markdown Preview',
-      desc: 'Preview Markdown online. Upload or paste, edit on the left, preview on the right.',
+      desc: 'Live Markdown preview—edit on the left, rendered on the right; great for docs and README drafts.',
       input: 'Input',
       upload: 'Upload file',
       uploadHint: 'Drag .md file here or click to select',
@@ -474,7 +510,7 @@ const translations = {
     },
     pdfViewer: {
       title: 'PDF Preview',
-      desc: 'Upload local PDF files and browse pages with zoom and navigation controls.',
+      desc: 'Open PDFs locally with paging, zoom, and keyboard-friendly navigation—nothing uploaded.',
       upload: 'Choose PDF',
       uploadHint: 'Click or drag a .pdf file here',
       dropHint: 'Drop PDF file to start previewing immediately.',
@@ -494,7 +530,7 @@ const translations = {
     },
     pdfCompress: {
       title: 'PDF Compress (browser)',
-      desc: 'Rasterize each page with PDF.js and rebuild a JPEG-based PDF. Read the limitations below before use.',
+      desc: 'Shrink PDFs by rasterizing pages—trade visual fidelity for size; read caveats below before production use.',
       caveatTitle: 'How this works & limitations',
       caveat1:
         'This is not a “structure optimizer” like qpdf: pages become bitmaps, so vector text and sharp zoom are lost.',
@@ -525,8 +561,8 @@ const translations = {
     },
     styleGuide: {
       title: 'Style & Component Guide',
-      desc: 'Preview shared UI elements. Every new global component or style token must be showcased here.',
-      intro: 'Use this page to verify the current design system. When adding buttons, cards, inputs, progress indicators, or helper classes, append a demo here for quick regression checks.',
+      desc: 'Living gallery of CloudCreate.ai UI tokens and components—use it to keep creative tools visually consistent.',
+      intro: 'When you add buttons, cards, inputs, progress patterns, or helper classes, extend this gallery so every tool page stays visually aligned.',
       sectionButtons: 'Buttons',
       sectionUtility: 'Utility Controls',
       sectionCards: 'Cards & Surfaces',
@@ -549,7 +585,7 @@ const translations = {
     },
     imagePreview: {
       title: 'Image Preview',
-      desc: 'Upload or drag in multiple images, inspect metadata at a glance, and preview with zoom controls.',
+      desc: 'Drop in multiple images—metadata, thumbnails, and zoom/pan for quick creative QA, all client-side.',
       upload: 'Upload images',
       uploadHint: 'Click or drag JPG/PNG/WebP, GIF, AVIF files here',
       dropHint: 'Drop files to add them instantly.',
@@ -563,7 +599,7 @@ const translations = {
     },
     gifTool: {
       title: 'GIF Compression',
-      desc: 'Upload heavy GIF files and compress them with frame-rate, size, palette, and background optimization strategies directly in the browser.',
+      desc: 'Tune frame rate, dimensions, palette, and background merge to slim GIFs—animation-friendly compression without servers.',
       upload: 'Upload GIF',
       uploadHint: 'Upload a GIF to start compressing.',
       formats: 'GIF',
@@ -620,7 +656,7 @@ const translations = {
     },
     tableTools: {
       title: 'Table Preview & Convert',
-      desc: 'Preview CSV, TSV, XLSX, JSON. Convert between formats and download.',
+      desc: 'Preview and convert tabular data (CSV, TSV, XLSX, JSON)—handy for creative ops and lightweight data prep.',
       input: 'Input',
       upload: 'Upload file',
       uploadHint: 'Drag CSV/TSV/XLSX/JSON here or click to select',
@@ -678,7 +714,15 @@ const translations = {
       changeImage: '更换图片',
       sameAsOriginal: '同原图',
     },
-    pageTitle: 'CloudCreate Workspace - 浏览器实用工具集',
+    pageTitle: 'CloudCreate.ai – AI时代的创意工具集',
+    seo: {
+      siteBrand: 'CloudCreate.ai',
+      defaultDescription:
+        '面向人与 AI 的创意工具集：工具、样例与演示，浏览器内开箱即用。图片、PDF、表格、工作流等，处理在本地完成。',
+      workflowAdvancedTitle: '高级工作流编辑器',
+      workflowAdvancedDesc:
+        '完整画布编排创意流水线：编辑步骤、导入导出 JSON、本地运行图片处理—无需安装，数据留在本机。',
+    },
     sidebar: {
       workspaceSection: '首页',
       workspaceHome: '首页',
@@ -695,13 +739,13 @@ const translations = {
     creative: {
       sidebarOverview: '概览',
       landingTitle: '创意',
-      landingDesc: '视觉演示与实验性界面，后续会持续补充条目。',
-      landingHint: '请从左侧列表选择演示。布局与工具页一致：左侧列表、中间主区域、右侧 AI 面板。',
-      overviewIntro: '以下「我的」「最近」仅含创意类入口；常用为创意演示快捷方式。左侧列表可打开具体页面。',
+      landingDesc: '视觉演示与界面实验—打开即玩，可借鉴到自有项目；后续会持续补充样例。',
+      landingHint: '从左侧选择条目；布局与工具页相同（列表 / 工作区 / AI 面板），方便快速上手与对比。',
+      overviewIntro: '下方收藏、最近与快捷入口仅含创意类；从左侧打开具体页面，均在浏览器内即用。',
       commonShortcutsTitle: '创意演示',
       borderBeamTitle: '流光边框（Border Beam）',
       borderBeamDesc:
-        '沿边框移动的流光高亮效果，实现方式与开源项目 border-beam-vue 一致（CSS 锥形渐变 + @property）。',
+        '沿卡片边缘移动的流光高亮—CSS 锥形渐变示例，可直接用于落地页与原型展示。',
       borderBeamGithub: '在 GitHub 查看项目',
       borderBeamNpmNote:
         '原版以 npm 包 border-beam-vue3 面向 Vue 3；本站使用 Svelte 包装层，共用同一套样式生成逻辑。',
@@ -729,15 +773,16 @@ const translations = {
       categoryWorkspace: '首页',
       categoryTools: '工具',
       categoryCreative: '创意',
-      toolsOverview: '工具概览',
-      creativeOverview: '创意概览',
+      toolsOverview: '创意工具库',
+      creativeOverview: '创意样例',
       categoryComingSoon: '敬请期待',
       localeSwitcher: '界面语言',
     },
     home: {
-      title: 'CloudCreate Workspace',
-      subtitle: '浏览器实用工具集',
-      toolsOverviewIntro: '以下为工具类收藏、最近使用与全部工具入口。顶栏可切换到工作区或创意。',
+      title: 'CloudCreate.ai',
+      subtitle: 'AI时代的创意工具集',
+      toolsOverviewIntro:
+        '收藏、最近使用与全部工具入口。顶栏可切换首页、工具库或创意样例—浏览器内即用，无需安装。',
       favoritesTitle: '我的收藏',
       recentlyUsedTitle: '最近使用',
       commonToolsTitle: '常用工具',
@@ -746,58 +791,60 @@ const translations = {
       emptyFavorites: '暂无收藏，点击工具卡片上的星标可添加。',
       emptyRecentlyUsed: '暂无最近使用的工具。',
       frameworkTitle: '框架测试',
+      frameworkDesc: '开发者内部布局预览（工作区 / 侧栏 / AI 面板），非面向最终用户的工具。',
       workflowTitle: '工作流编辑器',
-      workflowDesc: '可视化工作流编辑，组合图片处理步骤（解码、裁剪、缩放、编码），预设与自定义。',
+      workflowDesc:
+        '用画布串联图片处理：解码、裁剪、缩放、编码。支持预设与自定义，可导入导出 JSON，全部在浏览器本地运行。',
       imagePreviewTitle: '图片预览',
-      imagePreviewDesc: '批量上传图片，查看分辨率/大小并在预览区缩放。',
+      imagePreviewDesc: '批量检视创意素材：分辨率与体积一目了然，支持缩放平移；文件不离开本机。',
       compressTitle: '图片压缩',
-      compressDesc: '减小图片体积，可选保持原格式或转换为其他格式。支持调节质量与批量。',
+      compressDesc: '无需安装即可缩小图片体积。可保持原格式或转换格式，支持质量调节与批量，本地处理。',
       convertTitle: '图片格式转换',
-      convertDesc: '在 JPEG、PNG、WebP、AVIF 间转换。默认 WebP。支持调节质量与批量。',
+      convertDesc: '在 JPEG、PNG、WebP、AVIF 间互转（默认 WebP），适合站点、应用与下游 AI 素材准备，支持批量。',
       cropTitle: '图片裁剪',
-      cropDesc: '拖拽或输入精确尺寸裁剪，支持自由/固定比例，可选输出格式。',
+      cropDesc: '拖拽或精确像素裁剪，自由/固定比例，可选输出格式—快速完成画幅与封面构图。',
       resizeTitle: '图片缩放',
-      resizeDesc: '按比例或最大边缩放，可选输出格式，支持批量。',
+      resizeDesc: '按百分比或限制长边缩放，可选输出格式与批量导出，适合社媒、商店与规格图。',
       rotateTitle: '图片旋转与镜像',
-      rotateDesc: '旋转（90°、180°、270°）与镜像（水平、垂直）。支持批量。',
+      rotateDesc: '批量旋转与镜像，快速修正方向，便于发布与素材整理。',
       faviconTitle: 'Favicon 图标生成',
-      faviconDesc: '从图片生成多尺寸 favicon，居中裁剪为正方形，输出 PNG。',
+      faviconDesc: '从一张图导出多尺寸 PNG favicon，居中裁方，可直接用于站点与演示项目。',
       playstoreTitle: 'Play 商店图标',
-      playstoreDesc: '生成 Google Play 要求的 512×512 PNG 图标，居中裁剪为正方形。',
+      playstoreDesc: '一键导出 512×512 Play 商店图标，居中裁方，无需本地设计工具链。',
       appstoreTitle: 'App Store 图标',
-      appstoreDesc: '生成 Apple App Store 要求的 1024×1024 PNG 图标，居中裁剪为正方形，无透明通道。',
+      appstoreDesc: '生成 1024×1024 App Store 图标（裁方、无透明），在浏览器内完成合规导出。',
       cssMinifyTitle: 'CSS 压缩',
-      cssMinifyDesc: '压缩 CSS。上传或粘贴，基础/激进模式，在线预览。',
+      cssMinifyDesc: '粘贴或上传 CSS，基础/激进压缩并即时预览，减轻样式体积。',
       cssBeautifyTitle: 'CSS 解压',
-      cssBeautifyDesc: '美化压缩后的 CSS，提升可读性。上传或粘贴。',
+      cssBeautifyDesc: '把压缩 CSS 格式化，便于阅读、对比与教学演示。',
       archiveDecompressTitle: '压缩包解压',
-      archiveDecompressDesc: '解压 ZIP、GZIP、TAR.GZ、BROTLI。上传后下载文件。',
+      archiveDecompressDesc: '本地解压 ZIP、GZIP、TAR.GZ、BROTLI，上传即取回文件，无需额外客户端。',
       archiveCompressTitle: '压缩包压缩',
-      archiveCompressDesc: '创建 ZIP、GZIP、TAR.GZ、BROTLI。上传文件后下载。',
+      archiveCompressDesc: '在浏览器内将文件打成常见压缩包，便于分享与临时归档。',
       markdownPreviewTitle: 'Markdown 预览',
-      markdownPreviewDesc: '在线预览 Markdown。上传或粘贴，左侧编辑，右侧预览。',
+      markdownPreviewDesc: '左编右览，适合文档、笔记与 README 起草；不经过服务器。',
       tableToolsTitle: '表格预览与格式转换',
-      tableToolsDesc: '预览 CSV、TSV、XLSX、JSON，支持格式互转并下载。',
+      tableToolsDesc: '预览并互转 CSV、TSV、XLSX、JSON，适合数据核对、报表与轻量处理。',
       tablePreviewTitle: '表格预览',
-      tablePreviewDesc: '在浏览器中预览 CSV、TSV、XLSX、JSON。',
+      tablePreviewDesc: '本地浏览表格与 JSON 数据，分页与列宽调整，便于发布前检查。',
       tableConvertTitle: '表格格式转换',
-      tableConvertDesc: '在 CSV、TSV、XLSX、JSON 间互转并下载。',
+      tableConvertDesc: '在 CSV、TSV、XLSX、JSON 间转换并下载，便于流水线与交接。',
       pdfViewerTitle: 'PDF 预览',
-      pdfViewerDesc: '上传本地 PDF，在浏览器内直接翻页预览。',
+      pdfViewerDesc: '本地打开 PDF，支持翻页与缩放，适合审阅、对照与创意交付。',
       pdfCompressTitle: 'PDF 压缩（浏览器）',
-      pdfCompressDesc: 'PDF.js 栅格化 + JPEG；详见工具页说明与局限。',
+      pdfCompressDesc: '通过页面栅格化减小体积，适合可分享的预览版；正式场景请先阅读页内局限说明。',
       styleGuideTitle: '样式与组件',
-      styleGuideDesc: '查看当前公共组件和样式，新增模式时务必同步到此处。',
+      styleGuideDesc: 'CloudCreate.ai 内部设计样例库—统一创意工具的组件与样式令牌。',
       gifToolTitle: 'GIF 压缩',
-      gifToolDesc: '通过帧率、尺寸、调色板与背景优化组合策略压缩 GIF。',
+      gifToolDesc: '调节帧率、尺寸、调色板与背景合并，为网页与演示瘦身 GIF，全程本地处理。',
       batchTitle: '图片批处理（标准表）',
-      batchDesc: '加载规格表、按比例分配输入、按行执行、对比目标与实际。',
+      batchDesc: '按规格表批量出图，匹配多渠道与商店尺寸，逐行对比目标与实际。',
       watermarkGeminiTitle: 'Gemini 去水印',
-      watermarkGeminiDesc: '在本地去除 Gemini 右下角可见水印（反向 Alpha 混合），图片不上传。',
+      watermarkGeminiDesc: '本地去除 Gemini 可见角标（反向 Alpha 混合），图片不上传，适合 AI 出图后处理。',
     },
     watermarkGemini: {
       title: 'Gemini 去水印',
-      desc: '在浏览器内去除 Gemini AI 图片右下角的可见水印，基于开源反向 Alpha 混合算法，图片不离开本机。',
+      desc: '基于开源反向 Alpha 引擎，在浏览器内去除 Gemini 可见角标—零上传，面向 AI 出图的快速清理。',
       source: '图片',
       remove: '去除水印',
       disclaimer:
@@ -812,17 +859,17 @@ const translations = {
     },
     compress: {
       title: '图片压缩',
-      desc: '减小图片体积，可选保持原格式或转换为 JPEG、PNG、WebP、AVIF。',
+      desc: '本地缩小体积—可保持原格式或转为 JPEG、PNG、WebP、AVIF，质量可控。',
       outputFormat: '输出格式',
     },
     convert: {
       title: '图片格式转换',
-      desc: '在 JPEG、PNG、WebP、AVIF 间转换，默认输出 WebP。',
+      desc: '在 JPEG、PNG、WebP、AVIF 间互转（默认 WebP），服务网页、应用与后续 AI 流程。',
       targetFormat: '目标格式',
     },
     crop: {
       title: '图片裁剪',
-      desc: '拖拽框选或输入精确尺寸裁剪，支持自由/固定比例，可选输出格式。',
+      desc: '拖拽或精确像素裁剪，自由/固定比例，可选输出格式—浏览器内快速构图。',
       aspectRatio: '宽高比',
       widthPx: '宽 (px)',
       heightPx: '高 (px)',
@@ -889,7 +936,7 @@ const translations = {
     },
     resize: {
       title: '图片缩放',
-      desc: '按比例或最大边缩放，可选输出格式。',
+      desc: '按百分比或限制长边缩放，可选输出格式，支持批量，无需离开当前页面。',
       byPercent: '按比例',
       byMax: '限制宽高',
       byWidth: '按宽',
@@ -908,7 +955,7 @@ const translations = {
     },
     batch: {
       title: '图片批处理（标准表）',
-      desc: '加载规格表，按比例智能分配输入，按行执行缩放，对比目标与实际尺寸与大小。',
+      desc: '按规格表批量出图，匹配多渠道与商店尺寸，逐行对比目标与实际。',
       noSpecs: '未加载规格表。请添加 static/specs/batch-specs.json 并重新部署。',
       globalConfig: '全局配置',
       sectionRules: '规则',
@@ -972,7 +1019,7 @@ const translations = {
     },
     rotate: {
       title: '图片旋转与镜像',
-      desc: '旋转（90°、180°、270°）与镜像（水平、垂直）。支持批量。',
+      desc: '批量旋转与镜像，快速修正方向，便于发布与素材整理。',
       rotation: '旋转',
       '0deg': '0°',
       '90right': '90° 向右',
@@ -985,7 +1032,7 @@ const translations = {
     },
     favicon: {
       title: 'Favicon 图标生成',
-      desc: '从图片生成多尺寸 favicon，居中裁剪为正方形，输出 PNG。',
+      desc: '一张图导出多尺寸 PNG favicon，居中裁方，可直接嵌入站点。',
       steps: '步骤：',
       step1: '上传源图片（任意比例，将居中裁剪为正方形）',
       step2: '选择输出尺寸（16、32、48、180、192、512 px）',
@@ -1003,7 +1050,7 @@ const translations = {
     },
     playstore: {
       title: 'Play 商店图标',
-      desc: '生成 Google Play 要求的 512×512 PNG 图标，居中裁剪为正方形。',
+      desc: '导出 512×512 Play 商店图标，居中裁方，浏览器内完成合规尺寸。',
       steps: '步骤：',
       step1: '上传源图片（任意比例，将居中裁剪为正方形）',
       step2: '生成并下载 512×512 PNG',
@@ -1014,7 +1061,7 @@ const translations = {
     },
     appstore: {
       title: 'App Store 图标',
-      desc: '生成 Apple App Store 要求的 1024×1024 PNG 图标，居中裁剪为正方形，无透明通道。',
+      desc: '生成 1024×1024 App Store 图标（裁方、无透明），无需 Xcode 即可完成导出。',
       steps: '步骤：',
       step1: '上传源图片（任意比例，将居中裁剪为正方形）',
       step2: '生成并下载 1024×1024 PNG',
@@ -1025,15 +1072,15 @@ const translations = {
     },
     cssIndex: {
       title: 'CSS 工具',
-      desc: '压缩或美化 CSS。',
+      desc: '压缩或美化样式表—前端创意辅助，浏览器内完成。',
       minify: '压缩',
-      minifyDesc: '压缩 CSS，支持基础/激进模式。',
+      minifyDesc: '减小 CSS 体积，支持基础/激进模式。',
       beautify: '解压',
-      beautifyDesc: '格式化压缩后的 CSS，提升可读性。',
+      beautifyDesc: '把压缩 CSS 格式化，便于阅读。',
     },
     cssMinify: {
       title: 'CSS 压缩',
-      desc: '压缩 CSS。上传或粘贴，基础/激进模式，在线预览。',
+      desc: '粘贴或上传 CSS，选择模式并即时预览压缩结果。',
       basic: '基础',
       aggressive: '激进',
       input: '输入',
@@ -1045,7 +1092,7 @@ const translations = {
     },
     cssBeautify: {
       title: 'CSS 解压',
-      desc: '美化压缩后的 CSS，提升可读性。',
+      desc: '格式化压缩 CSS，便于排查、对比与教学演示。',
       input: '输入',
       uploadHint: '点击或拖拽 .css 文件到此处',
       orPaste: '或粘贴 CSS 到下方',
@@ -1055,15 +1102,15 @@ const translations = {
     },
     archiveIndex: {
       title: '压缩包工具',
-      desc: '压缩或解压。',
+      desc: '在浏览器内打包或解压 ZIP、GZIP、TAR.GZ、BROTLI。',
       decompress: '解压',
-      decompressDesc: '解压 ZIP、GZIP、TAR.GZ、BROTLI。',
+      decompressDesc: '本地解压常见压缩包格式。',
       compress: '压缩',
-      compressDesc: '创建 ZIP、GZIP、TAR.GZ、BROTLI。',
+      compressDesc: '从文件生成压缩包，无需额外客户端。',
     },
     archiveDecompress: {
       title: '压缩包解压',
-      desc: '解压 ZIP、GZIP、TAR.GZ、BROTLI。上传后下载文件。',
+      desc: '解压 ZIP、GZIP、TAR.GZ、BROTLI—上传、解压、下载，数据留在本机。',
       input: '输入',
       uploadHint: '点击或拖拽压缩包到此处',
       formats: 'ZIP、GZIP (.gz)、TAR.GZ (.tgz)、BROTLI (.br)',
@@ -1074,7 +1121,7 @@ const translations = {
     },
     archiveCompress: {
       title: '压缩包压缩',
-      desc: '创建 ZIP、GZIP、TAR.GZ、BROTLI。上传文件后下载。',
+      desc: '将上传文件打成 ZIP、GZIP、TAR.GZ 或 BROTLI，便于分享与临时归档。',
       format: '格式',
       input: '文件',
       uploadHint: '点击或拖拽文件/文件夹到此处',
@@ -1089,7 +1136,7 @@ const translations = {
     },
     markdownPreview: {
       title: 'Markdown 预览',
-      desc: '在线预览 Markdown。上传或粘贴，左侧编辑，右侧预览。',
+      desc: '左编右览，适合文档、笔记与 README 起草；实时预览，不经服务器。',
       input: '输入',
       upload: '上传文件',
       uploadHint: '拖拽 .md 文件到此处或点击选择',
@@ -1102,7 +1149,7 @@ const translations = {
     },
     pdfViewer: {
       title: 'PDF 预览',
-      desc: '上传本地 PDF，支持即时翻页与缩放。',
+      desc: '本地打开 PDF，支持翻页与缩放，零上传，适合审阅与对照。',
       upload: '选择 PDF',
       uploadHint: '点击或拖拽 .pdf 文件到此处',
       dropHint: '拖放 PDF 即刻预览。',
@@ -1122,7 +1169,7 @@ const translations = {
     },
     pdfCompress: {
       title: 'PDF 压缩（浏览器）',
-      desc: '使用 PDF.js 将每一页栅格化，再用 JPEG 重新打包为 PDF。使用前请阅读下方说明。',
+      desc: '通过栅格化减小 PDF 体积，适合可分享的预览版；正式场景请先阅读下方局限。',
       caveatTitle: '实现方式与不足',
       caveat1: '不是 qpdf 那种「结构优化」：页面会变成位图，矢量文字与无限放大清晰度会丢失。',
       caveat2: '可复制/可搜索文本、书签、图层及多数批注通常无法保留。',
@@ -1151,8 +1198,8 @@ const translations = {
     },
     styleGuide: {
       title: '样式与组件指引',
-      desc: '集中展示共享 UI 元素。任何新的公共组件或样式变量都必须在此添加示例。',
-      intro: '本页用于快速回归 VS Code 风格。新增按钮、卡片、输入、进度条或工具类时，请在这里补充示例与说明。',
+      desc: 'CloudCreate.ai 内部设计样例库—统一创意工具的组件与样式令牌。',
+      intro: '新增按钮、卡片、输入、进度条或工具类时，请在此补充示例，便于全站创意工具保持一致观感。',
       sectionButtons: '按钮',
       sectionUtility: '工具型控件',
       sectionCards: '卡片与面板',
@@ -1175,7 +1222,7 @@ const translations = {
     },
     imagePreview: {
       title: '图片预览',
-      desc: '上传或拖拽多张图片，查看分辨率/大小等元数据，并在预览区缩放查看细节。',
+      desc: '批量拖入图片—元数据、缩略图与缩放平移，本地完成创意素材检视。',
       upload: '选择图片',
       uploadHint: '点击或拖拽 JPG/PNG/WebP、GIF、AVIF 到此处',
       dropHint: '拖放后立即加入列表。',
@@ -1189,7 +1236,7 @@ const translations = {
     },
     gifTool: {
       title: 'GIF 压缩',
-      desc: '上传 GIF，使用帧率、尺寸、调色板与背景优化等策略压缩体积，全部在浏览器端完成。',
+      desc: '调节帧率、尺寸、调色板与背景合并，为网页与演示瘦身 GIF，全程本地处理。',
       upload: '选择 GIF',
       uploadHint: '上传 GIF 后即可开始压缩。',
       formats: 'GIF',
@@ -1246,7 +1293,7 @@ const translations = {
     },
     tableTools: {
       title: '表格预览与格式转换',
-      desc: '预览 CSV、TSV、XLSX、JSON，支持格式互转并下载。',
+      desc: '预览并互转 CSV、TSV、XLSX、JSON，适合数据核对、报表与轻量处理。',
       input: '输入',
       upload: '上传文件',
       uploadHint: '拖拽 CSV/TSV/XLSX/JSON 到此处或点击选择',
@@ -1288,7 +1335,6 @@ export function setLocale(lang) {
   if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY, lang);
   if (typeof document !== 'undefined') {
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-    document.title = t('pageTitle');
   }
 }
 
@@ -1303,9 +1349,24 @@ export function t(key) {
   return typeof obj === 'string' ? obj : key;
 }
 
-// 初始化时设置 html lang 和 title（仅浏览器环境，SSG 构建时不执行）
+/**
+ * 按固定语言取文案（供预渲染 / SEO，不依赖浏览器下的 locale store）
+ * @param {'en' | 'zh'} lang
+ * @param {string} key
+ */
+export function tLang(lang, key) {
+  const keys = key.split('.');
+  const dict = translations[lang === 'zh' ? 'zh' : 'en'];
+  let obj = dict;
+  for (const k of keys) {
+    obj = obj?.[k];
+    if (obj === undefined) return key;
+  }
+  return typeof obj === 'string' ? obj : key;
+}
+
+// 初始化时设置 html lang（title 由 SeoHead / svelte:head 管理）
 if (browser && typeof document !== 'undefined') {
   const initLang = get(locale);
   document.documentElement.lang = initLang === 'zh' ? 'zh-CN' : 'en';
-  document.title = (initLang === 'zh' ? translations.zh.pageTitle : translations.en.pageTitle);
 }

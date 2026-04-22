@@ -28,7 +28,11 @@
         ☰
       </button>
     {/if}
-    <a href={pathForLocale($locale, '/')} class="app-header-title">{t('home.title')}</a>
+    <div class="app-header-brand">
+      <a href={pathForLocale($locale, '/')} class="app-header-title">{t('home.title')}</a>
+      <span class="app-header-brand-sep" aria-hidden="true">·</span>
+      <span class="app-header-tagline">{t('home.subtitle')}</span>
+    </div>
   </div>
   <nav class="app-header-categories" aria-label={t('layout.categoryNav')}>
     {#each NAV_CATEGORIES as cat}
@@ -69,9 +73,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.75rem;
+    gap: 0.5rem;
     height: 46px;
-    padding: 0 1rem;
+    box-sizing: border-box;
+    padding: 0 0.75rem;
     flex-shrink: 0;
     border-bottom: 1px solid var(--ccw-border-contrast);
     background: var(--ccw-bg-panel);
@@ -80,7 +85,36 @@
   .app-header-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 38%;
+  }
+  .app-header-brand {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    line-height: 1.2;
+  }
+  .app-header-brand-sep {
+    flex-shrink: 0;
+    color: var(--ccw-text-muted);
+    opacity: 0.4;
+    font-size: 0.75rem;
+    line-height: 1;
+    user-select: none;
+  }
+  .app-header-tagline {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 0.6875rem;
+    font-weight: 400;
+    color: var(--ccw-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .app-header-menu-btn {
     padding: 0.2rem 0.55rem;
@@ -99,10 +133,12 @@
     background: rgba(255, 255, 255, 0.05);
   }
   .app-header-title {
-    font-size: 1rem;
+    flex-shrink: 0;
+    font-size: 0.9375rem;
     font-weight: 600;
     text-decoration: none;
     color: var(--ccw-text-primary);
+    letter-spacing: 0.01em;
   }
   .app-header-title:hover {
     color: var(--ccw-accent);

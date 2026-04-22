@@ -6,8 +6,10 @@ test.describe('工作区首页', () => {
   test('打开首页显示标题与副标题', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('CloudCreate Workspace', { timeout: 15000 });
-    await expect(page.getByText('Browser-based utility collection').or(page.getByText('浏览器实用工具集'))).toBeVisible();
+    await expect(page.getByRole('link', { name: 'CloudCreate.ai' })).toBeVisible({ timeout: 15000 });
+    await expect(
+      page.getByText('Creative toolkit for the AI era').or(page.getByText('AI时代的创意工具集')),
+    ).toBeVisible();
   });
 
   test('显示三个工具卡片并可点击进入', async ({ page }) => {
@@ -21,8 +23,8 @@ test.describe('工作区首页', () => {
   test('切换到中文后文案为中文', async ({ page }) => {
     await page.goto('/');
     await page.getByRole('button', { name: '中文' }).click();
-    await expect(page.getByText('浏览器实用工具集')).toBeVisible();
-    await expect(page.getByText('图片压缩与格式转换')).toBeVisible();
+    await expect(page.getByText('AI时代的创意工具集')).toBeVisible();
+    await expect(page.getByText('图片压缩')).toBeVisible();
   });
 
   test('从子页通过「工作区」返回首页', async ({ page }) => {

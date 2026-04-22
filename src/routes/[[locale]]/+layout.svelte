@@ -9,6 +9,7 @@
   import AppSidebar from '$lib/components/layout/AppSidebar.svelte';
   import AppFooter from '$lib/components/layout/AppFooter.svelte';
   import AiChatPanel from '$lib/components/layout/AiChatPanel.svelte';
+  import SeoHead from '$lib/components/SeoHead.svelte';
 
   function closeOverlays() {
     leftSidebarOpen.set(false);
@@ -38,6 +39,8 @@
   });
 
 </script>
+
+<SeoHead />
 
 <!-- 第一层：上中下三区。内联样式确保布局生效（第三方 CSS 会覆盖外部样式表） -->
 <div
