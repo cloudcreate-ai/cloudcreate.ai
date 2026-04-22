@@ -116,72 +116,108 @@ const translations = {
       localeSwitcher: 'Display language',
     },
     agentPrompt: {
-      intro:
-        'Copy the text below to your external agent. Adjust details if you changed options on the page. Current page: {{currentUrl}}',
-      copy: 'Copy full prompt',
-      copied: 'Copied — paste in your AI',
+      siteLeadIn:
+        'Site: {{siteName}} — {{siteTagline}}\n\n',
+      panelIntro:
+        '1. Site\n{{siteName}} — {{siteTagline}}\n\n2. This page\n{{pageBrief}}\n\n3. Copy the full text below for your external AI to read and explain in detail.',
+      panelBrief: {
+        _fallback: 'A tool page in this app (see the text below for details).',
+        genericWorkspace: 'Home: browse favorites, recents, and the full tool list.',
+        genericTools: 'Tools hub: links to image, PDF, table, and other utilities.',
+        genericCreative: 'Creative: sample visual effects and UI patterns in the browser.',
+        genericMisc: 'A page in this app—read the block below for what it is for.',
+        imageCompress: 'Image compress: shrink file size in the browser; choose format and quality.',
+        imageConvert: 'Image format convert: re-encode to another image format in the browser.',
+        imageResize: 'Image resize: change dimensions or scale in the browser.',
+        imageCrop: 'Image crop: pick aspect ratio or region, then export.',
+        imageRotate: 'Image rotate/flip: fix orientation and mirroring, then export.',
+        imageFavicon: 'Favicon: multi-size icons from one image for websites.',
+        imagePlaystore: 'Play Store icon: a 512×512 store-ready export.',
+        imageAppstore: 'App Store icon: a 1024×1024 marketing icon export.',
+        imagePreview: 'Image preview: inspect files locally (metadata, zoom), no upload.',
+        imageBatch: 'Image batch: run a spec table against your images locally.',
+        imageGif: 'GIF: reduce size and tune playback in the browser.',
+        markdown: 'Markdown: write with a live local preview.',
+        table: 'Table: open or preview tabular data and convert formats locally.',
+        pdf: 'PDF: read, page through, and zoom locally in the browser.',
+        pdfCompress: 'PDF compress: make a smaller PDF in the browser (quality tradeoffs on the page).',
+        workflow: 'Simple workflow: chain image steps (load → process → export) in the browser.',
+        workflowAdvanced: 'Advanced workflow: build and run a node graph for image pipelines in the browser.',
+        cssMinify: 'CSS minify: shrink stylesheets in the browser.',
+        cssBeautify: 'CSS beautify: reformat minified CSS for reading.',
+        archiveCompress: 'Create archive: pack files into a supported format in the browser.',
+        archiveDecompress: 'Extract archive: unpack supported archive types in the browser.',
+        watermarkGemini: 'Remove the standard visible Gemini corner mark from images, locally.',
+        creativeBorderBeam: 'Border beam: a marketing-card border effect; adjust on the page.',
+        framework: 'Framework: developer layout test for the app shell, not an end-user tool.',
+        styleGuide: 'Style guide: internal UI patterns and components.',
+        cssIndex: 'CSS tools: open minify or beautify (both run locally).',
+        archiveIndex: 'Archives: choose to extract files or create an archive (both local).',
+      },
+      copy: 'Copy full prompt — let your AI help',
+      copied: 'Copied',
       genericWorkspace:
-        'You are assisting someone using CloudCreate.ai (browser-only creative tools). The user is on the home overview ({{currentUrl}}). The site offers: image tools (compress, convert, crop, resize, etc.), PDF, tables, CSS minify/beautify, archives, workflow editor, and creative demos. Data stays in the browser unless a tool calls an external API (rare; stated on the page). Help them pick a tool, explain limitations, or draft steps for a creative task. Reply in the same language as the user.',
+        'The user is on CloudCreate.ai’s home overview ({{currentUrl}}). Explain what this area is for and what kinds of tools exist (images, PDF, tables, CSS, archives, workflow, creative demos). Ask what they want to do; suggest which part of the site to open. Do not re-implement any tool in chat. Reply in the same language as the user.',
       genericTools:
-        'You are assisting someone on CloudCreate.ai’s tools area ({{currentUrl}}). This section lists or hosts utilities for images, PDF, tables, code/CSS, and archives—processing is client-side. Guide them to the right tool, summarize what each does, and give step-by-step actions matching the on-page UI. Reply in the same language as the user.',
+        'The user is on CloudCreate.ai’s tools listing / hub ({{currentUrl}}). Help them understand what the tools collection is for, ask their goal, and point them to the right tool page. Describe at a high level what each category does; do not run or simulate processing in chat. Reply in the same language as the user.',
       genericCreative:
-        'You are assisting someone on CloudCreate.ai’s creative demos ({{currentUrl}}). These are front-end UI experiments and samples (e.g. visual effects) that run locally. Help them understand parameters, how to adapt the code/style to their project, and creative alternatives. Reply in the same language as the user.',
+        'The user is on CloudCreate.ai’s creative demos area ({{currentUrl}}). Explain that these are in-browser visual/UI samples. Ask what they need; describe parameters in plain terms. Do not reproduce the full effect as a “replacement” in chat—encourage using the on-page controls. Reply in the same language as the user.',
       genericMisc:
-        'You are assisting someone on CloudCreate.ai ({{currentUrl}}). The site is a static toolkit: tools run in the browser, data stays on the device for most features. Help them with navigation, what the current page is for, and safe usage. Reply in the same language as the user.',
+        'The user is on a CloudCreate.ai page ({{currentUrl}}). Explain the page’s role if known, ask what they need, and how to use the app safely. Do not stand in for the site’s tools. Reply in the same language as the user.',
       framework:
-        'You are assisting a developer testing CloudCreate.ai’s app shell: workspace, sidebar, and right AI column ({{currentUrl}}). This page is for layout validation, not an end-user tool. Explain layout behavior or debugging tips only. Reply in the same language as the user.',
+        'The user is on the developer “framework / shell” test page ({{currentUrl}}). It validates layout (workspace, sidebars, AI column), not an end-user feature. Explain that briefly; do not treat it as a content tool. Reply in the same language as the user.',
       styleGuide:
-        'You are assisting someone viewing CloudCreate.ai’s internal style guide ({{currentUrl}}). Help them find components, tokens, and patterns consistent with the site’s UI. Reply in the same language as the user.',
+        'The user is on the internal style guide ({{currentUrl}}). Help them find UI patterns, tokens, and components—like a doc navigator. No need to “implement” the design in chat. Reply in the same language as the user.',
       cssIndex:
-        'You are assisting someone on the CSS tools index ({{currentUrl}}). They can open Minify to shrink CSS, or Beautify to format minified CSS for reading. Both are client-side. Point them to the right sub-tool and what to paste or upload. Reply in the same language as the user.',
+        'The user is on the CSS tools index ({{currentUrl}}). Explain: Minify vs Beautify, then ask what they need and link them to the right subpage. Do not minify or beautify large CSS in chat on behalf of the site. Reply in the same language as the user.',
       archiveIndex:
-        'You are assisting someone on the archive tools index ({{currentUrl}}). Options: decompress (ZIP, GZIP, TAR.GZ, BR) or create archives in supported formats, in-browser. Summarize which link matches unpack vs pack. Reply in the same language as the user.',
+        'The user is on the archive tools index ({{currentUrl}}). Explain “decompress” vs “create archive” in plain terms, ask their goal, and which sub-link to use. No archive processing in chat. Reply in the same language as the user.',
       imageCompress:
-        'Replicate the CloudCreate.ai “Image compress” tool behavior for the user. Page: {{currentUrl}}. Mode: compress. Target output format: {{targetFormat}} (empty means keep original per file). Quality (1–100): {{quality}}. Files queued: {{fileCount}}. The app runs a local workflow to encode images; do not claim uploads to a server. If they need a smaller file, suggest lowering quality or choosing WebP/AVIF when appropriate. Reply in the same language as the user.',
+        'Page: “Image compress” ({{currentUrl}}). Purpose: lower image file size in the browser with optional format/quality. Explain that briefly, ask what the user wants, and tell them to use the page controls to process files. Do not compress or convert images in chat. Snapshot: target format {{targetFormat}} (empty = keep per-file as allowed), quality {{quality}}, files in queue {{fileCount}}. Optional shareable link (same path + query): `q` or `quality` 1–100; `f` or `format` jpeg|png|webp|avif (omit `f` for keep-format behavior). Reply in the user’s language.',
       imageConvert:
-        'Replicate the CloudCreate.ai “Image format convert” tool for the user. Page: {{currentUrl}}. Target format: {{targetFormat}}. Quality (1–100): {{quality}}. Files queued: {{fileCount}}. Processing is in-browser. Help them pick formats for web, transparency needs, and quality tradeoffs. Reply in the same language as the user.',
+        'Page: “Image format convert” ({{currentUrl}}). Purpose: change encoding format/quality in the browser. Ask their goal, guide them to the right settings on the page. Do not convert files in chat. Snapshot: target format {{targetFormat}}, quality {{quality}}, files in queue {{fileCount}}. Link query: same as compress—`q` or `quality`, `f` or `format`. Reply in the user’s language.',
       imageCrop:
-        'Replicate the CloudCreate.ai “Image crop” tool intent. Page: {{currentUrl}}. User settings: aspect mode {{aspectMode}}, size {{sizeLabel}}, output format {{outputFormat}}. Files: {{fileCount}}. The UI lets them select a region and export. Give cropping advice (composition, social ratios) consistent with their choices. Reply in the same language as the user.',
+        'Page: “Image crop” ({{currentUrl}}). Purpose: pick aspect ratio/region and export. Explain in plain words, ask what they need, point to on-page selection. Do not “crop for them” in chat. Settings snapshot: mode {{aspectMode}}, size {{sizeLabel}}, output {{outputFormat}}, files {{fileCount}}. Link query: `preset` or `p` = free, 1:1, 4:3, …, custom; `cw`+`ch` (or `customW`/`customH`); `q`/`quality`; `f`/`format`. Reply in the user’s language.',
       imageResize:
-        'Replicate the CloudCreate.ai “Image resize” tool intent. Page: {{currentUrl}}. Resize mode: {{mode}}. User parameters summary: {{paramsSummary}}. Files: {{fileCount}}. Suggest when to use percent vs max edge, and export format implications. Processing is local. Reply in the same language as the user.',
+        'Page: “Image resize” ({{currentUrl}}). Purpose: change dimensions or scale in the browser. Ask their target and recommend which mode in the UI fits; do not batch-resize in chat. Mode {{mode}}, params {{paramsSummary}}, files {{fileCount}}. Link: `mode` or `m`, `p`/`pct`, `maw`/`maxW`, `mah`/`maxH`, `tw`/`th`/`tl`, `q`/`quality`, `f`/`format`. Reply in the user’s language.',
       imageRotate:
-        'Replicate the CloudCreate.ai “Image rotate/flip” tool. Page: {{currentUrl}}. Rotation/flip: {{transformSummary}}. Output format: {{outputFormat}}. Files: {{fileCount}}. Help batch orientation fixes and format choice. Reply in the same language as the user.',
+        'Page: “Image rotate/flip” ({{currentUrl}}). Purpose: fix orientation and mirror, then export. Ask what they need; do not process images in chat. State: {{transformSummary}}, output {{outputFormat}}, files {{fileCount}}. Link: `r`/`rotate`, `fh`/`flipH`, `fv`/`flipV`, `q`/`quality`, `f`/`format`. Reply in the user’s language.',
       imageFavicon:
-        'Replicate the CloudCreate.ai “Favicon generator” tool. Page: {{currentUrl}}. User options summary: {{optionsSummary}}. Files: {{fileCount}}. Explain ICO/PNG use for browsers and multi-size output purpose. Reply in the same language as the user.',
+        'Page: “Favicon generator” ({{currentUrl}}). Purpose: from one image, export multiple icon sizes. Explain typical web use, ask what they need. Options snapshot: {{optionsSummary}}, files {{fileCount}}. Link: `sizes` = comma pixel list; `ico` 0|1. Reply in the user’s language.',
       imagePlaystore:
-        'Replicate the CloudCreate.ai “Play Store icon (512×512)” tool. Page: {{currentUrl}}. Options: {{optionsSummary}}. Files: {{fileCount}}. Remind: Google Play requires 512×512 PNG; ensure no transparency if the store rejects it. Reply in the same language as the user.',
+        'Page: “Play Store 512×512 icon” ({{currentUrl}}). Purpose: one compliant icon export. Remind the store rule (512 PNG, etc.). Options {{optionsSummary}}, files {{fileCount}}. This page has no option sync in the URL—share path only. Do not “output” a fake icon in chat. Reply in the user’s language.',
       imageAppstore:
-        'Replicate the CloudCreate.ai “App Store icon (1024×1024)” tool. Page: {{currentUrl}}. Options: {{optionsSummary}}. Files: {{fileCount}}. Remind: Apple’s marketing icon is 1024×1024, square, no transparency. Reply in the same language as the user.',
+        'Page: “App Store 1024×1024 icon” ({{currentUrl}}). Purpose: one compliant marketing icon. Remind 1024, square, no transparency as applicable. {{optionsSummary}}, files {{fileCount}}. No URL options—path only. No fake image output in chat. Reply in the user’s language.',
       imagePreview:
-        'Replicate the CloudCreate.ai “Image preview” tool. Page: {{currentUrl}}. User has files loaded: {{fileCount}}. The tool is for local inspection, metadata, zoom/pan. Do not claim cloud analysis. Help compare assets and read dimensions/file size. Reply in the same language as the user.',
+        'Page: “Image preview” ({{currentUrl}}). Purpose: local inspect, metadata, zoom—no server processing. Files loaded: {{fileCount}}. Help them read what the UI shows; do not claim you analyzed their files. Link: `z`/`zoom` (up to 16), `i`/`sel` index. Reply in the user’s language.',
       imageBatch:
-        'Replicate the CloudCreate.ai “Image batch (spec table)” tool. Page: {{currentUrl}}. Batch rows: {{rowCount}}. Files: {{fileCount}}. The user matches filenames to target sizes; help validate specs and common store dimensions. Processing is local. Reply in the same language as the user.',
+        'Page: “Image batch (spec table)” ({{currentUrl}}). Purpose: run rows from a spec table against user images. Ask what they are trying to ship; explain profile/prefix in plain terms. Do not run batch logic in chat. Rows {{rowCount}}, files {{fileCount}}. Link: `profile`/`prof`, `prefix`/`px`, `hide`/`hux`, `ich`/`chf` (0|1; profile value URL-encode as needed). Reply in the user’s language.',
       imageGif:
-        'Replicate the CloudCreate.ai “GIF compress” tool. Page: {{currentUrl}}. User-facing summary: {{summary}}. They tune FPS, size, palette, and background. Give practical web GIF size tips. All processing is in-browser. Reply in the same language as the user.',
+        'Page: “GIF compress” ({{currentUrl}}). Purpose: tune playback/size/palette in the browser. Ask goal and tradeoffs. Params summary: {{summary}}. No GIF re-encoding in chat. Link: `fps`/`tfps`, `scale`/`sc`, `pal`/`palette`, `dith`/`d`, `obg`/`merge`, `acc`/`accurate`. Reply in the user’s language.',
       markdown:
-        'Replicate the CloudCreate.ai “Markdown preview” page. Page: {{currentUrl}}. Help edit or improve their Markdown, explain preview vs source, and suggest structure for docs/README. Content stays in the browser session. Reply in the same language as the user.',
+        'Page: “Markdown preview” ({{currentUrl}}). Purpose: type Markdown and see preview locally. Suggest structure or wording if asked; do not replace a full on-page editor session. No useful query prefill (path only). Reply in the user’s language.',
       table:
-        'Replicate the CloudCreate.ai “Table preview & convert” tool. Page: {{currentUrl}}. Active section (hash): {{section}}. Output format selected for conversion: {{outputFormat}}. File loaded: {{fileName}}. Table shape: {{rows}} rows × {{cols}} columns (if known). Help clean data, choose export format, and pagination tips. Data stays local. Reply in the same language as the user.',
+        'Page: “Table preview & convert” ({{currentUrl}}). Purpose: open tabular data and convert format in-browser. Section hash {{section}}, target format {{outputFormat}}, file {{fileName}}, about {{rows}}×{{cols}}. Ask their export goal. Do not re-host their data in chat. Link: `fmt`/`format`/`out` = csv|tsv|xlsx|json. Reply in the user’s language.',
       pdf:
-        'Replicate the CloudCreate.ai “PDF preview” tool. Page: {{currentUrl}}. File loaded: {{fileName}}. Help them navigate pages, zoom, and review content; remind it is client-side rendering. Reply in the same language as the user.',
+        'Page: “PDF preview” ({{currentUrl}}). Purpose: read page-by-page, zoom, locally. File name (if any): {{fileName}}. Guide how to use the viewer; do not re-render the PDF in chat. Link: `pg`/`page`, `z`/`scale` ~0.5–2. Reply in the user’s language.',
       pdfCompress:
-        'Replicate the CloudCreate.ai “PDF compress (browser)” tool. Page: {{currentUrl}}. Settings summary: {{settingsSummary}}. File: {{fileName}}. Note: rasterization-based shrink is for lighter sharing, not print-grade; mention quality tradeoffs. Reply in the same language as the user.',
+        'Page: “PDF compress (browser)” ({{currentUrl}}). Purpose: smaller PDF by rasterization—good for share, not print masters. File {{fileName}}. Settings: {{settingsSummary}}. Explain tradeoffs; do not “recompress” the PDF in chat. Link: `rs`/`rscale`, `jq`/`jpegQ`, `pf`/`imgfmt` jpeg|png. Reply in the user’s language.',
       workflow:
-        'Replicate the CloudCreate.ai “Workflow editor” (simple mode) intent. Page: {{currentUrl}}. User’s workflow has {{stepCount}} steps. They load images, chain compress/resize/crop, and export. Help them order steps and interpret preset JSON. Execution is local. Reply in the same language as the user.',
+        'Page: “Workflow editor (simple)” ({{currentUrl}}). Purpose: chain image steps and run in the browser. Steps: {{stepCount}}. Help them name their goal; point to the step list—do not execute their pipeline in chat. Link: `n`/`name`, `d`/`desc` (URL-encode as needed). Reply in the user’s language.',
       workflowAdvanced:
-        'Replicate the CloudCreate.ai “Advanced workflow editor”. Page: {{currentUrl}}. Node graph: {{nodeCount}} nodes. They edit JSON, import/export workflows, and run image pipelines in-browser. Help with graph structure and troubleshooting without claiming server runs. Reply in the same language as the user.',
+        'Page: “Advanced workflow editor” ({{currentUrl}}). Purpose: node graph, import/export, local run. Nodes: {{nodeCount}}. Help understand structure and file flow; you are not a substitute runner. Preset in URL (initial load only): `preset` = compress|resize|crop. Custom graphs are not in the link. Reply in the user’s language.',
       cssMinify:
-        'Replicate the CloudCreate.ai “CSS minify” tool. Page: {{currentUrl}}. Aggressive minify: {{aggressive}}. Help reduce CSS for production and catch syntax issues. Processing is local. Reply in the same language as the user.',
+        'Page: “CSS minify” ({{currentUrl}}). Purpose: minify CSS in the browser. Aggressive: {{aggressive}}. Suggest which level in UI; do not minify their whole stylesheet in chat as “the tool.” Link: `level`/`l` = basic|b or aggressive|a. Reply in the user’s language.',
       cssBeautify:
-        'Replicate the CloudCreate.ai “CSS beautify” tool. Page: {{currentUrl}}. Help format messy CSS for reading and diffs. Processing is local. Reply in the same language as the user.',
+        'Page: “CSS beautify” ({{currentUrl}}). Purpose: format minified CSS for reading. No query prefill. Do not reformat large CSS in chat in place of the page. Reply in the user’s language.',
       archiveCompress:
-        'Replicate the CloudCreate.ai “archive compress” tool. Page: {{currentUrl}}. Format: {{format}}. Files queued: {{fileCount}}. Explain limitations of browser-side archiving. Reply in the same language as the user.',
+        'Page: “Create archive” ({{currentUrl}}). Purpose: pack files in the browser. Format now {{format}}, files queued {{fileCount}}. Ask what bundle they need; do not pack files in chat. Link: `fmt`/`f` = zip|gzip|targz|brotli. Reply in the user’s language.',
       archiveDecompress:
-        'Replicate the CloudCreate.ai “archive decompress” tool. Page: {{currentUrl}}. File loaded: {{fileName}}. Help extract and identify outputs; stay within supported formats. Reply in the same language as the user.',
+        'Page: “Extract archive” ({{currentUrl}}). Purpose: unpack supported formats locally. File {{fileName}}. Explain what they will get; no query prefill. Do not unpack in chat. Reply in the user’s language.',
       watermarkGemini:
-        'Replicate the CloudCreate.ai “Gemini watermark remover” (visible corner watermark) tool. Page: {{currentUrl}}. File: {{fileName}}. Remind: only for the standard visible Gemini mark; use ethically; client-side. Reply in the same language as the user.',
+        'Page: “Gemini watermark remover” ({{currentUrl}}). Purpose: remove the standard visible Gemini corner mark in-browser. File {{fileName}}. Ethics/limitations on-page. No query prefill. Do not claim to process their image in chat. Reply in the user’s language.',
       creativeBorderBeam:
-        'Replicate the “Border beam” creative demo. Page: {{currentUrl}}. Controls: size {{size}}, variant {{variant}}, theme {{theme}}, strength {{strength}}. It is a CSS conic-gradient style effect for marketing cards; help adapt colors and motion to their layout. Reply in the same language as the user.',
+        'Page: “Border beam” demo ({{currentUrl}}). Purpose: preview a marketing card border effect. Size {{size}}, variant {{variant}}, theme {{theme}}, strength {{strength}}. Ask what look they want; they tune it on the page. Link: `size` = sm|md|line; `var`/`v` = colorful|mono|ocean|sunset; `theme`/`t` = dark|light|auto; `str` = 0–100. Reply in the user’s language.',
     },
     home: {
       title: 'CloudCreate.ai',
@@ -847,72 +883,108 @@ const translations = {
       localeSwitcher: '界面语言',
     },
     agentPrompt: {
-      intro:
-        '将下方全文复制到你的外部 Agent 使用。若你在本页修改了选项，请相应调整说明。当前页面：{{currentUrl}}',
-      copy: '复制整段提示词',
-      copied: '已复制，可粘贴到你的 AI',
+      siteLeadIn:
+        '来源站点：{{siteName}}（{{siteTagline}}）。\n\n',
+      panelIntro:
+        '1. 站点信息\n{{siteName}}（{{siteTagline}}）\n\n2. 本页简介\n{{pageBrief}}\n\n3. 复制下方全文，交给外部 AI 做详细解读。',
+      panelBrief: {
+        _fallback: '当前打开的工具页（用途与操作见下框全文）。',
+        genericWorkspace: '首页总览：收藏、最近使用、全部工具入口。',
+        genericTools: '工具区：图片、PDF、表格等工具入口总览。',
+        genericCreative: '创意样例区：浏览器内可视化/界面演示。',
+        genericMisc: '本站内某一页，用途见下框说明。',
+        imageCompress: '「图片压缩」：在浏览器里缩小图片体积，可选输出格式与质量。',
+        imageConvert: '「图片格式转换」：在浏览器里把图片转成另一种编码格式。',
+        imageResize: '「图片缩放」：在浏览器里按比例或边长等调整尺寸。',
+        imageCrop: '「图片裁剪」：选比例或区域后导出。',
+        imageRotate: '「旋转/镜像」：纠正方向或镜像后导出。',
+        imageFavicon: '「Favicon 生成」：从一图生成多尺寸站点图标。',
+        imagePlaystore: '「Play 商店图标」：导出符合 Play 要求的 512 图。',
+        imageAppstore: '「App 商店图标」：导出符合 App Store 要求的 1024 图。',
+        imagePreview: '「图片预览」：本机查看、元信息与缩放，不上传。',
+        imageBatch: '「批处理规格表」：按规格表对图片逐行处理（本地）。',
+        imageGif: '「GIF 压缩」：在浏览器里压缩并调节 GIF 参数。',
+        markdown: '「Markdown 预览」：边写边本地预览。',
+        table: '「表格工具」：打开或预览表格数据并在本机转换格式。',
+        pdf: '「PDF 预览」：在浏览器里本地翻页与缩放阅读。',
+        pdfCompress: '「PDF 压缩」：在浏览器里生成更小的 PDF（页面上有质量说明）。',
+        workflow: '「简易工作流」：在浏览器里把多步图片处理串成一条流水线。',
+        workflowAdvanced: '「高级工作流」：用节点图编排并本地执行图片管线。',
+        cssMinify: '「CSS 压缩」：在浏览器里压缩样式表。',
+        cssBeautify: '「CSS 美化」：把压缩后的 CSS 排成可读格式（本机）。',
+        archiveCompress: '「打压缩包」：在浏览器里把文件打成压缩包。',
+        archiveDecompress: '「解压缩包」：在浏览器里解压支持的格式。',
+        watermarkGemini: '「角标去水印」：本机去除标准可见的 Gemini 角标样式。',
+        creativeBorderBeam: '「Border Beam」：营销卡片流光边框演示，在页上调节观感。',
+        framework: '「框架/壳层」：开发者联调布局用，不是内容工具。',
+        styleGuide: '「样式指南」：内部组件与样式参考。',
+        cssIndex: '「CSS 工具入口」：进入压缩或只读美化子页（均本机）。',
+        archiveIndex: '「压缩包入口」：进入解压或打包子页（均本机）。',
+      },
+      copy: '复制整段提示词让AI帮你',
+      copied: '已复制',
       genericWorkspace:
-        '你正在协助使用 CloudCreate.ai 的用户（纯浏览器创意工具集）。用户位于首页总览（{{currentUrl}}）。站点提供：图片、PDF、表格、CSS 压缩/美化、压缩包、工作流编辑器、创意演示等；除非页面说明，数据一般不出本机。帮助用户选择工具、解释限制、或拆解创作步骤。请使用与用户一致的语言回复。',
+        '用户位于 CloudCreate.ai 首页总览（{{currentUrl}}）。请说明本页能做什么、有哪些类工具。询问用户想完成什么、可引导到对应入口。勿在对话中「代替网站」实现工具效果。回复语言与用户一致即可。',
       genericTools:
-        '你正在协助浏览 CloudCreate.ai 工具区的用户（{{currentUrl}}）。此区包含图片、PDF、表格、代码/CSS、压缩包等工具，处理多在本地完成。引导他们进入正确工具、概括能力，并按页面上的真实控件逐步说明。请使用与用户一致的语言回复。',
+        '用户位于工具区/工具列表（{{currentUrl}}）。请概括工具集用途、询问需求，并指向合适工具页。勿在聊天里处理图片/PDF 等。回复语言与用户一致即可。',
       genericCreative:
-        '你正在协助浏览 CloudCreate.ai 创意演示区的用户（{{currentUrl}}）。这里是前端可视化实验与样例，本地运行。帮助理解参数、如何借鉴到自有项目，以及可替代方案。请使用与用户一致的语言回复。',
+        '用户位于创意样例区（{{currentUrl}}）。说明这是浏览器里试效果用的演示，询问其目标，鼓励用页面上控件调节。勿在对话中复刻完整特效代替页面。回复语言与用户一致即可。',
       genericMisc:
-        '你正在协助使用 CloudCreate.ai 的用户（{{currentUrl}}）。本站为静态工具站，多数功能在浏览器本地处理。帮助理解导航、当前页用途与安全使用方式。请使用与用户一致的语言回复。',
+        '用户正在浏览 CloudCreate.ai 某页（{{currentUrl}}）。说明该页作用（若可判断）、安全与用法。勿代替站内工具。回复语言与用户一致即可。',
       framework:
-        '你正在协助开发者调试 CloudCreate.ai 应用壳（工作区 / 侧栏 / 右侧 AI 栏）（{{currentUrl}}）。此页用于布局验证，非面向终端用户的功能说明。仅说明布局行为或排查思路。请使用与用户一致的语言回复。',
+        '用户位于开发用「框架/壳层」页（{{currentUrl}}），用于验布局。说明非内容工具。回复语言与用户一致即可。',
       styleGuide:
-        '你正在协助查看 CloudCreate.ai 内部样式与组件库的用户（{{currentUrl}}）。帮助查找与站点一致的组件、令牌与模式。请使用与用户一致的语言回复。',
+        '用户位于内部样式/组件库（{{currentUrl}}）。帮助像查文档一样找模式与规范，勿替用户做设计落地实现。回复语言与用户一致即可。',
       cssIndex:
-        '你正在协助使用「CSS 工具入口」的用户（{{currentUrl}}）。可进入「压缩」减小 CSS 体积，或「解压」美化只读。均为本地处理。根据需求指向子工具与输入方式。请使用与用户一致的语言回复。',
+        '用户位于 CSS 工具入口（{{currentUrl}}）。说明「压缩」与「美化只读」区别，问清需求后指向子页。勿在聊天里大段处理 CSS 代替网站。回复语言与用户一致即可。',
       archiveIndex:
-        '你正在协助使用「压缩包工具入口」的用户（{{currentUrl}}）。可选：解压（ZIP、GZIP、TAR.GZ、BR 等）或在支持格式下打包；均在浏览器内。概括「解包」与「打包」对应入口。请使用与用户一致的语言回复。',
+        '用户位于压缩包工具入口（{{currentUrl}}）。说明解包与打包两条路径。询问需求。勿在聊天里做打包/解包。回复语言与用户一致即可。',
       imageCompress:
-        '请复现 CloudCreate.ai「图片压缩」工具的目标与约束。页面：{{currentUrl}}。模式：压缩。输出格式：{{targetFormat}}（空表示尽量保持各文件原格式）。质量（1–100）：{{quality}}。队列文件数：{{fileCount}}。处理在本地工作流完成，不要声称上传到服务器。若要更小体积，可建议降低质量或按需选 WebP/AVIF。请使用与用户一致的语言回复。',
+        '**当前页：「图片压缩」** — {{currentUrl}}\n用途：在浏览器中减小图片体积，可选输出格式与质量。请用**白话**说明本页能做什么、再问对方需求，并引导在页面上传/操作；勿在对话中替人压图或出图。当前选项：目标格式 {{targetFormat}}，质量 {{quality}}，排队 {{fileCount}}。可分享链接（同路径后加 `?`）：`q`/`quality` 取 1–100；`f`/`format` 为 jpeg|png|webp|avif（省略 `f` 时依站点「保持原格式」规则）。回复语言与用户一致即可。',
       imageConvert:
-        '请复现 CloudCreate.ai「图片格式转换」工具。页面：{{currentUrl}}。目标格式：{{targetFormat}}。质量（1–100）：{{quality}}。队列文件数：{{fileCount}}。本地处理。帮助在网页、透明背景与质量之间做取舍。请使用与用户一致的语言回复。',
+        '「图片格式转换」页（{{currentUrl}}）。用途：在浏览器中换输出格式/质量。问清目标后指引用页面控件。勿在对话中处理文件。状态：{{targetFormat}}、{{quality}}、{{fileCount}}。参数同压缩。回复语言与用户一致即可。',
       imageCrop:
-        '请复现 CloudCreate.ai「图片裁剪」意图。页面：{{currentUrl}}。比例模式：{{aspectMode}}，尺寸说明：{{sizeLabel}}，输出格式：{{outputFormat}}。文件数：{{fileCount}}。界面支持框选区域并导出。结合其设置给构图与比例建议。请使用与用户一致的语言回复。',
+        '「图片裁剪」页（{{currentUrl}}）。用途：定比例/区域后导出。说明后问需求，请用户在页上框选。勿在对话里“代替裁剪”。状态：模式 {{aspectMode}}，{{sizeLabel}}，输出 {{outputFormat}}，文件 {{fileCount}}。参数：`preset`/`p`、`cw`/`ch`、`q`、`f` 等。回复语言与用户一致即可。',
       imageResize:
-        '请复现 CloudCreate.ai「图片缩放」意图。页面：{{currentUrl}}。模式：{{mode}}。参数摘要：{{paramsSummary}}。文件数：{{fileCount}}。说明何时用百分比或限制长边，以及格式影响。本地处理。请使用与用户一致的语言回复。',
+        '「图片缩放」页（{{currentUrl}}）。用途：按比例或边长等在浏览器中缩放。模式 {{mode}}，摘要 {{paramsSummary}}，文件 {{fileCount}}。帮选合适模式，勿代批量处理。参数：`mode`、`p`、`maw`/`mah`、`tw`/`th`/`tl`、`q`、`f` 等。回复语言与用户一致即可。',
       imageRotate:
-        '请复现 CloudCreate.ai「图片旋转/镜像」工具。页面：{{currentUrl}}。旋转/翻转：{{transformSummary}}。输出格式：{{outputFormat}}。文件数：{{fileCount}}。帮助批量纠正方向与格式选择。请使用与用户一致的语言回复。',
+        '「图片旋转/镜像」页（{{currentUrl}}）。用途：改方向/镜像后导出。{{transformSummary}}，输出 {{outputFormat}}，文件 {{fileCount}}。勿在聊天中处理图。参数：`r`、`fh`/`fv`、`q`、`f` 等。回复语言与用户一致即可。',
       imageFavicon:
-        '请复现 CloudCreate.ai「Favicon 生成」工具。页面：{{currentUrl}}。选项摘要：{{optionsSummary}}。文件数：{{fileCount}}。说明浏览器 ICO/PNG 与多尺寸用途。请使用与用户一致的语言回复。',
+        '「Favicon 生成」页（{{currentUrl}}）。用途：一图多尺寸图标。说明常见用途。选项 {{optionsSummary}}，文件 {{fileCount}}。参数：`sizes`、`ico`。回复语言与用户一致即可。',
       imagePlaystore:
-        '请复现 CloudCreate.ai「Play 商店图标 512×512」工具。页面：{{currentUrl}}。选项：{{optionsSummary}}。文件数：{{fileCount}}。提醒：Google Play 需要 512×512 PNG；若拒透明需按规范导出。请使用与用户一致的语言回复。',
+        '「Play 512 图标」页（{{currentUrl}}）。用途：按商店要求导出单张图标。{{optionsSummary}}，{{fileCount}}。本页无 URL 项，仅分享路径。勿在聊天里当真的图标交付。回复语言与用户一致即可。',
       imageAppstore:
-        '请复现 CloudCreate.ai「App Store 图标 1024×1024」工具。页面：{{currentUrl}}。选项：{{optionsSummary}}。文件数：{{fileCount}}。提醒：营销图标为 1024 方形、无透明。请使用与用户一致的语言回复。',
+        '「App 1024 图标」页（{{currentUrl}}）。用途：营销用方形图标。{{optionsSummary}}，{{fileCount}}。无 URL 项。回复语言与用户一致即可。',
       imagePreview:
-        '请复现 CloudCreate.ai「图片预览」工具。页面：{{currentUrl}}。已加载文件数：{{fileCount}}。用于本地查看、元数据、缩放平移；不要声称云端分析。帮助对比素材与尺寸。请使用与用户一致的语言回复。',
+        '「图片预览」页（{{currentUrl}}）。用途：本机看缩略/元信息/缩放。已选 {{fileCount}} 个文件。勿声称你「看过」其私有文件。参数：`z`、`i` 等。回复语言与用户一致即可。',
       imageBatch:
-        '请复现 CloudCreate.ai「图片批处理（规格表）」工具。页面：{{currentUrl}}。规格行数：{{rowCount}}。文件数：{{fileCount}}。用户按表对齐文件名与目标尺寸；帮助校验常见商店规格。本地处理。请使用与用户一致的语言回复。',
+        '「批处理规格表」页（{{currentUrl}}）。用途：按表对图批量出规格。行 {{rowCount}}，文件 {{fileCount}}。说清 profile/前缀在页面里的含义。勿在聊天跑批。参数：`profile`/`prefix`/`hide`/`ich` 等。回复语言与用户一致即可。',
       imageGif:
-        '请复现 CloudCreate.ai「GIF 压缩」工具。页面：{{currentUrl}}。用户当前参数摘要：{{summary}}。可调帧率、尺寸、调色板、背景等。提供网页 GIF 体积优化建议。全部本地。请使用与用户一致的语言回复。',
+        '「GIF 压缩」页（{{currentUrl}}）。用途：在浏览器中调参瘦身 GIF。当前摘要：{{summary}}。勿在对话中重编码 GIF。参数：fps/scale/pal 等。回复语言与用户一致即可。',
       markdown:
-        '请复现 CloudCreate.ai「Markdown 预览」页面。页面：{{currentUrl}}。帮助润色 Markdown、解释预览与源码、建议文档/README 结构。内容停留于浏览器会话。请使用与用户一致的语言回复。',
+        '「Markdown 预览」页（{{currentUrl}}）。用途：边写边预览。可给写作建议，勿代替整段编辑与预览会话。本页无有效 URL 预填。回复语言与用户一致即可。',
       table:
-        '请复现 CloudCreate.ai「表格预览与转换」工具。页面：{{currentUrl}}。当前区域（hash）：{{section}}。转换目标格式：{{outputFormat}}。已选文件：{{fileName}}。行列规模：约 {{rows}} 行 × {{cols}} 列。帮助清洗数据、选择导出与分页。数据本地。请使用与用户一致的语言回复。',
+        '「表格预览与转换」页（{{currentUrl}}）。用途：看表与导格式。区段 {{section}}，目标 {{outputFormat}}，文件 {{fileName}}，约 {{rows}}×{{cols}}。勿在聊天里托管其数据。参数：`fmt`/`format`/`out` = csv|tsv|xlsx|json。回复语言与用户一致即可。',
       pdf:
-        '请复现 CloudCreate.ai「PDF 预览」工具。页面：{{currentUrl}}。文件：{{fileName}}。帮助翻页、缩放与审阅；说明为本地渲染。请使用与用户一致的语言回复。',
+        '「PDF 预览」页（{{currentUrl}}）。用途：本地翻页与缩放。文件：{{fileName}}。教如何用控件，勿在聊天“渲染 PDF”。参数：`pg`、`z` 等。回复语言与用户一致即可。',
       pdfCompress:
-        '请复现 CloudCreate.ai「PDF 压缩（浏览器）」工具。页面：{{currentUrl}}。设置摘要：{{settingsSummary}}。文件：{{fileName}}。说明：基于栅格化的瘦身适合轻量分享，非印刷级；解释质量折衷。请使用与用户一致的语言回复。',
+        '「PDF 压缩」页（{{currentUrl}}）。用途：栅格化方式减小体积。文件 {{fileName}}。设置：{{settingsSummary}}。说清取舍，勿在对话里当压缩服务。参数：`rs`、`jq`、`pf` 等。回复语言与用户一致即可。',
       workflow:
-        '请复现 CloudCreate.ai「工作流编辑器（简易模式）」意图。页面：{{currentUrl}}。工作流步数：{{stepCount}}。用户加载图片并串联压缩/裁剪/缩放后导出。帮助步骤顺序与预设 JSON 含义。本地执行。请使用与用户一致的语言回复。',
+        '「简易工作流」页（{{currentUrl}}）。用途：在浏览器中串联多步。步数 {{stepCount}}。帮理清目标与步骤，勿在聊天执行其流水线。参数：`n`/`d` 等。回复语言与用户一致即可。',
       workflowAdvanced:
-        '请复现 CloudCreate.ai「高级工作流编辑器」。页面：{{currentUrl}}。节点数：{{nodeCount}}。可编辑图与 JSON 导入导出，本地跑图。帮助排查图结构与节点含义，不要声称有服务端执行。请使用与用户一致的语言回复。',
+        '「高级工作流」页（{{currentUrl}}）。用途：图编排与导入导出。节点 {{nodeCount}}。说清数据流，勿替代运行。URL 仅可带初始预设：`preset`=compress|resize|crop。回复语言与用户一致即可。',
       cssMinify:
-        '请复现 CloudCreate.ai「CSS 压缩」工具。页面：{{currentUrl}}。是否激进压缩：{{aggressive}}。帮助减小生产 CSS 与语法问题排查。本地处理。请使用与用户一致的语言回复。',
+        '「CSS 压缩」页（{{currentUrl}}）。用途：在浏览器中压缩。是否激进：{{aggressive}}。指引用哪个档位，勿整份替用户在聊天里“压成一行”。参数：`level`/`l` 等。回复语言与用户一致即可。',
       cssBeautify:
-        '请复现 CloudCreate.ai「CSS 解压/美化」工具。页面：{{currentUrl}}。帮助把压缩 CSS 变可读、便于 diff。本地处理。请使用与用户一致的语言回复。',
+        '「CSS 美化」页（{{currentUrl}}）。用途：只读排格式。本页无 URL 预填。勿用大段在聊天里代替网站。回复语言与用户一致即可。',
       archiveCompress:
-        '请复现 CloudCreate.ai「压缩包压缩」工具。页面：{{currentUrl}}。格式：{{format}}。队列文件数：{{fileCount}}。说明浏览器端打包的局限。请使用与用户一致的语言回复。',
+        '「打压缩包」页（{{currentUrl}}）。用途：在浏览器中打包。当前格式 {{format}}，待打包 {{fileCount}}。问目标格式与用途。参数：`fmt` = zip|gzip|targz|brotli。回复语言与用户一致即可。',
       archiveDecompress:
-        '请复现 CloudCreate.ai「压缩包解压」工具。页面：{{currentUrl}}。文件：{{fileName}}。在支持格式内帮助解压与结果说明。请使用与用户一致的语言回复。',
+        '「解压缩包」页（{{currentUrl}}）。用途：在浏览器中解压。文件 {{fileName}}。说清会产出什么。无 URL 预填。回复语言与用户一致即可。',
       watermarkGemini:
-        '请复现 CloudCreate.ai「Gemini 角标去水印」工具。页面：{{currentUrl}}。文件：{{fileName}}。提醒：仅针对标准可见角标；注意合规与版权；本地处理。请使用与用户一致的语言回复。',
+        '「角标去水印」页（{{currentUrl}}）。用途：在浏览器中处理。文件 {{fileName}}。提醒合规/局限。无 URL 预填。勿在对话中声称已处理其图。回复语言与用户一致即可。',
       creativeBorderBeam:
-        '请复现「Border Beam 流光边框」创意演示。页面：{{currentUrl}}。控件：尺寸 {{size}}、配色 {{variant}}、主题 {{theme}}、强度 {{strength}}。为 CSS 锥形渐变式营销动效，帮助改色与动效以适配其页面。请使用与用户一致的语言回复。',
+        '「Border Beam」演示（{{currentUrl}}）。营销边框动效。当前：尺寸 {{size}}、变体 {{variant}}、主题 {{theme}}、强度 {{strength}}。问审美目标，在页上调节。参数：`size`、`var`、`theme`、`str` 等。回复语言与用户一致即可。',
     },
     home: {
       title: 'CloudCreate.ai',

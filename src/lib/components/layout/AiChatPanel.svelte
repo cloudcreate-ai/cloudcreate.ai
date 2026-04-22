@@ -4,11 +4,26 @@
   import { aiPanelOpen } from '$lib/stores/layoutStore.js';
   import { agentPromptStore } from '$lib/stores/agentPromptStore.js';
   import { interpolateTemplate } from '$lib/agentPrompt/interpolate.js';
+  import { getPanelPagePurpose } from '$lib/agentPrompt/panelPageBrief.js';
   import { resolveAgentPromptFallbackTemplateKey } from '$lib/agentPrompt/fallbackKey.js';
   import { getLogicalPath } from '$lib/localePath.js';
 
   let copied = $state(false);
   let copyTimer = /** @type {ReturnType<typeof setTimeout> | null} */ (null);
+
+  /** 与首页 home.title / home.subtitle 一致，供提示词前导与插值 */
+  const sitePromptCtx = $derived.by(() => {
+    void $locale;
+    return {
+      siteName: t('home.title'),
+      siteTagline: t('home.subtitle'),
+    };
+  });
+
+  const siteLeadInText = $derived.by(() => {
+    void $locale;
+    return interpolateTemplate(t('agentPrompt.siteLeadIn'), sitePromptCtx);
+  });
 
   const compiledPrompt = $derived.by(() => {
     void $locale;
@@ -16,19 +31,33 @@
     const href = $page.url.href;
     const logical = getLogicalPath(pathname);
     const reg = $agentPromptStore;
+    const base = { currentUrl: href, ...sitePromptCtx };
     if (reg?.templateKey && typeof reg.getParams === 'function') {
       const raw = t(reg.templateKey);
-      const p = { currentUrl: href, ...reg.getParams() };
-      return interpolateTemplate(raw, p);
+      const p = { ...base, ...reg.getParams() };
+      return siteLeadInText + interpolateTemplate(raw, p);
     }
     const sub = resolveAgentPromptFallbackTemplateKey(logical, pathname);
     const raw = t(`agentPrompt.${sub}`);
-    return interpolateTemplate(raw, { currentUrl: href });
+    return siteLeadInText + interpolateTemplate(raw, base);
   });
 
-  const introText = $derived.by(() => {
+  const pageBriefText = $derived.by(() => {
     void $locale;
-    return interpolateTemplate(t('agentPrompt.intro'), { currentUrl: $page.url.href });
+    void $agentPromptStore;
+    const pathname = $page.url.pathname;
+    const logical = getLogicalPath(pathname);
+    const reg = $agentPromptStore;
+    if (reg?.templateKey) {
+      return getPanelPagePurpose(reg.templateKey, t);
+    }
+    const sub = resolveAgentPromptFallbackTemplateKey(logical, pathname);
+    return getPanelPagePurpose(`agentPrompt.${sub}`, t);
+  });
+
+  const panelIntroText = $derived.by(() => {
+    void $locale;
+    return interpolateTemplate(t('agentPrompt.panelIntro'), { ...sitePromptCtx, pageBrief: pageBriefText });
   });
 
   async function copyPrompt() {
@@ -62,7 +91,7 @@
       </button>
     </div>
     <div class="ai-panel-content">
-      <p class="ai-panel-intro">{introText}</p>
+      <p class="ai-panel-intro">{panelIntroText}</p>
       <div class="ai-panel-copy-wrap">
         <button
           type="button"
@@ -155,6 +184,7 @@
     color: var(--ccw-text-muted);
     margin: 0;
     line-height: 1.45;
+    white-space: pre-line;
   }
   .ai-panel-copy-wrap {
     width: 100%;
@@ -170,6 +200,7 @@
     font-weight: 600;
     line-height: 1.3;
     text-align: center;
+    white-space: normal;
     border-radius: var(--ccw-radius-button);
     transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease,
       box-shadow 150ms ease;
