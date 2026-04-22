@@ -1,5 +1,6 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { PRERENDER_PATHS } from './src/lib/site-paths.js';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -8,47 +9,7 @@ const config = {
     prerender: {
       /** /table 为客户端渲染（+layout.js ssr:false），预渲染 HTML 中无锚点 id，链向 #table-* 时需忽略校验 */
       handleMissingId: 'ignore',
-      entries: [
-        '/',
-        '/en',
-        '/en/image/compress',
-        '/en/image/crop',
-        '/en/image/resize',
-        '/en/image/favicon',
-        '/en/image/rotate',
-        '/en/image/playstore',
-        '/en/image/appstore',
-        '/en/css',
-        '/en/css/minify',
-        '/en/css/beautify',
-        '/en/archive',
-        '/en/archive/decompress',
-        '/en/archive/compress',
-        '/en/workflow',
-        '/en/workflow/advanced',
-        '/zh',
-        '/zh/image/compress',
-        '/zh/image/crop',
-        '/zh/image/resize',
-        '/zh/image/favicon',
-        '/zh/image/rotate',
-        '/zh/image/playstore',
-        '/zh/image/appstore',
-        '/zh/css',
-        '/zh/css/minify',
-        '/zh/css/beautify',
-        '/zh/archive',
-        '/zh/archive/decompress',
-        '/zh/archive/compress',
-        '/en/markdown',
-        '/zh/markdown',
-        '/en/table',
-        '/zh/table',
-        '/en/framework',
-        '/zh/framework',
-        '/zh/workflow',
-        '/zh/workflow/advanced',
-      ],
+      entries: [...PRERENDER_PATHS],
     },
     adapter: adapter({
       pages: 'build',
