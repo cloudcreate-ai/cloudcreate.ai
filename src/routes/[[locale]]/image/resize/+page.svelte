@@ -16,7 +16,16 @@
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildResizeQuery, parseResizeQuery } from '$lib/urlParams/resizeQuery.js';
 
   const VALID_MODES = ['percent', 'max', 'width', 'height', 'long', 'exact'];
   const resizeDefaults = {
@@ -57,6 +66,51 @@
       quality,
     })
   );
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const sp = searchStringToParams($page.url.search);
+    if ([...sp.keys()].length === 0) return;
+    const p = parseResizeQuery(sp);
+    if (p.scaleMode != null) scaleMode = /** @type {typeof scaleMode} */ (p.scaleMode);
+    if (p.scalePercent != null) scalePercent = p.scalePercent;
+    if (p.maxWidth != null) maxWidth = p.maxWidth;
+    if (p.maxHeight != null) maxHeight = p.maxHeight;
+    if (p.targetWidth != null) targetWidth = p.targetWidth;
+    if (p.targetHeight != null) targetHeight = p.targetHeight;
+    if (p.targetLong != null) targetLong = p.targetLong;
+    if (p.quality != null) quality = p.quality;
+    if (p.targetFormat !== undefined) targetFormat = p.targetFormat;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void scaleMode;
+    void scalePercent;
+    void maxWidth;
+    void maxHeight;
+    void targetWidth;
+    void targetHeight;
+    void targetLong;
+    void targetFormat;
+    void quality;
+    const next = buildResizeQuery(
+      scaleMode,
+      scalePercent,
+      maxWidth,
+      maxHeight,
+      targetWidth,
+      targetHeight,
+      targetLong,
+      targetFormat,
+      quality
+    ).toString();
+    const h = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(h);
+  });
 
   let processing = $state(false);
   let error = $state('');

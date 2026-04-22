@@ -1,9 +1,18 @@
 <script>
   import { onDestroy } from 'svelte';
   import { t } from '$lib/i18n.js';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildGifOptionsQuery, parseGifOptionsQuery } from '$lib/urlParams/gifOptionsQuery.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -65,6 +74,32 @@
     gifEditorStore.reset();
   });
 
+  function applyGifOptionsFromUrl() {
+    if (!browser) return;
+    const sp = searchStringToParams(get(page).url.search);
+    if ([...sp.keys()].length === 0) return;
+    const p = parseGifOptionsQuery(sp);
+    if (Object.keys(p).length === 0) return;
+    gifEditorStore.updateOptions(p);
+  }
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    applyGifOptionsFromUrl();
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void gifState;
+    const h = setTimeout(() => {
+      const st = get(gifEditorStore);
+      if (!st.frames?.length) return;
+      replaceUrlSearchIfChanged(page, goto, buildGifOptionsQuery(st.options || {}));
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(h);
+  });
+
   $effect(() => {
     void gifState;
     return registerAgentPrompt({
@@ -74,7 +109,7 @@
         const comp = st.compression ?? {};
         const opt = st.options ?? {};
         const fr = st.frames?.length ?? 0;
-        const summary = `name=${st.fileName || '—'} frames=${fr} scale%=${opt.scalePercent ?? 100} targetFps=${st.targetFps ?? '—'} mergeBg=${opt.mergeBackground ? 'Y' : 'N'} compReady=${!comp.dirty && !comp.running && (comp.frames?.length > 0)}`;
+        const summary = `name=${st.fileName || '—'} frames=${fr} scale%=${opt.scalePercent ?? 100} targetFps=${st.targetFps ?? '—'} obg=${opt.optimizeBackground !== false ? 'Y' : 'N'} compReady=${!comp.dirty && !comp.running && (comp.frames?.length > 0)}`;
         return { currentUrl: get(page).url.href, summary };
       },
     });
@@ -85,6 +120,7 @@
     playing = false;
     gifEditorStore.reset();
     await gifEditorStore.loadGif(files[0]);
+    applyGifOptionsFromUrl();
   }
 
   function toggleOption(key) {

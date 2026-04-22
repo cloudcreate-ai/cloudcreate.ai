@@ -20,7 +20,16 @@
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildRotateQuery, parseRotateQuery } from '$lib/urlParams/rotateQuery.js';
 
   const ROTATE_OPTIONS = [
     { value: 0, labelKey: 'rotate.0deg' },
@@ -44,6 +53,33 @@
   let idCounter = 0;
 
   $effect(() => saveToolConfig('rotate', { rotate, flipH, flipV, targetFormat, quality }));
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const sp = searchStringToParams($page.url.search);
+    if ([...sp.keys()].length === 0) return;
+    const p = parseRotateQuery(sp);
+    if (p.rotate != null) rotate = p.rotate;
+    if (p.flipH !== undefined) flipH = p.flipH;
+    if (p.flipV !== undefined) flipV = p.flipV;
+    if (p.quality != null) quality = p.quality;
+    if (p.targetFormat !== undefined) targetFormat = p.targetFormat;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void rotate;
+    void flipH;
+    void flipV;
+    void targetFormat;
+    void quality;
+    const next = buildRotateQuery(rotate, flipH, flipV, targetFormat, quality).toString();
+    const h = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(h);
+  });
 
   $effect(() => {
     void rotate;

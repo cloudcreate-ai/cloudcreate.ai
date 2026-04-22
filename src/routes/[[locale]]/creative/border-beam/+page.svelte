@@ -2,7 +2,16 @@
   import { t } from '$lib/i18n.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildBorderBeamQuery, parseBorderBeamQuery } from '$lib/urlParams/borderBeamQuery.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import WorkspacePageShell from '$lib/components/layout/WorkspacePageShell.svelte';
   import BorderBeam from '$lib/components/BorderBeam.svelte';
@@ -33,6 +42,29 @@
         strength: String(strengthPercent),
       }),
     });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parseBorderBeamQuery(searchStringToParams($page.url.search));
+    if (p.beamSize != null) beamSize = /** @type {'sm' | 'md' | 'line'} */ (p.beamSize);
+    if (p.colorVariant != null) colorVariant = /** @type {typeof colorVariant} */ (p.colorVariant);
+    if (p.beamTheme != null) beamTheme = /** @type {typeof beamTheme} */ (p.beamTheme);
+    if (p.strength != null) strength = p.strength;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void beamSize;
+    void colorVariant;
+    void beamTheme;
+    void strength;
+    const next = buildBorderBeamQuery(beamSize, colorVariant, beamTheme, strength).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 </script>
 

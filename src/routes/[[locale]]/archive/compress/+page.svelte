@@ -5,7 +5,16 @@
   import { t } from '$lib/i18n.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildArchiveCompressQuery, parseArchiveCompressQuery } from '$lib/urlParams/archiveCompressQuery.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import { formatFileSize } from '$lib/imageProcessor.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -44,6 +53,23 @@
         fileCount: String(files.length),
       }),
     });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parseArchiveCompressQuery(searchStringToParams($page.url.search));
+    if (p.format != null) format = p.format;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void format;
+    const next = buildArchiveCompressQuery(format).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 
   const fileStats = $derived.by(() => {

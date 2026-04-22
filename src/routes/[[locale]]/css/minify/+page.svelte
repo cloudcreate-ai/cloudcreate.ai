@@ -5,7 +5,16 @@
   import { t } from '$lib/i18n.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildCssMinifyQuery, parseCssMinifyQuery } from '$lib/urlParams/cssMinifyQuery.js';
   import { minifyBasic, minifyAggressive } from '$lib/cssTools.js';
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
@@ -78,6 +87,23 @@
         aggressive: minifyLevel === MINIFY_AGGRESSIVE ? 'yes' : 'no',
       }),
     });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parseCssMinifyQuery(searchStringToParams($page.url.search));
+    if (p.minifyLevel != null) minifyLevel = p.minifyLevel;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void minifyLevel;
+    const next = buildCssMinifyQuery(minifyLevel).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 </script>
 

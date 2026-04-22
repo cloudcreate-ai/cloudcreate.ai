@@ -4,7 +4,15 @@
   import { t } from '$lib/i18n.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildPreviewQuery, parsePreviewQuery } from '$lib/urlParams/previewQuery.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ZoomControls from '$lib/components/common/ZoomControls.svelte';
@@ -12,6 +20,25 @@
   let images = $state([]);
   let selectedIndex = $state(0);
   let zoom = $state(1);
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parsePreviewQuery(searchStringToParams($page.url.search));
+    if (p.zoom != null) zoom = p.zoom;
+    if (p.selectedIndex != null) selectedIndex = p.selectedIndex;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void zoom;
+    void selectedIndex;
+    const next = buildPreviewQuery(zoom, selectedIndex).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  });
 
   $effect(() => {
     void images;

@@ -1,7 +1,19 @@
 <script>
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
   import { t } from '$lib/i18n.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import {
+    buildWorkflowSimpleQuery,
+    parseWorkflowSimpleQuery,
+  } from '$lib/urlParams/workflowSimpleQuery.js';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { localePath } from '$lib/localePath.js';
   import { validateWorkflow, runWorkflow } from '$lib/workflow/runner.js';
@@ -31,6 +43,8 @@
   let workflowName = $state('');
   let workflowDescription = $state('');
 
+  let lastWorkflowSearch = '';
+
   const advancedHref = $derived(localePath($page.url.pathname, '/workflow/advanced'));
 
   $effect(() => {
@@ -42,6 +56,28 @@
         stepCount: String(steps.length),
       }),
     });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void $page.url.search;
+    const s = $page.url.search;
+    if (s === lastWorkflowSearch) return;
+    lastWorkflowSearch = s;
+    if (!hasUrlSearchParams(s)) return;
+    const pq = parseWorkflowSimpleQuery(searchStringToParams(s));
+    if (pq.workflowName !== undefined) workflowName = pq.workflowName;
+    if (pq.workflowDescription !== undefined) workflowDescription = pq.workflowDescription;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void workflowName;
+    void workflowDescription;
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, buildWorkflowSimpleQuery(workflowName, workflowDescription));
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 
   function addStep(index, type) {

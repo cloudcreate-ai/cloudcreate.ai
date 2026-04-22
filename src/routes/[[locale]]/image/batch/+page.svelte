@@ -19,9 +19,18 @@
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
+  import { browser } from '$app/environment';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildBatchQuery, parseBatchQuery } from '$lib/urlParams/batchQuery.js';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import { onMount } from 'svelte';
   import {
@@ -85,6 +94,10 @@
   /** 结果 blob 的 object URL，用于缩略图，按索引与 results 对应 */
   let resultBlobUrls = $state([]);
   let _prevResultUrls = [];
+
+  /** 批处理 onMount 完成后再同步 URL、写回，避免与从 localStorage 选 profile 竞态 */
+  let batchInitDone = $state(false);
+  let lastBatchSearch = '';
 
   $effect(() => {
     const urls = [];
@@ -178,6 +191,50 @@
     await loadSpecsForKey(key);
   }
 
+  $effect(() => {
+    if (!browser || !batchInitDone) return;
+    void $page.url.search;
+    void customPresets;
+    const s = $page.url.search;
+    if (s === lastBatchSearch) return;
+    lastBatchSearch = s;
+    if (!hasUrlSearchParams(s)) return;
+    const pq = parseBatchQuery(searchStringToParams(s));
+    if (pq.globalFilePrefix !== undefined) globalFilePrefix = pq.globalFilePrefix;
+    if (pq.hideUnsupported !== undefined) hideUnsupported = pq.hideUnsupported;
+    if (pq.includeChannelInFilename !== undefined) includeChannelInFilename = pq.includeChannelInFilename;
+    if (pq.selectedProfileKey) {
+      const key = normalizeStoredProfileKey(
+        pq.selectedProfileKey,
+        customPresets,
+        PROFILE_DEFAULT,
+        BUILTIN_ORDER
+      );
+      if (key !== selectedProfileKey) void switchProfileKey(key);
+    }
+  });
+
+  $effect(() => {
+    if (!browser || !batchInitDone) return;
+    void selectedProfileKey;
+    void globalFilePrefix;
+    void hideUnsupported;
+    void includeChannelInFilename;
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(
+        page,
+        goto,
+        buildBatchQuery(
+          selectedProfileKey,
+          globalFilePrefix,
+          hideUnsupported,
+          includeChannelInFilename
+        )
+      );
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  });
+
   /** 解析/写入 JSON 后的规格数组 */
   function applyNormalizedSpecs(nextSpecs) {
     specs = nextSpecs;
@@ -213,13 +270,38 @@
   }
 
   onMount(async () => {
-    if (typeof localStorage === 'undefined') return;
+    if (typeof localStorage === 'undefined') {
+      batchInitDone = true;
+      return;
+    }
+    lastBatchSearch = get(page).url.search;
     customPresets = loadCustomPresetsFromStorage();
-    const saved = localStorage.getItem(LS_BATCH_PROFILE_KEY);
-    const key = normalizeStoredProfileKey(saved, customPresets, PROFILE_DEFAULT, BUILTIN_ORDER);
+    const search = get(page).url.search;
+    let key;
+    if (hasUrlSearchParams(search)) {
+      const pq = parseBatchQuery(searchStringToParams(search));
+      if (pq.globalFilePrefix !== undefined) globalFilePrefix = pq.globalFilePrefix;
+      if (pq.hideUnsupported !== undefined) hideUnsupported = pq.hideUnsupported;
+      if (pq.includeChannelInFilename !== undefined) includeChannelInFilename = pq.includeChannelInFilename;
+      if (pq.selectedProfileKey) {
+        key = normalizeStoredProfileKey(
+          pq.selectedProfileKey,
+          customPresets,
+          PROFILE_DEFAULT,
+          BUILTIN_ORDER
+        );
+      } else {
+        const saved = localStorage.getItem(LS_BATCH_PROFILE_KEY);
+        key = normalizeStoredProfileKey(saved, customPresets, PROFILE_DEFAULT, BUILTIN_ORDER);
+      }
+    } else {
+      const saved = localStorage.getItem(LS_BATCH_PROFILE_KEY);
+      key = normalizeStoredProfileKey(saved, customPresets, PROFILE_DEFAULT, BUILTIN_ORDER);
+    }
     selectedProfileKey = key;
     localStorage.setItem(LS_BATCH_PROFILE_KEY, key);
     await loadSpecsForKey(key);
+    batchInitDone = true;
   });
 
   async function addFiles(fileList) {

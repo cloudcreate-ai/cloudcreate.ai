@@ -5,6 +5,9 @@
   import { page } from '$app/stores';
   import { browser } from '$app/environment';
   import { get } from 'svelte/store';
+  import { goto } from '$app/navigation';
+  import { URL_SYNC_DEBOUNCE_MS, replaceUrlSearchIfChanged } from '$lib/urlToolSync.js';
+  import { buildTableFormatQuery } from '$lib/urlParams/tableFormatQuery.js';
   import { t } from '$lib/i18n.js';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
   import { getLogicalPath } from '$lib/localePath.js';
@@ -40,6 +43,27 @@
   let fileName = $state('');
   /** 按全局列下标存储列宽（px）；未设置则随内容/布局自动 */
   let columnWidthsPx = $state(/** @type {Record<number, number>} */ ({}));
+
+  /** 从 ?fmt= / ?format= / ?out= 同步导出格式，便于带参直链；goto 保留 # 锚点 */
+  $effect(() => {
+    if (!browser) return;
+    const s = $page.url.search;
+    if (s == null || s.length <= 1) return;
+    const sp = new URLSearchParams(s.slice(1));
+    const fmt = (sp.get('fmt') ?? sp.get('format') ?? sp.get('out') ?? '').toLowerCase();
+    if (fmt && FORMATS.includes(fmt)) {
+      outputFormat = fmt;
+    }
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void outputFormat;
+    const handle = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, buildTableFormatQuery(outputFormat));
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  });
 
   const currentSheet = $derived(table?.sheets?.[selectedSheetIndex] ?? { headers: [], rows: [] });
   const totalRows = $derived(currentSheet.rows?.length ?? 0);

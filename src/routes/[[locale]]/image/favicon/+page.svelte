@@ -11,7 +11,16 @@
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildFaviconQuery, parseFaviconQuery } from '$lib/urlParams/faviconQuery.js';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
   import JSZip from 'jszip';
 
@@ -33,6 +42,30 @@
   $effect(() => {
     const arr = Array.from(selectedSizes).sort((a, b) => a - b);
     saveToolConfig('favicon', { sizes: arr, includeIco });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parseFaviconQuery(searchStringToParams($page.url.search));
+    if (p.sizes?.length) {
+      const next = new Set(
+        p.sizes.filter((n) => FAVICON_SIZES.some((d) => d.size === n))
+      );
+      if (next.size) selectedSizes = next;
+    }
+    if (p.includeIco !== undefined) includeIco = p.includeIco;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void selectedSizes;
+    void includeIco;
+    const next = buildFaviconQuery(selectedSizes, includeIco).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 
   $effect(() => {

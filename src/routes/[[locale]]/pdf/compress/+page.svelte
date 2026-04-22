@@ -10,7 +10,16 @@
   import { downloadBlob } from '$lib/batchHelpers.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildPdfCompressQuery, parsePdfCompressQuery } from '$lib/urlParams/pdfCompressQuery.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -55,6 +64,31 @@
         settingsSummary: `rasterScale=${renderScale} pageImg=${pageImageFormat} jpegQ%=${jpegQualityPercent}`,
       }),
     });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parsePdfCompressQuery(searchStringToParams($page.url.search));
+    if (p.renderScale != null) renderScale = p.renderScale;
+    if (p.jpegQualityPercent != null) jpegQualityPercent = p.jpegQualityPercent;
+    if (p.pageImageFormat != null) pageImageFormat = p.pageImageFormat;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void renderScale;
+    void jpegQualityPercent;
+    void pageImageFormat;
+    const next = buildPdfCompressQuery(
+      renderScale,
+      jpegQualityPercent,
+      pageImageFormat
+    ).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 
   const compareItem = $derived(

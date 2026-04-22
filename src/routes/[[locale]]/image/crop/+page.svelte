@@ -17,7 +17,16 @@
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildCropQuery, parseCropQuery } from '$lib/urlParams/cropQuery.js';
 
   const ASPECT_OPTIONS = [
     { labelKey: 'crop.free', value: 0 },
@@ -60,6 +69,39 @@
   $effect(() =>
     saveToolConfig('crop', { aspectRatio, customWidth, customHeight, targetFormat, quality })
   );
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const sp = searchStringToParams($page.url.search);
+    if ([...sp.keys()].length === 0) return;
+    const p = parseCropQuery(sp);
+    if (p.aspectRatio !== undefined) aspectRatio = p.aspectRatio;
+    if (p.customWidth != null) customWidth = p.customWidth;
+    if (p.customHeight != null) customHeight = p.customHeight;
+    if (p.quality != null) quality = p.quality;
+    if (p.targetFormat !== undefined) targetFormat = p.targetFormat;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void aspectRatio;
+    void customWidth;
+    void customHeight;
+    void targetFormat;
+    void quality;
+    const next = buildCropQuery(
+      aspectRatio,
+      customWidth,
+      customHeight,
+      targetFormat,
+      quality
+    ).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
+  });
 
   let processing = $state(false);
   let error = $state('');

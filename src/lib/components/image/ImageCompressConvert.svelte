@@ -15,7 +15,14 @@
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    buildImageEncodeQuery,
+    parseImageEncodeQuery,
+  } from '$lib/urlImageEncodeQuery.js';
+  import { URL_SYNC_DEBOUNCE_MS, replaceUrlSearchIfChanged } from '$lib/urlToolSync.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
@@ -44,6 +51,30 @@
   let targetFormat = $state(validFormat);
   let quality = $state(Math.min(100, Math.max(1, saved.quality ?? 75)));
   $effect(() => saveToolConfig(configKey, { targetFormat, quality }));
+
+  /** 从地址栏同步 q / f，便于带参直链与浏览器前进后退 */
+  $effect(() => {
+    if (!browser) return;
+    const s = $page.url.search;
+    if (s == null || s.length <= 1) return;
+    const sp = new URLSearchParams(s.slice(1));
+    if ([...sp.keys()].length === 0) return;
+    const parsed = parseImageEncodeQuery(sp, { showSameAsOriginal, defaultTargetFormat });
+    if (parsed.quality != null) quality = parsed.quality;
+    if (parsed.targetFormat !== undefined) targetFormat = parsed.targetFormat;
+  });
+
+  /** 将当前选项写回地址栏 */
+  $effect(() => {
+    if (!browser) return;
+    void quality;
+    void targetFormat;
+    const next = buildImageEncodeQuery(quality, targetFormat).toString();
+    const handle = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  });
 
   let processing = $state(false);
   let error = $state('');

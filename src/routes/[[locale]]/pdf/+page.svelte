@@ -5,7 +5,15 @@
   import { t } from '$lib/i18n.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
+  import {
+    URL_SYNC_DEBOUNCE_MS,
+    hasUrlSearchParams,
+    replaceUrlSearchIfChanged,
+    searchStringToParams,
+  } from '$lib/urlToolSync.js';
+  import { buildPdfViewerQuery, parsePdfViewerQuery } from '$lib/urlParams/pdfViewerQuery.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
@@ -37,6 +45,26 @@
         fileName: fileName || '—',
       }),
     });
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    if (!hasUrlSearchParams($page.url.search)) return;
+    const p = parsePdfViewerQuery(searchStringToParams($page.url.search));
+    if (p.page != null) currentPage = p.page;
+    if (p.scale != null) scale = p.scale;
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    void currentPage;
+    void totalPages;
+    void scale;
+    const next = buildPdfViewerQuery(currentPage, totalPages, scale).toString();
+    const t = setTimeout(() => {
+      replaceUrlSearchIfChanged(page, goto, next);
+    }, URL_SYNC_DEBOUNCE_MS);
+    return () => clearTimeout(t);
   });
 
   onMount(async () => {
