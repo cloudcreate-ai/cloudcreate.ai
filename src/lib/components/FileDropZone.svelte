@@ -86,7 +86,9 @@
     class="hidden"
     id="{idPrefix}-input"
   />
-  <p class="hint text-base text-surface-700-300 m-0">{t(hintKey)}</p>
+  {#if hintKey}
+    <p class="hint text-base text-surface-700-300 m-0">{t(hintKey)}</p>
+  {/if}
   {#if showFormats}
     <p class="formats text-[11px] text-surface-500-500 mt-1 m-0">{t(formatsKey)}</p>
   {/if}

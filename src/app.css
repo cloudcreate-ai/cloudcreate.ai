@@ -32,6 +32,10 @@
   --ccw-radius-button: 3px;
   --ccw-radius-card: 6px;
   --ccw-radius-pill: 999px;
+  /* 工具页内「上传/选项/主操作」等块级区域的竖直间距 */
+  --ccw-workspace-block-gap: 1rem;
+  /* 主操作行与下方结果/预览区（略大于普通块距） */
+  --ccw-workspace-primary-after: 1.25rem;
 }
 
 html,
@@ -155,7 +159,7 @@ body,
 
 /* 工具页/创意页标题下的说明段落（与 styleguide 一致） */
 .page-intro {
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 var(--ccw-workspace-block-gap) 0;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--ccw-text-muted);
@@ -168,20 +172,13 @@ input, select, textarea {
   line-height: 1.5;
 }
 
-/* VS Code 风格卡片与按钮 */
+/* VS Code 风格卡片与按钮（卡片本身无悬停动效，减少干扰；可点击元素用按钮/链接着重） */
 .card {
   background: var(--ccw-bg-elevated);
   border: 1px solid var(--ccw-border-soft);
   border-radius: var(--ccw-radius-card);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
   color: var(--ccw-text-secondary);
-}
-.card:hover {
-  border-color: var(--ccw-accent);
-  box-shadow: var(--ccw-shadow-soft);
-  transform: translateY(-1px);
-  color: var(--ccw-text-primary);
 }
 button,
 .btn,
@@ -255,6 +252,11 @@ button:focus-visible,
   box-shadow: inset 0 1px 2px color-mix(in srgb, black 35%, transparent) !important;
 }
 
+/* 工具页内容块：与主操作区/其它区块的竖直节奏一致，可替代零散 mb-4 */
+.workspace-content-block {
+  margin-bottom: var(--ccw-workspace-block-gap);
+}
+
 /* 工作区主操作行：仅负责排列与工具页行内尺寸（与 VS Code 工具栏按钮高度接近，不含 .btn-sm） */
 .workspace-primary-actions {
   display: flex;
@@ -262,10 +264,12 @@ button:focus-visible,
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-top: var(--ccw-workspace-block-gap);
+  margin-bottom: var(--ccw-workspace-primary-after);
   width: 100%;
 }
 .workspace-primary-actions--tight {
+  margin-top: 0;
   margin-bottom: 0;
 }
 .workspace-primary-actions .btn.preset-filled-primary-500:not(.btn-sm),

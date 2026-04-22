@@ -174,14 +174,14 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="crop.title" descKey="crop.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <FileDropZone onFilesAdd={addFiles} />
     {#if error}
       <p class="text-sm text-error-500 mt-2">{error}</p>
     {/if}
   </section>
 
-  <details open class="card preset-outlined-surface-200-800 p-4 mb-4">
+  <details open class="card preset-outlined-surface-200-800 p-4 workspace-content-block">
     <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
       <span class="font-medium">{t('common.options')}</span>
       <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {t('common.quality')}: {quality}</span>

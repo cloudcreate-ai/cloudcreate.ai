@@ -353,6 +353,7 @@ const translations = {
       flipH: 'Flip horizontal',
       flipV: 'Flip vertical',
       apply: 'Apply',
+      rotate: 'Rotate',
     },
     favicon: {
       title: 'Favicon Generator',
@@ -564,7 +565,7 @@ const translations = {
       title: 'GIF Compression',
       desc: 'Upload heavy GIF files and compress them with frame-rate, size, palette, and background optimization strategies directly in the browser.',
       upload: 'Upload GIF',
-      uploadHint: 'Click or drag GIF files here',
+      uploadHint: 'Upload a GIF to start compressing.',
       formats: 'GIF',
       metaResolution: 'Resolution',
       metaFrames: 'Frames',
@@ -980,6 +981,7 @@ const translations = {
       flipH: '水平镜像',
       flipV: '垂直镜像',
       apply: '应用',
+      rotate: '旋转',
     },
     favicon: {
       title: 'Favicon 图标生成',
@@ -1189,7 +1191,7 @@ const translations = {
       title: 'GIF 压缩',
       desc: '上传 GIF，使用帧率、尺寸、调色板与背景优化等策略压缩体积，全部在浏览器端完成。',
       upload: '选择 GIF',
-      uploadHint: '点击或拖拽 GIF 文件到此处',
+      uploadHint: '上传 GIF 后即可开始压缩。',
       formats: 'GIF',
       metaResolution: '分辨率',
       metaFrames: '帧数',

@@ -671,14 +671,14 @@
   <input type="file" accept=".json,application/json" class="hidden" bind:this={importInputEl} onchange={(e) => { const f = e.currentTarget?.files?.[0]; if (f) importSpecsFromFile(f); }} />
 
   {#if specs.length > 0}
-    <section class="mb-4">
+    <section class="workspace-content-block">
       <FileDropZone onFilesAdd={addFiles} selectedName={fileItems.length ? `${fileItems.length} ${t('workflow.fileCount')}` : ''} onClear={fileItems.length ? () => (fileItems = []) : undefined} showClear={fileItems.length > 0} />
       {#if error}
         <p class="text-sm text-error-500 mt-2">{error}</p>
       {/if}
     </section>
 
-    <section class="card preset-outlined-surface-200-800 p-4 mb-4">
+    <section class="card preset-outlined-surface-200-800 p-4 workspace-content-block">
       <h3 class="text-sm font-medium m-0 mb-3">{t('batch.globalConfig')}</h3>
       <div class="flex flex-col gap-4">
         <div>
@@ -768,7 +768,7 @@
     </section>
 
     {#if fileItems.length > 0}
-      <section class="card preset-outlined-surface-200-800 p-4 mb-4">
+      <section class="card preset-outlined-surface-200-800 p-4 workspace-content-block">
         <h3 class="text-sm font-medium m-0 mb-3">{t('batch.inputList')} ({fileItems.length})</h3>
         <div class="flex flex-wrap gap-3">
           {#each fileItems as item}
@@ -789,7 +789,7 @@
     {#if fileItems.length > 0}
       <p class="text-xs text-surface-600-400 mb-2">{t('batch.autoMatchHint')}</p>
     {/if}
-    <div class="overflow-x-auto mb-4">
+    <div class="overflow-x-auto workspace-content-block">
       <table class="w-full text-sm border border-surface-200-800 rounded-lg">
         <thead>
           <tr class="border-b border-surface-200-800 text-surface-600-400 text-left">

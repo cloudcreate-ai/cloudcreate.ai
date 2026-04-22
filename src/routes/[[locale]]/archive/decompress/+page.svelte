@@ -88,7 +88,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="archiveDecompress.title" descKey="archiveDecompress.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <FileDropZone
       accept={ACCEPT}
       multiple={false}

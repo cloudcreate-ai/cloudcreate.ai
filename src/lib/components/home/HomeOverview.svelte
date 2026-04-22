@@ -263,13 +263,6 @@
     border-radius: var(--ccw-radius-card);
     color: var(--ccw-text-secondary);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease, color 150ms ease, background-color 150ms ease;
-  }
-  .home-tool-card:hover {
-    border-color: var(--ccw-accent);
-    transform: translateY(-2px);
-    box-shadow: var(--ccw-shadow-soft);
-    color: var(--ccw-text-primary);
   }
   .home-tool-card:focus-visible {
     outline: 2px solid var(--ccw-accent);
@@ -298,9 +291,6 @@
     color: var(--ccw-accent);
     background: rgba(10, 132, 255, 0.2);
     border-color: rgba(10, 132, 255, 0.35);
-  }
-  .home-tool-card:hover .home-tool-fav {
-    color: var(--ccw-accent);
   }
   .home-tool-icon {
     display: block;

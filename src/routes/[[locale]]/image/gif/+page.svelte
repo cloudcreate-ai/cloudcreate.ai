@@ -177,19 +177,17 @@
   <ToolPageHeader titleKey="gifTool.title" descKey="gifTool.desc" />
 
   <section class="card upload">
-    <h3>{t('gifTool.upload')}</h3>
     <FileDropZone
       accept="image/gif"
       multiple={false}
       onFilesAdd={handleFiles}
-      hintKey="gifTool.uploadHint"
-      formatsKey="gifTool.formats"
+      hintKey={gifState.fileName ? '' : 'gifTool.uploadHint'}
+      formatsKey=""
+      selectedName={gifState.fileName || ''}
     />
   </section>
 
-  {#if gifState.width === 0}
-    <p class="placeholder">{t('gifTool.emptyPlaceholder')}</p>
-  {:else}
+  {#if gifState.width > 0}
     <section class="card meta">
       <div>
         <strong>{t('gifTool.metaResolution')}:</strong> {gifState.width} × {gifState.height}px
@@ -466,12 +464,6 @@
 </div>
 
 <style>
-  .gif-tool .upload h3 {
-    margin-top: 0;
-  }
-  .placeholder {
-    color: var(--ccw-text-muted);
-  }
   .meta {
     display: flex;
     gap: 1rem;

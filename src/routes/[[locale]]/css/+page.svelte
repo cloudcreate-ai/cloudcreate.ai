@@ -16,7 +16,7 @@
   <section class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
     <a
       href={localePath($page.url.pathname, '/css/minify')}
-      class="card preset-outlined-surface-200-800 block p-5 no-underline text-inherit transition hover:brightness-95 dark:hover:brightness-110"
+      class="card preset-outlined-surface-200-800 block p-5 no-underline text-inherit"
     >
       <span class="text-2xl block mb-2">🗜️</span>
       <h2 class="text-base font-semibold mb-1">{t('cssIndex.minify')}</h2>
@@ -24,7 +24,7 @@
     </a>
     <a
       href={localePath($page.url.pathname, '/css/beautify')}
-      class="card preset-outlined-surface-200-800 block p-5 no-underline text-inherit transition hover:brightness-95 dark:hover:brightness-110"
+      class="card preset-outlined-surface-200-800 block p-5 no-underline text-inherit"
     >
       <span class="text-2xl block mb-2">📐</span>
       <h2 class="text-base font-semibold mb-1">{t('cssIndex.beautify')}</h2>

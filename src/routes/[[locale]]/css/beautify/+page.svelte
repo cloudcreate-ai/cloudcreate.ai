@@ -66,7 +66,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="cssBeautify.title" descKey="cssBeautify.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <FileDropZone
       accept={ACCEPT_CSS}
       multiple={false}

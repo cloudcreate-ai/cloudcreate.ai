@@ -208,9 +208,6 @@
   .step-card.clickable {
     cursor: pointer;
   }
-  .step-card.clickable:hover {
-    border-color: var(--color-primary-500);
-  }
   .step-card.readonly {
     cursor: default;
   }

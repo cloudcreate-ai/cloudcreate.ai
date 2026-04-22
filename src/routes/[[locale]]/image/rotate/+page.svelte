@@ -146,7 +146,14 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="rotate.title" descKey="rotate.desc" />
 
-  <details class="card preset-outlined-surface-200-800 p-4 mb-4">
+  <section class="workspace-content-block">
+    <FileDropZone onFilesAdd={addFiles} />
+    {#if error}
+      <p class="text-sm text-error-500 mt-2">{error}</p>
+    {/if}
+  </section>
+
+  <details open class="card preset-outlined-surface-200-800 p-4 workspace-content-block">
     <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
       <span class="font-medium">{t('common.options')}</span>
       <span class="text-surface-600-400 text-sm">
@@ -157,8 +164,8 @@
     </summary>
     <div class="mt-3 pt-3 border-t border-surface-200-800 flex flex-wrap items-end gap-4">
       <div class="flex flex-col gap-0.5">
-        <label for="rotate" class="text-xs text-surface-600-400">{t('rotate.rotation')}</label>
-        <select id="rotate" bind:value={rotate} class="select w-28">
+        <label for="rotate-sel" class="text-xs text-surface-600-400">{t('rotate.rotation')}</label>
+        <select id="rotate-sel" bind:value={rotate} class="select w-28">
           {#each ROTATE_OPTIONS as opt}
             <option value={opt.value}>{t(opt.labelKey)}</option>
           {/each}
@@ -198,20 +205,13 @@
     </div>
   </details>
 
-  <section class="mb-4">
-    <FileDropZone onFilesAdd={addFiles} />
-    {#if error}
-      <p class="text-sm text-error-500 mt-2">{error}</p>
-    {/if}
-  </section>
-
   <section class="workspace-primary-actions">
     <button
       class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
       onclick={processFiles}
       disabled={processing || items.length === 0}
     >
-      {processing ? t('common.processing') : t('rotate.apply')}
+      {processing ? t('common.processing') : t('rotate.rotate')}
     </button>
     <button class="btn preset-outlined-surface-200-800" onclick={clear}>{t('common.clearAll')}</button>
   </section>

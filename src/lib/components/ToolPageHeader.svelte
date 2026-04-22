@@ -23,7 +23,7 @@
 
 <style>
   .tool-page-header {
-    margin-bottom: 1rem;
+    margin-bottom: var(--ccw-workspace-block-gap, 1rem);
   }
 
   .tool-page-header-title-row {

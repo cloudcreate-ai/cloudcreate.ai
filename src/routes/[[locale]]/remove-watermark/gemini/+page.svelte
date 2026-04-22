@@ -135,7 +135,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="watermarkGemini.title" descKey="watermarkGemini.desc" />
 
-  <section class="mb-4 text-sm text-surface-600-400 space-y-2">
+  <section class="workspace-content-block text-sm text-surface-600-400 space-y-2">
     <p class="m-0">{t('watermarkGemini.disclaimer')}</p>
     <p class="m-0 text-xs text-surface-500-500">
       {t('watermarkGemini.credits')}
@@ -148,7 +148,7 @@
     </p>
   </section>
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <p class="text-sm font-medium block mb-2 m-0">{t('watermarkGemini.source')}</p>
     <FileDropZone
       multiple={false}

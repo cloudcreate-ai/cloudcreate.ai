@@ -122,7 +122,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="archiveCompress.title" descKey="archiveCompress.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <p class="text-sm font-medium block mb-2 m-0">{t('archiveCompress.format')}</p>
     <div class="flex flex-wrap gap-2 mb-4">
       <label class="flex items-center gap-2 cursor-pointer text-sm">
@@ -144,7 +144,7 @@
     </div>
   </section>
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <FileDropZone
       accept="*"
       multiple={!isSingleFormat}

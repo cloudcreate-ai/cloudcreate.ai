@@ -151,7 +151,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="favicon.title" descKey="favicon.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <p class="text-sm text-surface-600-400 mb-2">{t('favicon.steps')}</p>
     <ol class="list-decimal list-inside text-sm text-surface-600-400 space-y-1 mb-4">
       <li>{t('favicon.step1')}</li>
@@ -160,7 +160,7 @@
     </ol>
   </section>
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <p class="text-sm font-medium block mb-2 m-0">{t('favicon.sourceImage')}</p>
     <FileDropZone multiple={false} onFilesAdd={handleFiles} idPrefix="favicon" />
     {#if sourcePreviewUrl}
@@ -171,7 +171,7 @@
     {/if}
   </section>
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <div class="flex items-center justify-between mb-2">
       <span class="text-sm font-medium">{t('favicon.sizes')}</span>
       <div class="flex gap-2">

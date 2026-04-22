@@ -70,7 +70,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="cssMinify.title" descKey="cssMinify.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <div class="flex flex-wrap gap-4 items-center mb-3">
       <label class="flex items-center gap-2 cursor-pointer text-sm">
         <input type="radio" bind:group={minifyLevel} value={MINIFY_BASIC} class="radio" />
@@ -83,7 +83,7 @@
     </div>
   </section>
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <FileDropZone
       accept={ACCEPT_CSS}
       multiple={false}

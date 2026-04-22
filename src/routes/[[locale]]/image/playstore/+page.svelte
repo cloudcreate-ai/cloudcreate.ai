@@ -83,7 +83,7 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="playstore.title" descKey="playstore.desc" />
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <p class="text-sm text-surface-600-400 mb-2">{t('playstore.steps')}</p>
     <ol class="list-decimal list-inside text-sm text-surface-600-400 space-y-1 mb-4">
       <li>{t('playstore.step1')}</li>
@@ -92,7 +92,7 @@
     <p class="text-xs text-surface-500-500 mb-4">{t('playstore.spec')}</p>
   </section>
 
-  <section class="mb-4">
+  <section class="workspace-content-block">
     <p class="text-sm font-medium block mb-2 m-0">{t('playstore.sourceImage')}</p>
     <FileDropZone multiple={false} onFilesAdd={handleFiles} idPrefix="playstore" />
     {#if sourcePreviewUrl}
