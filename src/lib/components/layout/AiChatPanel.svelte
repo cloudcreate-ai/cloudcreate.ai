@@ -25,6 +25,22 @@
     return interpolateTemplate(t('agentPrompt.siteLeadIn'), sitePromptCtx);
   });
 
+  /** @param {string} pathname */
+  function localePrefixFromPathname(pathname) {
+    if (pathname.startsWith('/zh')) return '/zh';
+    if (pathname.startsWith('/en')) return '/en';
+    return '/en';
+  }
+
+  const specDocUrls = $derived.by(() => {
+    const pathname = $page.url.pathname;
+    const prefix = localePrefixFromPathname(pathname);
+    const origin = $page.url.origin;
+    const specPageUrl = `${origin}${prefix}/ai-spec`;
+    const plainDocUrl = `${origin}${prefix}/ai-spec/llm.txt`;
+    return { specPageUrl, plainDocUrl };
+  });
+
   const compiledPrompt = $derived.by(() => {
     void $locale;
     const pathname = $page.url.pathname;
@@ -32,14 +48,19 @@
     const logical = getLogicalPath(pathname);
     const reg = $agentPromptStore;
     const base = { currentUrl: href, ...sitePromptCtx };
+    const { plainDocUrl } = specDocUrls;
+    const append = interpolateTemplate(t('agentPrompt.promptToolSpecAppend'), { plainDocUrl });
+    let main = '';
     if (reg?.templateKey && typeof reg.getParams === 'function') {
       const raw = t(reg.templateKey);
       const p = { ...base, ...reg.getParams() };
-      return siteLeadInText + interpolateTemplate(raw, p);
+      main = siteLeadInText + interpolateTemplate(raw, p);
+    } else {
+      const sub = resolveAgentPromptFallbackTemplateKey(logical, pathname);
+      const raw = t(`agentPrompt.${sub}`);
+      main = siteLeadInText + interpolateTemplate(raw, base);
     }
-    const sub = resolveAgentPromptFallbackTemplateKey(logical, pathname);
-    const raw = t(`agentPrompt.${sub}`);
-    return siteLeadInText + interpolateTemplate(raw, base);
+    return main + append;
   });
 
   const pageBriefText = $derived.by(() => {
@@ -55,9 +76,12 @@
     return getPanelPagePurpose(`agentPrompt.${sub}`, t);
   });
 
-  const panelIntroText = $derived.by(() => {
+  const panelIntroPart12 = $derived.by(() => {
     void $locale;
-    return interpolateTemplate(t('agentPrompt.panelIntro'), { ...sitePromptCtx, pageBrief: pageBriefText });
+    return interpolateTemplate(t('agentPrompt.panelIntroPart12'), {
+      ...sitePromptCtx,
+      pageBrief: pageBriefText,
+    });
   });
 
   async function copyPrompt() {
@@ -91,7 +115,19 @@
       </button>
     </div>
     <div class="ai-panel-content">
-      <p class="ai-panel-intro">{panelIntroText}</p>
+      <div class="ai-panel-intro">
+        <p class="ai-panel-intro-part12">{panelIntroPart12}</p>
+        <p class="ai-panel-intro-part3">
+          <span>{t('agentPrompt.specDetailLabel')}</span>
+          <a
+            class="ai-panel-spec-link"
+            href={specDocUrls.specPageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            >{t('agentPrompt.specLinkDetail')}</a
+          >
+        </p>
+      </div>
       <div class="ai-panel-copy-wrap">
         <button
           type="button"
@@ -182,9 +218,25 @@
   .ai-panel-intro {
     font-size: 0.75rem;
     color: var(--ccw-text-muted);
-    margin: 0;
     line-height: 1.45;
+  }
+  .ai-panel-intro-part12 {
+    margin: 0 0 0.5rem;
     white-space: pre-line;
+  }
+  .ai-panel-intro-part3 {
+    margin: 0;
+    font-size: 0.75rem;
+  }
+  .ai-panel-spec-sep {
+    color: var(--ccw-text-muted);
+  }
+  .ai-panel-spec-link {
+    color: var(--ccw-accent);
+    text-decoration: underline;
+  }
+  .ai-panel-spec-link:hover {
+    color: var(--ccw-text-primary);
   }
   .ai-panel-copy-wrap {
     width: 100%;

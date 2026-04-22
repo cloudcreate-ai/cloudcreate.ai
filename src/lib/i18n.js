@@ -3,6 +3,10 @@
  */
 import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
+import {
+  AGENT_PROMPT_TOOL_SPEC_DETAIL_EN,
+  AGENT_PROMPT_TOOL_SPEC_DETAIL_ZH,
+} from './i18n/agentPromptToolSpecData.js';
 
 const STORAGE_KEY = 'freetools-locale';
 
@@ -118,8 +122,34 @@ const translations = {
     agentPrompt: {
       siteLeadIn:
         'Site: {{siteName}} — {{siteTagline}}\n\n',
-      panelIntro:
-        '1. Site\n{{siteName}} — {{siteTagline}}\n\n2. This page\n{{pageBrief}}\n\n3. Copy the full text below for your external AI to read and explain in detail.',
+      /** 第 1–2 步；第 3 步含链接在 AiChatPanel 内单独渲染 */
+      panelIntroPart12:
+        '1. Site\n{{siteName}} — {{siteTagline}}\n\n2. This page\n{{pageBrief}}\n\n',
+      specDetailLabel: '3. Details:',
+      specLinkDetail: 'Full tool & URL spec',
+      promptToolSpecAppend: '\n\n---\nTool reference (text/plain, fetch the body): {{plainDocUrl}}\n',
+      /** 全站 /ai-spec 说明页的 UI 文案（与主模板键名区分开，避免与 aiSpecPageDoc 等冲突） */
+      aiSpecPage: {
+        pageTitle: 'Tool pages & URL parameters (for AI)',
+        pageIntro:
+          'Each block matches a page. “Prompt / state keys” reflect the copyable prompt; “URL query keys” are for shareable links when implemented.',
+        purposeLabel: 'Purpose',
+        urlQueryLabel: 'URL query keys',
+        interpolateLabel: 'Prompt / state keys',
+        copyPage: 'Copy all (plain text)',
+        copySection: 'Copy this section (plain text)',
+        copied: 'Copied',
+        introLinkLead: 'Quick links: ',
+        plainInBrowserBlurb: 'The text/plain URL is below; use “Copy URL” to copy it.',
+        plainTextUrlLabel: 'text/plain (for fetch / LLM):',
+        copyPlainUrl: 'Copy URL',
+        headingGenericMisc: 'Generic or unmatched route',
+        headingWorkflowAdvanced: 'Workflow (advanced graph)',
+      },
+      /** 当前用户打开 /ai-spec 时主提示词用 */
+      aiSpecPageDoc:
+        'Page: “Tool & URL reference for AI” ({{currentUrl}}). Purpose: static catalog of each tool’s purpose, prompt placeholders, and URL keys. Suggest the user read the table on the page; do not invent parameters that are not listed. Reply in the user’s language.',
+      toolSpecDetail: AGENT_PROMPT_TOOL_SPEC_DETAIL_EN,
       panelBrief: {
         _fallback: 'A tool page in this app (see the text below for details).',
         genericWorkspace: 'Home: browse favorites, recents, and the full tool list.',
@@ -153,6 +183,7 @@ const translations = {
         styleGuide: 'Style guide: internal UI patterns and components.',
         cssIndex: 'CSS tools: open minify or beautify (both run locally).',
         archiveIndex: 'Archives: choose to extract files or create an archive (both local).',
+        aiSpecPageDoc: 'Full-site tool & URL reference for AI: static list of purposes, prompt keys, and query parameters.',
       },
       copy: 'Copy full prompt — let your AI help',
       copied: 'Copied',
@@ -885,8 +916,31 @@ const translations = {
     agentPrompt: {
       siteLeadIn:
         '来源站点：{{siteName}}（{{siteTagline}}）。\n\n',
-      panelIntro:
-        '1. 站点信息\n{{siteName}}（{{siteTagline}}）\n\n2. 本页简介\n{{pageBrief}}\n\n3. 复制下方全文，交给外部 AI 做详细解读。',
+      panelIntroPart12:
+        '1. 站点\n{{siteName}}（{{siteTagline}}）\n\n2. 本页\n{{pageBrief}}\n\n',
+      specDetailLabel: '3. 详细说明：',
+      specLinkDetail: '全站工具与参数说明',
+      promptToolSpecAppend: '\n\n---\n全站工具说明（text/plain，请拉取该 URL 正文）：{{plainDocUrl}}\n',
+      aiSpecPage: {
+        pageTitle: '工具页与 URL 参数（供 AI 阅读）',
+        pageIntro:
+          '每一块对应站内一页。「提示词/状态键」即可复制进提示词的占位；「URL 参数」为可分享链接中实现的键名。',
+        purposeLabel: '用途摘要',
+        urlQueryLabel: 'URL 查询参数',
+        interpolateLabel: '提示词/状态键',
+        copyPage: '复制全页（纯文本）',
+        copySection: '复制本节为纯文本',
+        copied: '已复制',
+        introLinkLead: '人读 / 机读：',
+        plainInBrowserBlurb: 'text/plain 直链在下方，可用「复制链接」获取。',
+        plainTextUrlLabel: 'text/plain 直链（给 fetch/模型）：',
+        copyPlainUrl: '复制链接',
+        headingGenericMisc: '通用或未知路由',
+        headingWorkflowAdvanced: '高级工作流（节点图）',
+      },
+      aiSpecPageDoc:
+        '**「全站工具与 URL 说明」页**（{{currentUrl}}）。用途：列出各页用途、提示词占位与可分享 query。请引导用户以本页为准，勿杜撰未在表中出现的参数。回复语言与用户一致即可。',
+      toolSpecDetail: AGENT_PROMPT_TOOL_SPEC_DETAIL_ZH,
       panelBrief: {
         _fallback: '当前打开的工具页（用途与操作见下框全文）。',
         genericWorkspace: '首页总览：收藏、最近使用、全部工具入口。',
@@ -920,6 +974,7 @@ const translations = {
         styleGuide: '「样式指南」：内部组件与样式参考。',
         cssIndex: '「CSS 工具入口」：进入压缩或只读美化子页（均本机）。',
         archiveIndex: '「压缩包入口」：进入解压或打包子页（均本机）。',
+        aiSpecPageDoc: '「全站工具与 URL 说明」：供 AI 阅读的静态目录（用途、提示词键、URL 参数）。',
       },
       copy: '复制整段提示词让AI帮你',
       copied: '已复制',

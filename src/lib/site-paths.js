@@ -37,6 +37,9 @@ const PATHS_AFTER_LOCALE = [
   '/archive/compress',
   '/workflow',
   '/workflow/advanced',
+  '/ai-spec',
+  '/ai-spec/llm',
+  '/ai-spec/llm.txt',
 ];
 
 /** @type {readonly string[]} */
