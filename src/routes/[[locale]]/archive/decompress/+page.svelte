@@ -103,7 +103,7 @@
     <p class="text-xs text-surface-500-500 mt-2 m-0">{t('archiveDecompress.formats')}</p>
   </section>
 
-  <section class="flex gap-3 mb-4">
+  <section class="workspace-primary-actions">
     <button
       class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
       onclick={decompress}

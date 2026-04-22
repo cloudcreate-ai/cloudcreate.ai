@@ -8,10 +8,8 @@
     filterImageFiles,
   } from '$lib/batchHelpers.js';
   import { loadToolConfig, saveToolConfig } from '$lib/toolConfig.js';
-  import { loadWorkflow, runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
-  import StepBar from '$lib/components/workflow/StepBar.svelte';
+  import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
-  import PresetJsonActions from '$lib/components/PresetJsonActions.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import BatchResultsTable from '$lib/components/BatchResultsTable.svelte';
   import SliderComparePreview from '$lib/components/SliderComparePreview.svelte';
@@ -32,7 +30,6 @@
   const saved = loadToolConfig('resize', resizeDefaults);
   const validResizeFormat = saved.targetFormat === '' || ENCODE_FORMATS.includes(saved.targetFormat) ? saved.targetFormat : '';
 
-  let workflow = $state(null);
   let items = $state([]);
   let scaleMode = $state(VALID_MODES.includes(saved.scaleMode) ? saved.scaleMode : 'percent');
   let scalePercent = $state(Math.min(200, Math.max(1, saved.scalePercent ?? 50)));
@@ -57,10 +54,6 @@
       quality,
     })
   );
-
-  $effect(() => {
-    loadWorkflow('/workflows/resize.json').then((r) => (workflow = r.workflow)).catch(() => {});
-  });
 
   let processing = $state(false);
   let error = $state('');
@@ -159,31 +152,6 @@
     previewBlobUrl = null;
   }
 
-  const steps = $derived.by(() => {
-    const s = workflow?.steps ?? [];
-    return s.map((step) => {
-      if (step.type === 'resize') {
-        return {
-          ...step,
-          params: {
-            ...step.params,
-            scaleMode,
-            scalePercent,
-            maxWidth,
-            maxHeight,
-            targetWidth,
-            targetHeight,
-            targetLong,
-          },
-        };
-      }
-      if (step.type === 'output') {
-        return { ...step, params: { ...step.params, targetFormat: targetFormat || '', quality } };
-      }
-      return step;
-    });
-  });
-
   const optionsSummary = $derived(
     scaleMode === 'percent'
       ? `${scalePercent}%`
@@ -204,17 +172,14 @@
 <div class="workspace-content">
   <ToolPageHeader titleKey="resize.title" descKey="resize.desc" />
 
-  {#if steps.length > 0}
-    <div class="mb-4 flex flex-wrap items-center gap-3">
-      <StepBar steps={steps} readonly={true} />
-      <PresetJsonActions
-        effectiveWorkflow={workflow ? { ...workflow, steps } : null}
-        presetName="resize"
-      />
-    </div>
-  {/if}
+  <section class="mb-4">
+    <FileDropZone onFilesAdd={addFiles} />
+    {#if error}
+      <p class="text-sm text-error-500 mt-2">{error}</p>
+    {/if}
+  </section>
 
-  <details class="card preset-outlined-surface-200-800 p-4 mb-4">
+  <details open class="card preset-outlined-surface-200-800 p-4 mb-4">
     <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between">
       <span class="font-medium">{t('common.options')}</span>
       <span class="text-surface-600-400 text-sm">{targetFormat ? targetFormat.toUpperCase() : t('common.sameAsOriginal')}, {optionsSummary}, {t('common.quality')}: {quality}</span>
@@ -318,14 +283,7 @@
     </div>
   </details>
 
-  <section class="mb-4">
-    <FileDropZone onFilesAdd={addFiles} />
-    {#if error}
-      <p class="text-sm text-error-500 mt-2">{error}</p>
-    {/if}
-  </section>
-
-  <section class="flex gap-3 mb-4">
+  <section class="workspace-primary-actions">
     <button
       onclick={processFiles}
       disabled={processing || items.length === 0}

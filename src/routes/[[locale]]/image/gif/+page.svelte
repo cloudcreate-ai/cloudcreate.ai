@@ -225,7 +225,7 @@
               <span>{t('gifTool.accuratePreviewLabel')}</span>
             </label>
           </div>
-          <div class="options-actions">
+          <div class="options-actions workspace-primary-actions workspace-primary-actions--tight">
             <button
               type="button"
               class="btn preset-filled-primary-500"
@@ -430,7 +430,7 @@
 
     <section class="card export">
       <p class="tips">{t('gifTool.compressionTips')}</p>
-      <div class="export-actions">
+      <div class="export-actions workspace-primary-actions workspace-primary-actions--tight">
         <button
           type="button"
           class="btn preset-filled-primary-500"
@@ -507,9 +507,6 @@
     max-width: 400px;
   }
   .options-actions {
-    display: flex;
-    gap: 0.75rem;
-    align-items: center;
     flex-shrink: 0;
   }
   .status-badge {
@@ -714,8 +711,6 @@
     color: var(--ccw-text-muted);
   }
   .export-actions {
-    display: flex;
-    gap: 0.5rem;
     flex-wrap: wrap;
   }
   .progress {

@@ -7,6 +7,5 @@
   configKey="convert"
   titleKey="convert.title"
   descKey="convert.desc"
-  presetName="convert"
   showSameAsOriginal={false}
 />

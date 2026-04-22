@@ -164,16 +164,16 @@
     {/if}
   </section>
 
-  <section class="flex flex-wrap gap-2 mb-4">
+  <section class="workspace-primary-actions">
     <button
       type="button"
-      class="btn btn-sm preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
+      class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
       onclick={removeWatermark}
       disabled={processing || !sourceFile}
     >
       {processing ? t('common.processing') : t('watermarkGemini.remove')}
     </button>
-    <button type="button" class="btn btn-sm preset-outlined-surface-200-800" onclick={clear}>{t('common.clearAll')}</button>
+    <button type="button" class="btn preset-outlined-surface-200-800" onclick={clear}>{t('common.clearAll')}</button>
   </section>
 
   {#if error}

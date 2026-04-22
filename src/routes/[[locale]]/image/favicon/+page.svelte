@@ -197,7 +197,7 @@
     </div>
   </section>
 
-  <section class="flex gap-3 mb-4">
+  <section class="workspace-primary-actions">
     <button
       class="btn preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
       onclick={generate}

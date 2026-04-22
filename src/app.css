@@ -20,6 +20,16 @@
   --ccw-accent-strong: #0078d4;
   --ccw-focus-ring: rgba(10, 132, 255, 0.45);
   --ccw-shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.45);
+  /* 主按钮（对齐 VS Code button.*：扁平、细描边、小圆角、无营销向光晕） */
+  --ccw-btn-primary-bg: var(--ccw-accent-strong);
+  --ccw-btn-primary-fg: #ffffff;
+  /* 比填充色略深一线，贴 VS Code 默认按钮底边感 */
+  --ccw-btn-primary-border: color-mix(in srgb, var(--ccw-accent-strong) 90%, black);
+  --ccw-btn-primary-hover-bg: var(--ccw-accent);
+  --ccw-btn-primary-hover-border: color-mix(in srgb, var(--ccw-accent) 82%, white);
+  --ccw-btn-primary-active-bg: color-mix(in srgb, var(--ccw-accent-strong) 78%, black);
+  --ccw-btn-primary-active-border: color-mix(in srgb, var(--ccw-accent-strong) 85%, black);
+  --ccw-radius-button: 3px;
   --ccw-radius-card: 6px;
   --ccw-radius-pill: 999px;
 }
@@ -41,7 +51,7 @@ body {
   color: #fff;
 }
 
-:global(.app-wrap) {
+.app-wrap {
   min-height: 100%;
   height: 100%;
   width: 100%;
@@ -50,8 +60,8 @@ body {
 }
 
 body,
-:global(.app-wrap),
-:global(.app-shell) {
+.app-wrap,
+.app-shell {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -63,12 +73,12 @@ body,
 }
 
 /* 布局辅助样式（关键布局用内联样式，此处补充子元素样式） */
-:global(.app-shell-header),
-:global(.app-shell-footer) {
+.app-shell-header,
+.app-shell-footer {
   flex-shrink: 0;
 }
 /* 左栏侧边栏：固定宽度，占满高度 */
-:global(.app-shell-sidebar) {
+.app-shell-sidebar {
   flex: 0 0 auto;
   width: 200px;
   height: 100%;
@@ -77,7 +87,7 @@ body,
   flex-direction: column;
 }
 /* 中栏工作区：占满剩余宽度和高度，最小宽度保证始终可读 */
-:global(.app-shell-workspace) {
+.app-shell-workspace {
   flex: 1 1 0%;
   min-width: 320px;
   height: 100%;
@@ -85,7 +95,7 @@ body,
   padding: 0.75rem;
 }
 /* 右栏 AI 面板：宽度由子组件决定（展开 280px/收起 36px），紧贴右侧，占满高度 */
-:global(.app-shell-ai) {
+.app-shell-ai {
   flex: 0 0 auto;
   height: 100%;
   overflow: hidden;
@@ -94,14 +104,14 @@ body,
 }
 
 /* 小屏响应式：侧边栏折叠/覆盖 */
-:global(.app-shell-sidebar-collapsed) {
+.app-shell-sidebar-collapsed {
   width: 0 !important;
   min-width: 0 !important;
   overflow: hidden !important;
   flex: 0 0 0 !important;
   border: none !important;
 }
-:global(.app-shell-sidebar-overlay) {
+.app-shell-sidebar-overlay {
   position: fixed !important;
   left: 0;
   top: 40px;
@@ -110,11 +120,11 @@ body,
   z-index: 100;
   box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
 }
-:global(.app-shell-ai-collapsed) {
+.app-shell-ai-collapsed {
   width: 36px !important;
   min-width: 36px !important;
 }
-:global(.app-shell-ai-overlay) {
+.app-shell-ai-overlay {
   position: fixed !important;
   right: 0;
   top: 40px;
@@ -123,7 +133,7 @@ body,
   z-index: 100;
   box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
 }
-:global(.app-shell-backdrop) {
+.app-shell-backdrop {
   position: fixed;
   inset: 0;
   top: 40px;
@@ -134,17 +144,17 @@ body,
   cursor: pointer;
 }
 
-:global(.workspace-content) {
+.workspace-content {
   max-width: 56rem;
   margin: 0 auto;
 }
-:global(.workspace-content-wide) {
+.workspace-content-wide {
   max-width: 72rem;
   margin: 0 auto;
 }
 
 /* 工具页/创意页标题下的说明段落（与 styleguide 一致） */
-:global(.page-intro) {
+.page-intro {
   margin: 0 0 1.5rem 0;
   font-size: 0.875rem;
   line-height: 1.5;
@@ -159,7 +169,7 @@ input, select, textarea {
 }
 
 /* VS Code 风格卡片与按钮 */
-:global(.card) {
+.card {
   background: var(--ccw-bg-elevated);
   border: 1px solid var(--ccw-border-soft);
   border-radius: var(--ccw-radius-card);
@@ -167,24 +177,24 @@ input, select, textarea {
   transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
   color: var(--ccw-text-secondary);
 }
-:global(.card:hover) {
+.card:hover {
   border-color: var(--ccw-accent);
   box-shadow: var(--ccw-shadow-soft);
   transform: translateY(-1px);
   color: var(--ccw-text-primary);
 }
-:global(button),
-:global(.btn),
-:global(.btn-primary) {
+button,
+.btn,
+.btn-primary {
   font-family: var(--ccw-font-sans);
 }
-:global(button:focus-visible),
-:global(.btn:focus-visible) {
+button:focus-visible,
+.btn:focus-visible {
   outline: 2px solid var(--ccw-accent);
   outline-offset: 2px;
 }
 
-:global(.btn) {
+.btn {
   border-radius: var(--ccw-radius-pill) !important;
   border: 1px solid var(--ccw-border-soft) !important;
   background: rgba(255, 255, 255, 0.04) !important;
@@ -194,45 +204,94 @@ input, select, textarea {
   font-weight: 600;
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
 }
-:global(.btn:hover:not(:disabled)) {
+.btn:hover:not(:disabled) {
   border-color: var(--ccw-border-contrast) !important;
   background: rgba(255, 255, 255, 0.08) !important;
   color: var(--ccw-text-primary) !important;
 }
-:global(.btn:disabled) {
+.btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   box-shadow: none;
 }
-:global(.btn.btn-sm) {
+.btn.btn-sm {
   padding: 0.25rem 0.8rem;
   font-size: 0.75rem;
 }
-:global(.btn.preset-outlined-surface-200-800) {
+/* 表格/卡片内小主按钮与 VS Code 小按钮密度一致 */
+.btn.btn-sm.preset-filled-primary-500 {
+  min-height: 24px;
+  padding: 2px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.25;
+  border-radius: var(--ccw-radius-button) !important;
+}
+.btn.preset-outlined-surface-200-800 {
   background: transparent !important;
   color: var(--ccw-text-secondary) !important;
   border-color: var(--ccw-border-contrast) !important;
 }
-:global(.btn.preset-outlined-surface-200-800:hover:not(:disabled)) {
+.btn.preset-outlined-surface-200-800:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--ccw-text-primary) !important;
 }
-:global(.btn.preset-filled-primary-500) {
-  background: var(--ccw-accent-strong) !important;
-  border-color: var(--ccw-accent-strong) !important;
-  color: #fff !important;
-  box-shadow: 0 4px 14px rgba(0, 120, 212, 0.4) !important;
+/* 全站主按钮：与 VS Code 默认蓝按钮一致，覆盖 .btn 的胶囊圆角 */
+.btn.preset-filled-primary-500 {
+  background: var(--ccw-btn-primary-bg) !important;
+  border: 1px solid var(--ccw-btn-primary-border) !important;
+  color: var(--ccw-btn-primary-fg) !important;
+  box-shadow: none !important;
+  border-radius: var(--ccw-radius-button) !important;
+  font-weight: 500;
 }
-:global(.btn.preset-filled-primary-500:hover:not(:disabled)) {
-  background: var(--ccw-accent) !important;
-  border-color: var(--ccw-accent) !important;
+.btn.preset-filled-primary-500:hover:not(:disabled) {
+  background: var(--ccw-btn-primary-hover-bg) !important;
+  border-color: var(--ccw-btn-primary-hover-border) !important;
 }
-:global(.btn.btn-ghost) {
+.btn.preset-filled-primary-500:active:not(:disabled) {
+  background: var(--ccw-btn-primary-active-bg) !important;
+  border-color: var(--ccw-btn-primary-active-border) !important;
+  box-shadow: inset 0 1px 2px color-mix(in srgb, black 35%, transparent) !important;
+}
+
+/* 工作区主操作行：仅负责排列与工具页行内尺寸（与 VS Code 工具栏按钮高度接近，不含 .btn-sm） */
+.workspace-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.workspace-primary-actions--tight {
+  margin-bottom: 0;
+}
+.workspace-primary-actions .btn.preset-filled-primary-500:not(.btn-sm),
+.workspace-primary-actions .btn.preset-outlined-surface-200-800:not(.btn-sm) {
+  min-height: 28px;
+  padding: 4px 14px;
+  font-size: 0.8125rem;
+  border-radius: var(--ccw-radius-button) !important;
+  line-height: 1.3;
+  align-self: center;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+.workspace-primary-actions .btn.preset-filled-primary-500:not(.btn-sm) {
+  font-weight: 500;
+}
+.workspace-primary-actions .btn.preset-outlined-surface-200-800:not(.btn-sm) {
+  font-weight: 400;
+}
+.workspace-primary-actions .btn.preset-outlined-surface-200-800:not(.btn-sm):hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--ccw-text-primary) !important;
+}
+.btn.btn-ghost {
   border-color: transparent !important;
   background: transparent !important;
   color: var(--ccw-text-secondary) !important;
 }
-:global(.btn.btn-ghost:hover:not(:disabled)) {
+.btn.btn-ghost:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--ccw-text-primary) !important;
 }

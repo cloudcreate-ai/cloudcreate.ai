@@ -7,6 +7,5 @@
   configKey="compress"
   titleKey="compress.title"
   descKey="compress.desc"
-  presetName="compress"
   showSameAsOriginal={true}
 />

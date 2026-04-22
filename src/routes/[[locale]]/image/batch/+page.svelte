@@ -970,7 +970,7 @@
       </div>
     {/if}
 
-    <section class="flex gap-3 mb-4">
+    <section class="workspace-primary-actions">
       <button
         onclick={runBatch}
         disabled={processing || !rows.some((r) => r.assignedFile)}
