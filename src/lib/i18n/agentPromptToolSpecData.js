@@ -125,6 +125,10 @@ export const AGENT_PROMPT_TOOL_SPEC_DETAIL_EN = {
     interpolate: 'currentUrl; size; variant; theme; strength.',
     urlQuery: 'size=sm|md|line; var|v; theme|t; str=0–100.',
   },
+  creativeAiti: {
+    interpolate: 'currentUrl (hub only; quiz runs on thedecklab).',
+    urlQuery: 'None — external open-source + hosted app.',
+  },
   framework: {
     interpolate: 'currentUrl (developer shell / layout test).',
     urlQuery: 'None.',
@@ -256,6 +260,10 @@ export const AGENT_PROMPT_TOOL_SPEC_DETAIL_ZH = {
   creativeBorderBeam: {
     interpolate: 'currentUrl、size、variant、theme、strength。',
     urlQuery: 'size=sm|md|line；var|v；theme|t；str=0–100。',
+  },
+  creativeAiti: {
+    interpolate: 'currentUrl（本站仅入口，测验在 thedecklab 上完成）。',
+    urlQuery: '无 — 外站与开源仓库，无本站 query。',
   },
   framework: {
     interpolate: 'currentUrl（开发者壳层/布局测试）。',

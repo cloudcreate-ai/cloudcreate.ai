@@ -134,9 +134,9 @@
           class="btn preset-filled-primary-500 ai-panel-copy-btn"
           class:ai-panel-copy-btn--done={copied}
           onclick={() => copyPrompt()}
-          aria-label={copied ? t('agentPrompt.copied') : t('agentPrompt.copy')}
+          aria-label={copied ? t('agentPrompt.copiedAfterPrompt') : t('agentPrompt.copy')}
         >
-          {copied ? t('agentPrompt.copied') : t('agentPrompt.copy')}
+          {copied ? t('agentPrompt.copiedAfterPrompt') : t('agentPrompt.copy')}
         </button>
       </div>
       <textarea

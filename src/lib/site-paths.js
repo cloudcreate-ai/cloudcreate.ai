@@ -11,6 +11,7 @@ const PATHS_AFTER_LOCALE = [
   '/tools',
   '/creative',
   '/creative/border-beam',
+  '/creative/aiti',
   '/framework',
   '/styleguide',
   '/markdown',
@@ -40,6 +41,8 @@ const PATHS_AFTER_LOCALE = [
   '/ai-spec',
   '/ai-spec/llm',
   '/ai-spec/llm.txt',
+  '/privacy',
+  '/terms',
 ];
 
 /** @type {readonly string[]} */

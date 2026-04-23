@@ -39,6 +39,18 @@ export const WORKSPACE_SIDEBAR_GROUPS = [
   },
 ];
 
+/** 仅工作区（首页）侧栏底部追加：法律与条款（见 navRegistry.getSidebarGroupsForPath） */
+/** @type {SidebarGroup} */
+export const LEGAL_SIDEBAR_GROUP = {
+  id: 'legal',
+  flat: true,
+  labelKey: 'sidebar.legalSection',
+  items: [
+    { id: 'legalPrivacy', titleKey: 'legal.privacyTitle', href: '/privacy', icon: '🔒' },
+    { id: 'legalTerms', titleKey: 'legal.termsTitle', href: '/terms', icon: '📄' },
+  ],
+};
+
 /**
  * 非 workspace 分类侧栏首组：指向该分类分页首页（navHomeLogicalPath）。
  * @param {string} navHomeLogicalPath

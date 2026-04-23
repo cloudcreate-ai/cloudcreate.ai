@@ -26,7 +26,11 @@
   <nav class="app-sidebar-nav">
     {#each sidebarGroups as group}
       {#if group.flat}
-        <div class="app-sidebar-flat" aria-label={t(group.labelKey)}>
+        <div
+          class="app-sidebar-flat"
+          class:app-sidebar-legal={group.id === 'legal'}
+          aria-label={t(group.labelKey)}
+        >
           {#each group.items as item}
             <a
               href={localePath($page.url.pathname, item.href) + (item.hash ?? '')}
@@ -144,6 +148,11 @@
   }
   .app-sidebar-flat {
     margin-top: 0.35rem;
+  }
+  .app-sidebar-legal {
+    margin-top: 0.6rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid var(--ccw-border-contrast);
   }
   .app-sidebar-group {
     margin-top: 0.35rem;

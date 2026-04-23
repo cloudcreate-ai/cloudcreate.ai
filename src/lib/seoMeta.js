@@ -33,6 +33,10 @@ const SEO_EXACT = {
     descKey: 'seo.workflowAdvancedDesc',
   },
   '/creative': { template: 'brand', titleKey: 'creative.landingTitle', descKey: 'creative.landingDesc' },
+  /** 列表用短标题键 aitiListLabel，描述仍用 aitiDesc */
+  '/creative/aiti': { template: 'brand', titleKey: 'creative.aitiListLabel', descKey: 'creative.aitiDesc' },
+  '/privacy': { template: 'brand', titleKey: 'seo.privacyTitle', descKey: 'seo.privacyDesc' },
+  '/terms': { template: 'brand', titleKey: 'seo.termsTitle', descKey: 'seo.termsDesc' },
 };
 
 function buildHrefSeoMap() {

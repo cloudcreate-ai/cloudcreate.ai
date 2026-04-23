@@ -61,6 +61,17 @@ const translations = {
       workflowAdvancedTitle: 'Advanced workflow editor',
       workflowAdvancedDesc:
         'Full canvas for custom creative pipelines: edit steps, import/export JSON, run image workflows locally—no install, private to your device.',
+      privacyTitle: 'Privacy Policy',
+      privacyDesc:
+        'How CloudCreate.ai handles information when you use the in-browser tools: local processing, hosting, browser storage, and policy updates.',
+      termsTitle: 'Terms of Service',
+      termsDesc:
+        'Rules for using CloudCreate.ai: the service, acceptable use, third parties, liability limits, and how we may change the terms.',
+    },
+    legal: {
+      privacyTitle: 'Privacy Policy',
+      termsTitle: 'Terms of Service',
+      lastUpdated: 'Last updated:',
     },
     sidebar: {
       workspaceSection: 'Home',
@@ -74,6 +85,7 @@ const translations = {
       other: 'Other',
       creative: 'Creative',
       workspaceShortcuts: 'Shortcuts',
+      legalSection: 'Legal',
     },
     creative: {
       sidebarOverview: 'Overview',
@@ -90,6 +102,20 @@ const translations = {
         'Traveling glow along a card edge—CSS conic-gradient sample you can drop into landing pages and prototypes.',
       borderBeamGithub: 'View project on GitHub',
       borderBeamNpmNote: 'The original ships as the npm package border-beam-vue3 for Vue 3; this page uses a Svelte wrapper over the same style generator.',
+      aitiTitle: 'AITI (SBTI for AI)',
+      /** 侧栏与首页创意列表等短标签 */
+      aitiListLabel: 'SBTI test for AI',
+      aitiDesc:
+        'A playful SBTI-style prompt for models—use the live questionnaire and copyable prompts; open-source SBKPI.',
+      aitiIntro:
+        'The experience randomizes a questionnaire, shows safety copy, and builds prompts for you to paste. CloudCreate only links to the project; the quiz runs on the host below.',
+      aitiOpenSite: 'Open live page (thedecklab.com)',
+      aitiOpenGithub: 'View source (SBKPI) on GitHub',
+      aitiSafetyTitle: 'Safety & use',
+      aitiSafety1:
+        'Copying URLs or prompts to a third-party model sends them to that environment. Do not include secrets or private data.',
+      aitiSafety2: 'On the host page, read the full questionnaire and notes before you paste anything to a model.',
+      aitiSafety3: 'For fun and self-reflection only—not professional advice of any kind.',
       demoCardText: 'Content inside the beam',
       controlSize: 'Size',
       controlVariant: 'Color',
@@ -118,6 +144,8 @@ const translations = {
       creativeOverview: 'Creative demos',
       categoryComingSoon: 'Coming soon',
       localeSwitcher: 'Display language',
+      footerLegalNav: 'Legal',
+      footerContactTitle: 'Email us',
     },
     agentPrompt: {
       siteLeadIn:
@@ -179,6 +207,8 @@ const translations = {
         archiveDecompress: 'Extract archive: unpack supported archive types in the browser.',
         watermarkGemini: 'Remove the standard visible Gemini corner mark from images, locally.',
         creativeBorderBeam: 'Border beam: a marketing-card border effect; adjust on the page.',
+        creativeAiti:
+          'AITI: links to the hosted SBTI-for-AI quiz and SBKPI repo; the quiz is not run inside CloudCreate.',
         framework: 'Framework: developer layout test for the app shell, not an end-user tool.',
         styleGuide: 'Style guide: internal UI patterns and components.',
         cssIndex: 'CSS tools: open minify or beautify (both run locally).',
@@ -186,6 +216,8 @@ const translations = {
         aiSpecPageDoc: 'Full-site tool & URL reference for AI: static list of purposes, prompt keys, and query parameters.',
       },
       copy: 'Copy full prompt — let your AI help',
+      /** 复制整段提示词成功后的按钮文案（与「复制 URL」等短句区分） */
+      copiedAfterPrompt: 'Copied — paste in your AI chat to view',
       copied: 'Copied',
       genericWorkspace:
         'The user is on CloudCreate.ai’s home overview ({{currentUrl}}). Explain what this area is for and what kinds of tools exist (images, PDF, tables, CSS, archives, workflow, creative demos). Ask what they want to do; suggest which part of the site to open. Do not re-implement any tool in chat. Reply in the same language as the user.',
@@ -249,6 +281,8 @@ const translations = {
         'Page: “Gemini watermark remover” ({{currentUrl}}). Purpose: remove the standard visible Gemini corner mark in-browser. File {{fileName}}. Ethics/limitations on-page. No query prefill. Do not claim to process their image in chat. Reply in the user’s language.',
       creativeBorderBeam:
         'Page: “Border beam” demo ({{currentUrl}}). Purpose: preview a marketing card border effect. Size {{size}}, variant {{variant}}, theme {{theme}}, strength {{strength}}. Ask what look they want; they tune it on the page. Link: `size` = sm|md|line; `var`/`v` = colorful|mono|ocean|sunset; `theme`/`t` = dark|light|auto; `str` = 0–100. Reply in the user’s language.',
+      creativeAiti:
+        'Page: “AITI (SBTI for AI)” hub ({{currentUrl}}). Purpose: point to the hosted questionnaire and SBKPI source. The quiz and prompts are built and run on the external site, not in this app. Do not re-implement the test in chat; ask users to use the open links, read the host’s safety text, and avoid pasting sensitive data to models. Reply in the user’s language.',
     },
     home: {
       title: 'CloudCreate.ai',
@@ -857,6 +891,17 @@ const translations = {
       workflowAdvancedTitle: '高级工作流编辑器',
       workflowAdvancedDesc:
         '完整画布编排创意流水线：编辑步骤、导入导出 JSON、本地运行图片处理—无需安装，数据留在本机。',
+      privacyTitle: '隐私政策',
+      privacyDesc:
+        '说明使用 CloudCreate.ai 浏览器内工具时本站如何处理信息：本地处理、托管与访问、浏览器存储及政策更新。',
+      termsTitle: '服务条款',
+      termsDesc:
+        '使用 CloudCreate.ai 的规则：服务说明、合规使用、第三方与责任限制、以及条款与站点变更方式。',
+    },
+    legal: {
+      privacyTitle: '隐私政策',
+      termsTitle: '服务条款',
+      lastUpdated: '最后更新：',
     },
     sidebar: {
       workspaceSection: '首页',
@@ -870,6 +915,7 @@ const translations = {
       other: '其他',
       creative: '创意',
       workspaceShortcuts: '快捷入口',
+      legalSection: '法律与条款',
     },
     creative: {
       sidebarOverview: '概览',
@@ -884,6 +930,20 @@ const translations = {
       borderBeamGithub: '在 GitHub 查看项目',
       borderBeamNpmNote:
         '原版以 npm 包 border-beam-vue3 面向 Vue 3；本站使用 Svelte 包装层，共用同一套样式生成逻辑。',
+      aitiTitle: '给 AI 的 SBTI 人格测试（AITI）',
+      /** 侧栏与首页创意列表等短标签 */
+      aitiListLabel: 'AI 的 SBTI 测试',
+      aitiDesc:
+        '面向大模型的 SBTI 风问卷与可复制提示词流；此处仅链到线上体验与开源仓库 SBKPI。',
+      aitiIntro:
+        '线上页会随机一套问卷、展示使用说明，并生成就绪复制的提示词。CloudCreate.ai 不内嵌测验流程，判题与交互在下方托管站完成。',
+      aitiOpenSite: '打开线上页（thedecklab.com）',
+      aitiOpenGithub: '在 GitHub 查看源码（SBKPI）',
+      aitiSafetyTitle: '安全与使用',
+      aitiSafety1:
+        '将问卷 URL 或提示词交给第三方模型，即向不可控环境发送信息；请勿包含机密、隐私或受保护数据。',
+      aitiSafety2: '提交前请在原站通读问卷原文与安全提示，确认无你不希望模型接触的内容。',
+      aitiSafety3: '仅供娱乐与自我了解参考，不构成任何专业建议。',
       demoCardText: '光束环绕区域内的内容',
       controlSize: '尺寸',
       controlVariant: '配色',
@@ -912,6 +972,8 @@ const translations = {
       creativeOverview: '创意样例',
       categoryComingSoon: '敬请期待',
       localeSwitcher: '界面语言',
+      footerLegalNav: '法律链接',
+      footerContactTitle: '发送邮件',
     },
     agentPrompt: {
       siteLeadIn:
@@ -970,6 +1032,8 @@ const translations = {
         archiveDecompress: '「解压缩包」：在浏览器里解压支持的格式。',
         watermarkGemini: '「角标去水印」：本机去除标准可见的 Gemini 角标样式。',
         creativeBorderBeam: '「Border Beam」：营销卡片流光边框演示，在页上调节观感。',
+        creativeAiti:
+          '「给 AI 的 SBTI / AITI」：外链 thedecklab 上的托管问卷与 SBKPI 开源；本站不内嵌答题。',
         framework: '「框架/壳层」：开发者联调布局用，不是内容工具。',
         styleGuide: '「样式指南」：内部组件与样式参考。',
         cssIndex: '「CSS 工具入口」：进入压缩或只读美化子页（均本机）。',
@@ -977,6 +1041,8 @@ const translations = {
         aiSpecPageDoc: '「全站工具与 URL 说明」：供 AI 阅读的静态目录（用途、提示词键、URL 参数）。',
       },
       copy: '复制整段提示词让AI帮你',
+      /** 复制整段提示词成功后的按钮文案（与「复制 URL」等短句区分） */
+      copiedAfterPrompt: '已复制，粘贴到 AI 聊天查看',
       copied: '已复制',
       genericWorkspace:
         '用户位于 CloudCreate.ai 首页总览（{{currentUrl}}）。请说明本页能做什么、有哪些类工具。询问用户想完成什么、可引导到对应入口。勿在对话中「代替网站」实现工具效果。回复语言与用户一致即可。',
@@ -1040,6 +1106,8 @@ const translations = {
         '「角标去水印」页（{{currentUrl}}）。用途：在浏览器中处理。文件 {{fileName}}。提醒合规/局限。无 URL 预填。勿在对话中声称已处理其图。回复语言与用户一致即可。',
       creativeBorderBeam:
         '「Border Beam」演示（{{currentUrl}}）。营销边框动效。当前：尺寸 {{size}}、变体 {{variant}}、主题 {{theme}}、强度 {{strength}}。问审美目标，在页上调节。参数：`size`、`var`、`theme`、`str` 等。回复语言与用户一致即可。',
+      creativeAiti:
+        '「给 AI 的 SBTI / AITI」入口（{{currentUrl}}）。用途：引导用户到 thedecklab 上的在线问卷与 SBKPI 开源库；测验与计分不在 CloudCreate 内完成。勿在对话里代替外站跑题；提醒阅读原站安全说明、勿向模型粘贴机密。回复语言与用户一致即可。',
     },
     home: {
       title: 'CloudCreate.ai',

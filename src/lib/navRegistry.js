@@ -2,12 +2,18 @@
  * 顶栏与左侧栏的导航分类单一数据源。
  *
  * 约定：
- * - `id === 'workspace'`：仅逻辑路径 `/`（工作区总览）。
+ * - `id === 'workspace'`：逻辑路径 `/`（首页），以及站点级说明页（隐私、条款、/ai-spec 等，与工具区无关）。
  * - `id === 'tools'`：工具概览 `/tools` 及所有工具子路径（/image、/pdf 等）；兜底分类。
  * - `pathPrefix` 非 null 的项按**前缀长度降序**匹配（如 `/creative`）。
  */
 import { getLogicalPath } from '$lib/localePath.js';
-import { getSidebarGroupsForCategory } from '$lib/sidebarConfig.js';
+import { getSidebarGroupsForCategory, LEGAL_SIDEBAR_GROUP } from '$lib/sidebarConfig.js';
+
+/** 归入首页/工作区顶栏与侧栏的逻辑路径（精确） */
+const WORKSPACE_EXACT_PATHS = new Set(['/privacy', '/terms']);
+
+/** 归入首页/工作区的前缀（含子路径，如 /ai-spec/llm） */
+const WORKSPACE_PATH_PREFIX = '/ai-spec';
 
 /** @type {Array<{ id: string, pathPrefix: string | null, labelKey: string, navHomeLogicalPath: string }>} */
 export const NAV_CATEGORIES = [
@@ -49,14 +55,23 @@ export function resolveCategoryId(pathname) {
     if (!p) continue;
     if (logical === p || logical.startsWith(p + '/')) return c.id;
   }
+  if (WORKSPACE_EXACT_PATHS.has(logical)) return 'workspace';
+  if (logical === WORKSPACE_PATH_PREFIX || logical.startsWith(WORKSPACE_PATH_PREFIX + '/')) {
+    return 'workspace';
+  }
   return 'tools';
 }
 
 /**
  * 当前路径对应的侧栏分组列表（与 resolveCategoryId 一致）。
+ * 法律与条款仅出现在工作区（首页）侧栏。
  * @param {string} pathname
  */
 export function getSidebarGroupsForPath(pathname) {
   const id = resolveCategoryId(pathname);
-  return getSidebarGroupsForCategory(id);
+  const groups = getSidebarGroupsForCategory(id);
+  if (id === 'workspace') {
+    return [...groups, LEGAL_SIDEBAR_GROUP];
+  }
+  return groups;
 }

@@ -7,3 +7,6 @@ export const siteOrigin = (
     ? String(import.meta.env.PUBLIC_SITE_URL).replace(/\/$/, '')
     : 'https://cloudcreate.ai'
 );
+
+/** 对外联系邮箱（页脚、法律页与文案引用均用此值） */
+export const siteContactEmail = 'contact@cloudcreate.ai';

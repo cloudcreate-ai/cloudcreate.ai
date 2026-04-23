@@ -76,6 +76,12 @@ export const CREATIVE_GROUPS = [
         href: '/creative/border-beam',
         icon: '✨',
       },
+      {
+        id: 'aiti',
+        titleKey: 'creative.aitiListLabel',
+        href: '/creative/aiti',
+        icon: '🃏',
+      },
     ],
   },
 ];

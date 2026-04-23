@@ -1,11 +1,28 @@
 <script>
+  import { page } from '$app/stores';
   import { t } from '$lib/i18n.js';
+  import { localePath } from '$lib/localePath.js';
+  import { siteContactEmail } from '$lib/siteConfig.js';
 </script>
 
 <footer class="app-footer">
-  <span class="app-footer-brand">{t('home.title')}</span>
-  <span class="app-footer-sep" aria-hidden="true">·</span>
-  <span class="app-footer-tagline">{t('home.subtitle')}</span>
+  <div class="app-footer-left">
+    <span class="app-footer-brand">{t('home.title')}</span>
+    <span class="app-footer-sep" aria-hidden="true">·</span>
+    <span class="app-footer-tagline">{t('home.subtitle')}</span>
+  </div>
+  <nav class="app-footer-legal" aria-label={t('layout.footerLegalNav')}>
+    <a class="app-footer-link" href={localePath($page.url.pathname, '/privacy')}>{t('legal.privacyTitle')}</a>
+    <span class="app-footer-sep" aria-hidden="true">·</span>
+    <a class="app-footer-link" href={localePath($page.url.pathname, '/terms')}>{t('legal.termsTitle')}</a>
+    <span class="app-footer-sep" aria-hidden="true">·</span>
+    <a
+      class="app-footer-link"
+      href={'mailto:' + siteContactEmail}
+      title={t('layout.footerContactTitle')}
+      >{siteContactEmail}</a
+    >
+  </nav>
 </footer>
 
 <style>
@@ -15,12 +32,26 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.35rem 0.75rem;
     flex-shrink: 0;
     border-top: 1px solid var(--ccw-border-contrast);
     background: var(--ccw-bg-panel);
     font-size: 0.75rem;
     color: var(--ccw-text-muted);
+  }
+  .app-footer-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .app-footer-legal {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-left: auto;
   }
   .app-footer-brand {
     font-weight: 600;
@@ -33,5 +64,13 @@
   }
   .app-footer-tagline {
     letter-spacing: 0.01em;
+  }
+  .app-footer-link {
+    color: var(--ccw-text-muted);
+    text-decoration: none;
+  }
+  .app-footer-link:hover {
+    color: var(--ccw-accent);
+    text-decoration: underline;
   }
 </style>

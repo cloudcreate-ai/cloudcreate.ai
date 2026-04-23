@@ -42,6 +42,7 @@ export const TOOL_PAGE_SPECS = [
   { id: 'archiveDecompress', path: '/archive/decompress', titleKey: 'home.archiveDecompressTitle' },
   { id: 'watermarkGemini', path: '/remove-watermark/gemini', titleKey: 'home.watermarkGeminiTitle' },
   { id: 'creativeBorderBeam', path: '/creative/border-beam', titleKey: 'creative.borderBeamTitle' },
+  { id: 'creativeAiti', path: '/creative/aiti', titleKey: 'creative.aitiTitle' },
   { id: 'framework', path: '/framework', titleKey: 'home.frameworkTitle' },
   { id: 'styleGuide', path: '/styleguide', titleKey: 'home.styleGuideTitle' },
   { id: 'aiSpecPageDoc', path: '/ai-spec', titleKey: 'agentPrompt.aiSpecPage.pageTitle' },
