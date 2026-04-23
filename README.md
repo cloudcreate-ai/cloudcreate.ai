@@ -1,67 +1,29 @@
-# FreeTools
+# CloudCreate.ai
 
-Browser-based utility collection built with Svelte and open-source libraries.
+面向「人与 AI 协作」的创意工具集：**图片 / PDF / 表格 / CSS / 压缩包 / 工作流**等以浏览器端为主，侧重本地处理与可复用工作区体验。
 
-## Tech Stack
+## 技术栈
 
-- **Svelte 5** + **Vite**
-- **svelte-spa-router** - hash-based routing
-- **jSquash** - image compression & format conversion (JPEG, PNG, WebP, AVIF)
+**SvelteKit**（Svelte 5、Vite）+ **@sveltejs/adapter-static** 静态预渲染，样式以 **Tailwind** 与 Skeleton 等为主；部署示例见 `package.json` 中的 `deploy`（Cloudflare Pages）。
 
-## Project Structure
+## 线上地址
 
-```
-src/
-├── lib/
-│   └── imageProcessor.js   # Image decode/encode (jSquash)
-├── routes/
-│   ├── Workspace.svelte    # Home - tool cards grid
-│   └── ImageTool.svelte    # Image compress & convert
-├── App.svelte
-├── app.css
-└── main.js
-```
+<https://cloudcreate.ai>
 
-## Development
+## AI 辅助开发声明
+
+本仓库部分说明、实现与测试由 **AI 辅助生成**，并经过人工审阅与调整；不保证与真实业务或安全要求完全一致。公开页面与数据不代表任何正式服务承诺。
+
+## 了解更多
+
+**结构、各工具约定与细节目录，请用 IDE / 仓库的 AI 能力通读项目**（或配合搜索 `src/lib`、`src/routes`），本 README 仅作概览、不作完整文档。
+
+## 本地开发
 
 ```bash
-npm install
-npm run dev
+npm install && npm run dev
 ```
-
-## E2E 测试（Playwright）
-
-在真实 dev 服务器上模拟用户操作（工作区导航、压缩/裁剪/缩放完整流程）。
-
-```bash
-npx playwright install   # 首次需安装浏览器
-npm run test:e2e
-```
-
-- 用例目录：`e2e/`；场景覆盖工作区导航、语言切换、压缩/裁剪/缩放完整用户流程
-- 测试用图：内存 buffer（`e2e/fixtures.js`），无需额外文件
-- 本地：若已运行 `npm run dev`，会复用当前服务器；否则会自动启动。若首屏断言失败，可先浏览器打开 `http://localhost:5173/#/` 确认应用正常
-
-## Build
 
 ```bash
 npm run build
 ```
-
-Output: `dist/`. Deploy as static site. Uses hash routing (`#/`, `#/image`), so no server config needed.
-
-## Tools
-
-### Image Tool
-
-- **Compress** images with adjustable quality (1–100)
-- **Convert** formats: JPEG, PNG, WebP, AVIF
-- **Batch** process multiple images
-
-## 开发规范
-
-- [图片工具预览规范](docs/image-tools-preview.md) - 所有生成图片的工具必须提供预览功能
-
-## Note
-
-Uses `@jsquash/avif@1.1.2-single-thread-only` for Vite compatibility (multi-threaded AVIF has worker build issues).
