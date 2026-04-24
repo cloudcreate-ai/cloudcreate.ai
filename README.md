@@ -16,6 +16,14 @@ A **human–AI creative toolkit**: image, PDF, table, CSS, archive, and workflow
 
 <https://cloudcreate.ai>
 
+### Public container image
+
+GHCR:
+
+```bash
+docker pull ghcr.io/cloudcreate-ai/cloudcreate-ai:latest
+```
+
 ### AI-assisted development
 
 Parts of the docs, implementation, and tests were produced with **AI assistance** and reviewed by humans; this is not a guarantee of production or security fitness. Public pages and data are not a formal service commitment.
@@ -47,6 +55,14 @@ npm run build
 ### 线上地址
 
 <https://cloudcreate.ai>
+
+### 公开镜像
+
+GHCR：
+
+```bash
+docker pull ghcr.io/cloudcreate-ai/cloudcreate-ai:latest
+```
 
 ### AI 辅助开发声明
 
