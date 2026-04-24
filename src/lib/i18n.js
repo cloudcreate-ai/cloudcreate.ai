@@ -145,6 +145,7 @@ const translations = {
       categoryComingSoon: 'Coming soon',
       localeSwitcher: 'Display language',
       footerLegalNav: 'Legal',
+      footerGithubTitle: 'View source on GitHub',
       footerContactTitle: 'Email us',
     },
     agentPrompt: {
@@ -973,6 +974,7 @@ const translations = {
       categoryComingSoon: '敬请期待',
       localeSwitcher: '界面语言',
       footerLegalNav: '法律链接',
+      footerGithubTitle: '在 GitHub 查看源码',
       footerContactTitle: '发送邮件',
     },
     agentPrompt: {

@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { t } from '$lib/i18n.js';
   import { localePath } from '$lib/localePath.js';
-  import { siteContactEmail } from '$lib/siteConfig.js';
+  import { siteContactEmail, siteGithubUrl } from '$lib/siteConfig.js';
 </script>
 
 <footer class="app-footer">
@@ -25,6 +25,15 @@
     <a class="app-footer-link" href={localePath($page.url.pathname, '/privacy')}>{t('legal.privacyTitle')}</a>
     <span class="app-footer-sep" aria-hidden="true">·</span>
     <a class="app-footer-link" href={localePath($page.url.pathname, '/terms')}>{t('legal.termsTitle')}</a>
+    <span class="app-footer-sep" aria-hidden="true">·</span>
+    <a
+      class="app-footer-link"
+      href={siteGithubUrl}
+      target="_blank"
+      rel="noreferrer"
+      title={t('layout.footerGithubTitle')}
+      >GitHub</a
+    >
     <span class="app-footer-sep" aria-hidden="true">·</span>
     <a
       class="app-footer-link"

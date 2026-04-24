@@ -10,3 +10,6 @@ export const siteOrigin = (
 
 /** 对外联系邮箱（页脚、法律页与文案引用均用此值） */
 export const siteContactEmail = 'contact@cloudcreate.ai';
+
+/** 站点源码仓库 */
+export const siteGithubUrl = 'https://github.com/cloudcreate-ai/cloudcreate.ai';
