@@ -1,6 +1,7 @@
 # 本地或内网：静态站 + 默认 8080 映射到容器 80
 services:
   web:
+    image: cloudcreate-ai:latest
     build:
       context: .
       dockerfile: Dockerfile

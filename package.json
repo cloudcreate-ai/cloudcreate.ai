@@ -9,7 +9,7 @@
     "build": "vite build && node scripts/generate-sitemap.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy build --project-name=freetools",
-    "docker:build": "docker build -t freetools:local .",
+    "docker:build": "docker build -t cloudcreate-ai:latest .",
     "docker:up": "docker compose -f docker-compose.yml up -d --build"
   },
   "devDependencies": {
