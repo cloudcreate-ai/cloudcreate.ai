@@ -1,0 +1,23 @@
+# 依赖与构建产物（在镜像内重新安装/构建）
+node_modules
+build
+.svelte-kit
+
+# Git 与子模块（不参与站点构建）
+.git
+**/.git
+skills
+
+# 环境变量与 IDE
+.env
+.env.*
+!.env.example
+.cursor
+.vscode
+*.log
+
+# 测试与杂项
+coverage
+playwright-report
+test-results
+.DS_Store

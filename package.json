@@ -8,7 +8,9 @@
     "gen:batch-specs": "node scripts/xlsx-to-batch-specs.js",
     "build": "vite build && node scripts/generate-sitemap.mjs",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler pages deploy build --project-name=freetools"
+    "deploy": "npm run build && wrangler pages deploy build --project-name=freetools",
+    "docker:build": "docker build -t freetools:local .",
+    "docker:up": "docker compose -f docker-compose.yml up -d --build"
   },
   "devDependencies": {
     "@skeletonlabs/skeleton": "^4.11.0",

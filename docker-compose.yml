@@ -1,0 +1,9 @@
+# 本地或内网：静态站 + 默认 8080 映射到容器 80
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
