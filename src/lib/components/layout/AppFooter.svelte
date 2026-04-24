@@ -7,7 +7,17 @@
 
 <footer class="app-footer">
   <div class="app-footer-left">
-    <span class="app-footer-brand">{t('home.title')}</span>
+    <span class="app-footer-brand-row">
+      <img
+        src="/cloudcreate-rounded-bg.png"
+        class="app-footer-site-logo"
+        width="16"
+        height="16"
+        alt=""
+        decoding="async"
+      />
+      <span class="app-footer-brand">{t('home.title')}</span>
+    </span>
     <span class="app-footer-sep" aria-hidden="true">·</span>
     <span class="app-footer-tagline">{t('home.subtitle')}</span>
   </div>
@@ -52,6 +62,19 @@
     flex-wrap: wrap;
     gap: 0.35rem;
     margin-left: auto;
+  }
+  .app-footer-brand-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .app-footer-site-logo {
+    display: block;
+    flex-shrink: 0;
+    width: 0.95rem;
+    height: 0.95rem;
+    border-radius: 0.22rem;
+    opacity: 0.9;
   }
   .app-footer-brand {
     font-weight: 600;

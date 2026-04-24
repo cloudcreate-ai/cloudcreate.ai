@@ -29,7 +29,17 @@
       </button>
     {/if}
     <div class="app-header-brand">
-      <a href={pathForLocale($locale, '/')} class="app-header-title">{t('home.title')}</a>
+      <a href={pathForLocale($locale, '/')} class="app-header-title app-header-title-link">
+        <img
+          src="/cloudcreate-rounded-bg.png"
+          class="app-header-site-logo"
+          width="18"
+          height="18"
+          alt=""
+          decoding="async"
+        />
+        {t('home.title')}
+      </a>
       <span class="app-header-brand-sep" aria-hidden="true">·</span>
       <span class="app-header-tagline">{t('home.subtitle')}</span>
     </div>
@@ -139,6 +149,18 @@
     text-decoration: none;
     color: var(--ccw-text-primary);
     letter-spacing: 0.01em;
+  }
+  .app-header-title-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .app-header-site-logo {
+    display: block;
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 0.25rem;
   }
   .app-header-title:hover {
     color: var(--ccw-accent);
