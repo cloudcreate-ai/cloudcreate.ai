@@ -15,7 +15,7 @@ export {
   getFormatFromFile,
   getImageFormatFromNameAndMime,
   normalizeImageFormat,
-} from '../../packages/tools-core/src/image.js';
+} from '@cloudcreate/freetools-core/image';
 
 export async function getImageDimensions(file) {
   const bitmap = await createImageBitmap(file);

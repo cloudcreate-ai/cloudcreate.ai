@@ -19,7 +19,7 @@ import {
   decompressZipEntries,
   detectFormat,
   parseTarEntries,
-} from '../../packages/tools-core/src/archive.js';
+} from '@cloudcreate/freetools-core/archive';
 
 export {
   FORMATS,

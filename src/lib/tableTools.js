@@ -4,4 +4,4 @@ export {
   parseTableSource,
   tableToBlob,
   tableToOutput,
-} from '../../packages/tools-core/src/table.js';
+} from '@cloudcreate/freetools-core/table';

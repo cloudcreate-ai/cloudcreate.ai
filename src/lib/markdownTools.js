@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { markdownToHtml as renderMarkdownToHtml } from '../../packages/tools-core/src/markdown.js';
+import { markdownToHtml as renderMarkdownToHtml } from '@cloudcreate/freetools-core/markdown';
 
 export function markdownToHtml(md) {
   return renderMarkdownToHtml(md, {
