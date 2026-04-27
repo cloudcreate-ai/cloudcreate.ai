@@ -13,6 +13,7 @@
     "docker:up": "docker compose -f docker-compose.yml up -d --build"
   },
   "devDependencies": {
+    "@cloudcreate/ai-skills": "git+ssh://git@github.com/cloudcreate-ai/cloudcreate.ai.skills.git#6557c83902dd7ea58acef417d55e4a7a3ea7cf0b",
     "@skeletonlabs/skeleton": "^4.11.0",
     "@skeletonlabs/skeleton-svelte": "^4.11.0",
     "@sveltejs/adapter-static": "^3.0.10",
