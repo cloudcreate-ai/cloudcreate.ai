@@ -1,1 +1,1 @@
-export { compressImageFile as compressImage } from '@cloudcreate/freetools-core/image';
+export { compressImageFile as compressImage } from '@cloudcreate/cloudcreate-core/image';
