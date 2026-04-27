@@ -1,18 +1,11 @@
-/**
- * Markdown 工具 - 解析、sanitize、渲染
- */
-import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { markdownToHtml as renderMarkdownToHtml } from '../../packages/tools-core/src/markdown.js';
 
-/** 将 Markdown 转为安全的 HTML */
 export function markdownToHtml(md) {
-  if (!md || typeof md !== 'string') return '';
-  try {
-    const html = marked(md, { async: false });
-    const str = typeof html === 'string' ? html : String(html ?? '');
-    if (typeof window === 'undefined') return str;
-    return DOMPurify.sanitize(str, { USE_PROFILES: { html: true } });
-  } catch {
-    return '';
-  }
+  return renderMarkdownToHtml(md, {
+    sanitizer:
+      typeof window === 'undefined'
+        ? null
+        : (html) => DOMPurify.sanitize(html, { USE_PROFILES: { html: true } }),
+  });
 }
