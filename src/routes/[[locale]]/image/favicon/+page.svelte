@@ -201,7 +201,7 @@
   }
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="favicon.title" descKey="favicon.desc" />
 
   <section class="workspace-content-block">

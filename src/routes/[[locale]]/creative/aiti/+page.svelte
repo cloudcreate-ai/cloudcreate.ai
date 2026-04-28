@@ -19,10 +19,10 @@
   });
 </script>
 
-<WorkspacePageShell wide={true} class="creative-aiti">
+<WorkspacePageShell layout="operation" class="creative-aiti">
   <ToolPageHeader titleKey="creative.aitiTitle" descKey="creative.aitiDesc" />
 
-  <p class="page-intro m-0 mb-4 text-sm text-surface-600-400 max-w-2xl">{t('creative.aitiIntro')}</p>
+  <p class="page-intro m-0 mb-4 text-sm text-surface-600-400">{t('creative.aitiIntro')}</p>
 
   <div class="flex flex-wrap gap-3 mb-5">
     <a
@@ -44,7 +44,7 @@
   </div>
 
   <section
-    class="card preset-outlined-surface-200-800 p-4 max-w-2xl"
+    class="card preset-outlined-surface-200-800 p-4 creative-aiti-safety"
     aria-labelledby="aiti-safety-h"
   >
     <h2 id="aiti-safety-h" class="text-sm font-semibold m-0 mb-2 text-surface-800-100">
@@ -61,5 +61,8 @@
 <style>
   :global(.creative-aiti .page-intro) {
     line-height: 1.55;
+  }
+  .creative-aiti-safety {
+    width: 100%;
   }
 </style>

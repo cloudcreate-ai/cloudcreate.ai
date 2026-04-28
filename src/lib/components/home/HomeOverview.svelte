@@ -229,7 +229,7 @@
 
 <style>
   .home-workspace {
-    max-width: 56rem;
+    max-width: var(--ccw-layout-overview-max);
     margin: 0 auto;
     padding-bottom: 2rem;
   }

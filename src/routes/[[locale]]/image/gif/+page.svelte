@@ -22,8 +22,8 @@
   import { encodeGif } from '$lib/gif/utils.js';
   import JSZip from 'jszip';
 
-  let exporting = false;
-  let exportingMessage = '';
+  let exporting = $state(false);
+  let exportingMessage = $state('');
   let playbackTimer = null;
   let playing = $state(false);
   let playingIndex = $state(0);
@@ -227,7 +227,7 @@
   }
 </script>
 
-<div class="workspace-content workspace-content-wide gif-tool">
+<div class="workspace-layout-operation gif-tool">
   <ToolPageHeader titleKey="gifTool.title" descKey="gifTool.desc" />
 
   <section class="card upload">

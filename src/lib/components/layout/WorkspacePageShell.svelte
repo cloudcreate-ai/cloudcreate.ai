@@ -1,12 +1,15 @@
 <script>
   /**
-   * 工具/创意等中间主区的统一宽度与可选 class 包装，与全局 .workspace-content 对齐。
+   * 中间主区的统一宽度包装：overview / operation / content 三类布局。
    */
-  let { wide = false, class: className = '', children } = $props();
+  /** @type {{ layout?: 'overview' | 'operation' | 'content', wide?: boolean, class?: string, children?: import('svelte').Snippet }} */
+  let { layout, wide = false, class: className = '', children } = $props();
+
+  const layoutName = $derived(layout ?? (wide ? 'operation' : 'overview'));
 </script>
 
 <div
-  class={['workspace-content', wide ? 'workspace-content-wide' : '', className].filter(Boolean).join(' ')}
+  class={['workspace-layout-' + layoutName, className].filter(Boolean).join(' ')}
 >
   {@render children?.()}
 </div>

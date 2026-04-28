@@ -16,7 +16,7 @@
   });
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-overview">
   <header class="tool-page-header mb-6">
     <h1 class="text-xl font-semibold mb-1">{t('cssIndex.title')}</h1>
     <p class="text-surface-600-400 text-sm m-0">{t('cssIndex.desc')}</p>

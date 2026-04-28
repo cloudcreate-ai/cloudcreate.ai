@@ -41,11 +41,11 @@
         <tr class="border-b border-surface-200-800 text-surface-600-400 text-left">
           <th class="p-3 w-12">#</th>
           <th class="p-3 w-16">{t('common.preview')}</th>
-          <th class="p-3 min-w-[140px]">{t('common.filename')}</th>
+          <th class="p-3 min-w-[220px]">{t('common.filename')}</th>
           <th class="p-3 w-16">{t('common.format')}</th>
           <th class="p-3 w-20">{t('common.size')}</th>
           <th class="p-3 w-24">{t('common.dimensions')}</th>
-          <th class="p-3 min-w-[180px] text-right">{t('common.result')}</th>
+          <th class="p-3 min-w-[240px] text-right">{t('common.result')}</th>
         </tr>
       </thead>
       <tbody>
@@ -55,7 +55,7 @@
             <td class="p-3">
               <img src={item.previewUrl} alt="" class="w-12 h-12 object-cover rounded block" />
             </td>
-            <td class="p-3 truncate max-w-[140px]" title={item.name}>{item.name}</td>
+            <td class="p-3 truncate min-w-[220px]" title={item.name}>{item.name}</td>
             <td class="p-3">{item.format}</td>
             <td class="p-3">{formatFileSize(item.size)}</td>
             <td class="p-3">

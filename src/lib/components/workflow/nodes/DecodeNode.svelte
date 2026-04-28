@@ -2,10 +2,6 @@
   import { Handle, Position } from '@xyflow/svelte';
   import { getNodeDef } from '$lib/workflow/registry.js';
 
-  /** @type {import('@xyflow/svelte').NodeProps} */
-  export let data;
-  export let id;
-
   const def = getNodeDef('decode');
   const label = def?.label ?? 'Decode';
 </script>

@@ -107,7 +107,7 @@
   });
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="cssMinify.title" descKey="cssMinify.desc" />
 
   <section class="workspace-content-block">

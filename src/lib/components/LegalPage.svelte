@@ -14,7 +14,7 @@
   const lastStr = $derived($locale === 'zh' ? LEGAL_LAST_UPDATED.zh : LEGAL_LAST_UPDATED.en);
 </script>
 
-<WorkspacePageShell wide={true}>
+<WorkspacePageShell layout="content">
   <article class="legal-page">
     <h1 class="legal-page-title">{title}</h1>
     <p class="legal-page-updated">{t('legal.lastUpdated')} {lastStr}</p>
@@ -30,8 +30,7 @@
 
 <style>
   .legal-page {
-    max-width: 42rem;
-    margin: 0 auto;
+    width: 100%;
   }
   .legal-page-title {
     margin: 0 0 0.35rem;

@@ -15,6 +15,7 @@ export const WORKSPACE_SIDEBAR_GROUPS = [
     labelKey: 'sidebar.workspaceSection',
     items: [
       { id: 'workspaceHome', titleKey: 'sidebar.workspaceHome', href: '/', icon: '🏠' },
+      { id: 'toolSpec', titleKey: 'sidebar.toolSpec', href: '/ai-spec', icon: '📘' },
     ],
   },
   {

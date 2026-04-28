@@ -38,19 +38,21 @@
   function isMiddleStep(type) {
     return type === 'resize' || type === 'crop';
   }
-</script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-<div
-  class="step-bar"
-  role="group"
-  aria-label="Workflow steps"
-  onclick={(e) => {
+  function closeAddDropdownOnOutsideClick(e) {
     const el = e.target instanceof Element ? e.target : null;
     if (addDropdownIndex != null && el && !el.closest('.add-dropdown') && !el.closest('.add-step-btn')) {
       addDropdownIndex = null;
     }
-  }}
+  }
+</script>
+
+<svelte:window onclick={closeAddDropdownOnOutsideClick} />
+
+<div
+  class="step-bar"
+  role="group"
+  aria-label="Workflow steps"
 >
   {#each steps as step, i}
     {#if !readonly && i > 0}
@@ -90,6 +92,7 @@
       <div class="step-gap step-gap-readonly" aria-hidden="true">→</div>
     {/if}
 
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <div
       class="step-card"
       class:selected={!readonly && selectedIndex === i}

@@ -201,7 +201,7 @@
   });
 </script>
 
-<div class="workspace-content workspace-content-wide pdf-viewer">
+<div class="workspace-layout-operation pdf-viewer">
   <ToolPageHeader titleKey="pdfViewer.title" descKey="pdfViewer.desc" />
 
   <section class="mb-4">

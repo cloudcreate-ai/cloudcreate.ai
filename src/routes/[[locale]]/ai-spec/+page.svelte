@@ -77,8 +77,7 @@
   }
 </script>
 
-<WorkspacePageShell wide={true}>
-  <div class="workspace-content ai-spec-page">
+<WorkspacePageShell layout="content" class="ai-spec-page">
     <section class="ai-spec-human card preset-outlined-surface-200-800 workspace-content-block p-4 mb-2">
       <h1 class="text-xl font-semibold mt-0 mb-2 text-[color:var(--ccw-text-primary)]">
         {t('agentPrompt.aiSpecPage.pageTitle')}
@@ -89,7 +88,7 @@
           >{t('agentPrompt.specLinkDetail')}</a
         >
       </p>
-      <p class="text-surface-600-400 text-sm m-0 mb-4 max-w-3xl">{t('agentPrompt.aiSpecPage.pageIntro')}</p>
+      <p class="text-surface-600-400 text-sm m-0 mb-4">{t('agentPrompt.aiSpecPage.pageIntro')}</p>
       <div class="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -137,14 +136,13 @@
         </button>
       </section>
     {/each}
-  </div>
 </WorkspacePageShell>
 
 <style>
-  .ai-spec-page :global(.card) {
+  :global(.ai-spec-page .card) {
     border-radius: var(--ccw-radius-card);
   }
-  .ai-spec-human {
+  :global(.ai-spec-page .ai-spec-human) {
     border-radius: var(--ccw-radius-card);
   }
   .ai-spec-toplink {

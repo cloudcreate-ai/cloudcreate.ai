@@ -185,7 +185,7 @@
   }
 </script>
 
-<div class="workspace-content workspace-content-wide">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="tableTools.title" descKey="tableTools.desc" />
 
   <section class="mb-4 scroll-mt-4" id="table-preview">

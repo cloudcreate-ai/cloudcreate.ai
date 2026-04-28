@@ -36,6 +36,13 @@
   --ccw-workspace-block-gap: 1rem;
   /* 主操作行与下方结果/预览区（略大于普通块距） */
   --ccw-workspace-primary-after: 1.25rem;
+  /* 中间工作区三类页面宽度：概览页 / 操作页 / 内容页 */
+  --ccw-layout-overview-max: 64rem;
+  --ccw-layout-operation-max: 88rem;
+  --ccw-layout-content-max: 64rem;
+  /* 兼容旧类名：普通内容与宽版操作区 */
+  --ccw-workspace-content-max: var(--ccw-layout-content-max);
+  --ccw-workspace-content-wide-max: var(--ccw-layout-operation-max);
 }
 
 html,
@@ -148,13 +155,29 @@ body,
   cursor: pointer;
 }
 
-.workspace-content {
-  max-width: 56rem;
+.workspace-layout-overview,
+.workspace-layout-operation,
+.workspace-layout-content,
+.workspace-content,
+.workspace-content-wide {
   margin: 0 auto;
 }
+
+.workspace-layout-overview {
+  width: min(100%, var(--ccw-layout-overview-max));
+  max-width: var(--ccw-layout-overview-max);
+}
+
+.workspace-layout-content,
+.workspace-content {
+  width: min(100%, var(--ccw-layout-content-max));
+  max-width: var(--ccw-layout-content-max);
+}
+
+.workspace-layout-operation,
 .workspace-content-wide {
-  max-width: 72rem;
-  margin: 0 auto;
+  width: min(100%, var(--ccw-layout-operation-max));
+  max-width: var(--ccw-layout-operation-max);
 }
 
 /* 工具页/创意页标题下的说明段落（与 styleguide 一致） */
@@ -301,4 +324,3 @@ button:focus-visible,
   background: rgba(255, 255, 255, 0.05) !important;
   color: var(--ccw-text-primary) !important;
 }
-

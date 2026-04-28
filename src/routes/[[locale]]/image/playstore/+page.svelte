@@ -95,7 +95,7 @@
   }
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="playstore.title" descKey="playstore.desc" />
 
   <section class="workspace-content-block">

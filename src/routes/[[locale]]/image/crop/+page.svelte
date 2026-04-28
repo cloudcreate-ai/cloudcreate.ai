@@ -249,7 +249,7 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') (cropRequest ? null : closePreview()); }} />
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="crop.title" descKey="crop.desc" />
 
   <section class="workspace-content-block">

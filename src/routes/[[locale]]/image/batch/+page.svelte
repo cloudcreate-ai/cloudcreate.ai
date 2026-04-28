@@ -754,7 +754,7 @@
   onclick={() => { if (pickerOpenForRow !== null) pickerOpenForRow = null; }}
 />
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="batch.title" descKey="batch.desc" />
 
   {#if specLoadError}

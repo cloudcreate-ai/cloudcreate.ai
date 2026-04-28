@@ -228,9 +228,6 @@
     margin: 0;
     font-size: 0.75rem;
   }
-  .ai-panel-spec-sep {
-    color: var(--ccw-text-muted);
-  }
   .ai-panel-spec-link {
     color: var(--ccw-accent);
     text-decoration: underline;

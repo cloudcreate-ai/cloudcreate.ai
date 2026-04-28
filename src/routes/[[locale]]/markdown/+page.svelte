@@ -45,7 +45,7 @@
   });
 </script>
 
-<div class="workspace-content workspace-content-wide">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="markdownPreview.title" descKey="markdownPreview.desc" />
 
   <section class="mb-4">

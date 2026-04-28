@@ -3,7 +3,7 @@
    * 与 [border-beam-vue](https://github.com/mooniitt/border-beam-vue) 同源的流光边框效果，
    * 样式由 vendored `generateBeamCSS` 生成（Svelte 包装层）。
    */
-  import { onMount } from 'svelte';
+  import { onMount, untrack } from 'svelte';
   import { browser } from '$app/environment';
   import { generateBeamCSS, sizePresets, sizeThemePresets } from '$lib/border-beam/styles.ts';
 
@@ -28,7 +28,7 @@
   let containerEl = $state(/** @type {HTMLElement | null} */ (null));
   let detectedRadius = $state(/** @type {number | null} */ (null));
   let systemTheme = $state(/** @type {'dark' | 'light'} */ ('dark'));
-  let isActive = $state(active);
+  let isActive = $state(untrack(() => active));
   let isFading = $state(false);
 
   /** @param {import('$lib/border-beam/types.ts').BorderBeamTheme} themeMode */
@@ -122,7 +122,7 @@
 </script>
 
 {#if cssStyles}
-  <svelte:element this="style">{cssStyles}</svelte:element>
+  <svelte:element this={'style'}>{cssStyles}</svelte:element>
 {/if}
 <div
   bind:this={containerEl}

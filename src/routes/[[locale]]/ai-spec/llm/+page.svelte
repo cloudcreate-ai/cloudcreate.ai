@@ -28,8 +28,7 @@
   }
 </script>
 
-<WorkspacePageShell wide={true}>
-  <div class="workspace-content p-1">
+<WorkspacePageShell layout="content" class="ai-spec-llm-page">
     <p class="text-sm m-0 mb-2 text-[color:var(--ccw-text-muted)]">{t('agentPrompt.aiSpecPage.plainInBrowserBlurb')}</p>
     <div class="spec-plain-row">
       <span class="text-sm text-[color:var(--ccw-text-secondary)]">{t('agentPrompt.aiSpecPage.plainTextUrlLabel')}</span>
@@ -39,14 +38,9 @@
       </button>
     </div>
     <pre class="ai-spec-llm-pre">{data.body}</pre>
-  </div>
 </WorkspacePageShell>
 
 <style>
-  .spec-plain-url {
-    color: var(--ccw-accent);
-    word-break: break-all;
-  }
   .spec-plain-row {
     display: flex;
     flex-wrap: wrap;
@@ -69,7 +63,6 @@
   }
   .ai-spec-llm-pre {
     margin: 0;
-    max-width: 72rem;
     white-space: pre-wrap;
     word-break: break-word;
     font-family: var(--ccw-font-mono, ui-monospace, monospace);

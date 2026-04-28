@@ -20,7 +20,7 @@
   });
 </script>
 
-<WorkspacePageShell wide={true} class="styleguide">
+<WorkspacePageShell layout="content" class="styleguide">
   <ToolPageHeader titleKey="styleGuide.title" descKey="styleGuide.desc" />
 
   <p class="page-intro">{t('styleGuide.intro')}</p>

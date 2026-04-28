@@ -346,7 +346,7 @@
   bind:this={importInputRef}
   onchange={handleImportFile}
 />
-<div class="workspace-content">
+<div class="workspace-layout-operation">
 <main class="workflow-simple">
   <header class="workflow-header">
     <h1 class="text-xl font-semibold m-0">{t('workflow.title')}</h1>
@@ -454,7 +454,7 @@
                         class="result-preview-thumb"
                       />
                     </td>
-                    <td class="truncate max-w-[120px]" title={item.name}>{item.name}</td>
+                    <td class="truncate min-w-[220px]" title={item.name}>{item.name}</td>
                     <td>{item.format}</td>
                     <td>{formatFileSize(item.size)}</td>
                     <td>{item.width}×{item.height}</td>
@@ -657,9 +657,8 @@
 </div>
 
 <style>
-  /* 统一内容宽度，与其他工具页 max-w-4xl (896px) 一致 */
   .workflow-simple {
-    --workflow-width: 896px;
+    --workflow-width: 100%;
     display: flex;
     flex-direction: column;
     width: 100%;

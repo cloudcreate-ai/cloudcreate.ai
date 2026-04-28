@@ -43,7 +43,7 @@
     box-sizing: border-box;
   }
   .framework-region {
-    max-width: 56rem;
+    max-width: var(--ccw-layout-content-max);
     margin: 0 auto;
   }
   .framework-label {

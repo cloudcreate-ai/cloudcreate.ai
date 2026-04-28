@@ -15,6 +15,7 @@
   import { runWorkflowFromPreset } from '$lib/workflow/workflowLoader.js';
   import { page } from '$app/stores';
   import { get } from 'svelte/store';
+  import { untrack } from 'svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
   import { registerAgentPrompt } from '$lib/stores/agentPromptStore.js';
@@ -38,18 +39,22 @@
     showSameAsOriginal = true,
   } = $props();
 
-  const defaults = $derived({ targetFormat: defaultTargetFormat, quality: 75 });
-  const saved = $derived(loadToolConfig(configKey, defaults));
-  const validFormat = $derived((() => {
+  const initialConfig = untrack(() => {
+    const defaults = { targetFormat: defaultTargetFormat, quality: 75 };
+    const saved = loadToolConfig(configKey, defaults);
     const v = saved.targetFormat;
-    if (v === '' && !showSameAsOriginal) return defaultTargetFormat || 'webp';
-    if (v === '' || ENCODE_FORMATS.includes(v)) return v;
-    return defaultTargetFormat || 'webp';
-  })());
+    const targetFormat =
+      v === '' && !showSameAsOriginal
+        ? defaultTargetFormat || 'webp'
+        : v === '' || ENCODE_FORMATS.includes(v)
+          ? v
+          : defaultTargetFormat || 'webp';
+    return { targetFormat, quality: Math.min(100, Math.max(1, saved.quality ?? 75)) };
+  });
 
   let items = $state([]);
-  let targetFormat = $state(validFormat);
-  let quality = $state(Math.min(100, Math.max(1, saved.quality ?? 75)));
+  let targetFormat = $state(initialConfig.targetFormat);
+  let quality = $state(initialConfig.quality);
   $effect(() => saveToolConfig(configKey, { targetFormat, quality }));
 
   /** 从地址栏同步 q / f，便于带参直链与浏览器前进后退 */
@@ -192,7 +197,7 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader {titleKey} {descKey} />
 
   <section class="workspace-content-block">

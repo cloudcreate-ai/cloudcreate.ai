@@ -74,7 +74,7 @@
   });
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="cssBeautify.title" descKey="cssBeautify.desc" />
 
   <section class="workspace-content-block">

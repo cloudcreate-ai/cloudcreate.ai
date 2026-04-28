@@ -199,7 +199,7 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'Escape') closePreview(); }} />
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="rotate.title" descKey="rotate.desc" />
 
   <section class="workspace-content-block">

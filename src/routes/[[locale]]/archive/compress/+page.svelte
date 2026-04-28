@@ -161,7 +161,7 @@
   }
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="archiveCompress.title" descKey="archiveCompress.desc" />
 
   <section class="workspace-content-block">

@@ -2,15 +2,13 @@
   import { Handle, Position } from '@xyflow/svelte';
   import { getNodeDef } from '$lib/workflow/registry.js';
 
-  /** @type {import('@xyflow/svelte').NodeProps} */
-  export let data;
-  export let id;
+  let { data } = $props();
 
   const def = getNodeDef('resize');
   const label = def?.label ?? 'Resize';
-  const params = data?.params ?? {};
-  const mode = params.scaleMode ?? 'percent';
-  const summary = mode === 'percent' ? `${params.scalePercent ?? 50}%` : mode;
+  const params = $derived(data?.params ?? {});
+  const mode = $derived(params.scaleMode ?? 'percent');
+  const summary = $derived(mode === 'percent' ? `${params.scalePercent ?? 50}%` : mode);
 </script>
 
 <div class="workflow-node workflow-node-resize">

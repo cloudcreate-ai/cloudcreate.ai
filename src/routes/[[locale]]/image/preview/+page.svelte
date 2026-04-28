@@ -130,7 +130,7 @@
   const selectedImage = $derived(images[selectedIndex]);
 </script>
 
-<div class="workspace-content workspace-content-wide image-preview">
+<div class="workspace-layout-operation image-preview">
   <ToolPageHeader titleKey="imagePreview.title" descKey="imagePreview.desc" />
 
   <section class="mb-4">

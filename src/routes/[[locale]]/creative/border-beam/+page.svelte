@@ -68,7 +68,7 @@
   });
 </script>
 
-<WorkspacePageShell wide={true} class="creative-border-beam">
+<WorkspacePageShell layout="operation" class="creative-border-beam">
   <ToolPageHeader titleKey="creative.borderBeamTitle" descKey="creative.borderBeamDesc" />
 
   <p class="page-intro">{t('creative.borderBeamNpmNote')}</p>

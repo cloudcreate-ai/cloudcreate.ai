@@ -146,7 +146,7 @@
   }
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="watermarkGemini.title" descKey="watermarkGemini.desc" />
 
   <section class="workspace-content-block text-sm text-surface-600-400 space-y-2">

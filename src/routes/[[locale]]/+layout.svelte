@@ -11,6 +11,8 @@
   import AiChatPanel from '$lib/components/layout/AiChatPanel.svelte';
   import SeoHead from '$lib/components/SeoHead.svelte';
 
+  let { children } = $props();
+
   function closeOverlays() {
     leftSidebarOpen.set(false);
     aiPanelOpen.set(false);
@@ -72,7 +74,7 @@
     <main
       class="app-shell-workspace"
       style="flex: 1 1 0%; min-width: 320px; height: 100%; overflow: auto; padding: 0.75rem; background: var(--ccw-bg-panel); border: 1px solid var(--ccw-border-soft); border-radius: var(--ccw-radius-card); box-shadow: var(--ccw-shadow-soft);"
-    ><slot /></main>
+    >{@render children()}</main>
     <!-- 右侧 AI：大屏正常，小屏折叠时窄条，展开时覆盖 -->
     <aside
       class="app-shell-ai"

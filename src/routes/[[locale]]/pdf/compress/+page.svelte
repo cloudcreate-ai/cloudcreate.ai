@@ -282,7 +282,7 @@
   }
 </script>
 
-<div class="workspace-content workspace-content-wide">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="pdfCompress.title" descKey="pdfCompress.desc" />
 
   <section class="card preset-outlined-surface-200-800 p-4 mb-4 space-y-3">

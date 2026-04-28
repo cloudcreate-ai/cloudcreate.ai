@@ -2,14 +2,14 @@
   import { Handle, Position } from '@xyflow/svelte';
   import { getNodeDef } from '$lib/workflow/registry.js';
 
-  /** @type {import('@xyflow/svelte').NodeProps} */
-  export let data;
-  export let id;
+  let { data } = $props();
 
   const def = getNodeDef('encode');
   const label = def?.label ?? 'Encode';
-  const params = data?.params ?? {};
-  const summary = params.targetFormat ? `${params.targetFormat} Q${params.quality ?? 75}` : `Q${params.quality ?? 75}`;
+  const params = $derived(data?.params ?? {});
+  const summary = $derived(
+    params.targetFormat ? `${params.targetFormat} Q${params.quality ?? 75}` : `Q${params.quality ?? 75}`,
+  );
 </script>
 
 <div class="workflow-node workflow-node-encode">

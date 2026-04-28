@@ -293,7 +293,7 @@
   }
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
 <main class="workflow-editor">
   <header class="workflow-header">
     <a href={workflowHref} class="text-surface-600-400 text-sm no-underline hover:text-primary-500">← {t('workflow.simpleMode')}</a>

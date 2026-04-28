@@ -99,7 +99,7 @@
   }
 </script>
 
-<div class="workspace-content">
+<div class="workspace-layout-operation">
   <ToolPageHeader titleKey="archiveDecompress.title" descKey="archiveDecompress.desc" />
 
   <section class="workspace-content-block">
@@ -152,7 +152,7 @@
           <tbody>
             {#each extractedFiles as file}
               <tr class="border-b border-surface-200-800 last:border-b-0 hover:bg-surface-100-900/50">
-                <td class="p-3 truncate max-w-[200px]" title={file.name}>{file.name}</td>
+                <td class="p-3 truncate min-w-[220px]" title={file.name}>{file.name}</td>
                 <td class="p-3">{formatFileSize(file.size)}</td>
                 <td class="p-3 text-right">
                   <button class="btn btn-sm preset-outlined-surface-200-800" onclick={() => downloadSingle(file)}>

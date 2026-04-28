@@ -76,6 +76,7 @@ const translations = {
     sidebar: {
       workspaceSection: 'Home',
       workspaceHome: 'Home',
+      toolSpec: 'Tool spec',
       categoryOverviewSection: 'Overview',
       categoryOverview: 'Overview',
       image: 'Image',
@@ -907,6 +908,7 @@ const translations = {
     sidebar: {
       workspaceSection: '首页',
       workspaceHome: '首页',
+      toolSpec: '工具说明',
       categoryOverviewSection: '概览',
       categoryOverview: '概览',
       image: '图片',

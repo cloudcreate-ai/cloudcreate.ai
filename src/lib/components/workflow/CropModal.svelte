@@ -191,6 +191,7 @@
     role="dialog"
     aria-modal="true"
     aria-label="Crop region"
+    tabindex="-1"
     onclick={(e) => e.target === e.currentTarget && cancel()}
     onkeydown={(e) => e.key === "Escape" && cancel()}
   >
