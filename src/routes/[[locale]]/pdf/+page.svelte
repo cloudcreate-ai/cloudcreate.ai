@@ -35,6 +35,45 @@
   let pdfReady = $state(false);
   let getDocumentRef = null;
   let docLoading = $state(false);
+  let pdfInfo = $state(null);
+
+  function round2(value) {
+    return Math.round(value * 100) / 100;
+  }
+
+  async function readPdfInfo(doc) {
+    const next = {
+      title: null,
+      author: null,
+      creator: null,
+      producer: null,
+      firstPageWidthMm: null,
+      firstPageHeightMm: null,
+    };
+
+    try {
+      const metadata = await doc.getMetadata();
+      const info = metadata?.info || {};
+      next.title = info.Title?.trim?.() || null;
+      next.author = info.Author?.trim?.() || null;
+      next.creator = info.Creator?.trim?.() || null;
+      next.producer = info.Producer?.trim?.() || null;
+    } catch {
+      /* ignore metadata errors */
+    }
+
+    try {
+      const firstPage = await doc.getPage(1);
+      const viewport = firstPage.getViewport({ scale: 1 });
+      next.firstPageWidthMm = round2((viewport.width / 72) * 25.4);
+      next.firstPageHeightMm = round2((viewport.height / 72) * 25.4);
+      firstPage.cleanup?.();
+    } catch {
+      /* ignore page info errors */
+    }
+
+    return next;
+  }
 
   $effect(() => {
     void fileName;
@@ -96,6 +135,7 @@
     }
     docLoading = true;
     error = '';
+    pdfInfo = null;
     if (pdfDoc) {
       pdfDoc.destroy();
       pdfDoc = null;
@@ -108,10 +148,12 @@
       totalPages = doc.numPages;
       currentPage = 1;
       fileName = file.name || 'document.pdf';
+      pdfInfo = await readPdfInfo(doc);
     } catch (err) {
       console.error(err);
       error = t('pdfViewer.loadError');
       pdfDoc = null;
+      pdfInfo = null;
       totalPages = 0;
       currentPage = 1;
       docLoading = false;
@@ -178,6 +220,7 @@
     totalPages = 0;
     currentPage = 1;
     scale = 1;
+    pdfInfo = null;
     fileName = '';
     error = '';
     rendering = false;
@@ -271,6 +314,40 @@
       </div>
     </div>
     <div class="canvas-wrapper">
+      {#if pdfDoc && pdfInfo}
+        <div class="doc-info-grid">
+          {#if pdfInfo.title}
+            <div class="info-item">
+              <span class="info-label">{t('pdfViewer.metaTitle')}</span>
+              <span class="info-value">{pdfInfo.title}</span>
+            </div>
+          {/if}
+          {#if pdfInfo.author}
+            <div class="info-item">
+              <span class="info-label">{t('pdfViewer.metaAuthor')}</span>
+              <span class="info-value">{pdfInfo.author}</span>
+            </div>
+          {/if}
+          {#if pdfInfo.creator}
+            <div class="info-item">
+              <span class="info-label">{t('pdfViewer.metaCreator')}</span>
+              <span class="info-value">{pdfInfo.creator}</span>
+            </div>
+          {/if}
+          {#if pdfInfo.producer}
+            <div class="info-item">
+              <span class="info-label">{t('pdfViewer.metaProducer')}</span>
+              <span class="info-value">{pdfInfo.producer}</span>
+            </div>
+          {/if}
+          {#if pdfInfo.firstPageWidthMm && pdfInfo.firstPageHeightMm}
+            <div class="info-item">
+              <span class="info-label">{t('pdfViewer.firstPageSize')}</span>
+              <span class="info-value">{pdfInfo.firstPageWidthMm} x {pdfInfo.firstPageHeightMm} mm</span>
+            </div>
+          {/if}
+        </div>
+      {/if}
       {#if pdfDoc}
         <canvas bind:this={canvasRef}></canvas>
         {#if rendering}
@@ -326,6 +403,32 @@
     gap: 0.5rem;
     align-items: center;
     margin-bottom: 1rem;
+  }
+  .doc-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+  .info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--ccw-border-soft);
+    border-radius: var(--ccw-radius-card);
+    background: rgba(255, 255, 255, 0.03);
+    min-width: 0;
+  }
+  .info-label {
+    font-size: 0.72rem;
+    color: var(--ccw-text-muted);
+    text-transform: uppercase;
+  }
+  .info-value {
+    font-size: 0.88rem;
+    color: var(--ccw-text-primary);
+    overflow-wrap: anywhere;
   }
   .file-name .label {
     text-transform: uppercase;
