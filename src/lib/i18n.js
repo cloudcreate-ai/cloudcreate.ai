@@ -58,6 +58,12 @@ const translations = {
       siteBrand: 'CloudCreate.ai',
       defaultDescription:
         'A creative toolkit for people and AI—tools, examples, and demos in your browser, ready to use. Images, PDF, tables, workflows, and more; processing stays on your device.',
+      cliIntroTitle: 'CLI: Browser + local, better together',
+      cliIntroDesc:
+        'Why CloudCreate CLI complements the browser tools: quick local runs, script automation, and a consistent path when browser limits appear.',
+      coreLibIntroTitle: 'Core library: integrate CloudCreate capabilities',
+      coreLibIntroDesc:
+        'For developers: integrate CloudCreate core features into your own apps and workflows with reusable APIs.',
       workflowAdvancedTitle: 'Advanced workflow editor',
       workflowAdvancedDesc:
         'Full canvas for custom creative pipelines: edit steps, import/export JSON, run image workflows locally—no install, private to your device.',
@@ -77,6 +83,8 @@ const translations = {
       workspaceSection: 'Home',
       workspaceHome: 'Home',
       toolSpec: 'Tool spec',
+      cliIntro: 'CLI intro',
+      coreLibIntro: 'Core lib intro',
       categoryOverviewSection: 'Overview',
       categoryOverview: 'Overview',
       image: 'Image',
@@ -216,6 +224,10 @@ const translations = {
         cssIndex: 'CSS tools: open minify or beautify (both run locally).',
         archiveIndex: 'Archives: choose to extract files or create an archive (both local).',
         aiSpecPageDoc: 'Full-site tool & URL reference for AI: static list of purposes, prompt keys, and query parameters.',
+        cliIntro:
+          'CLI intro: browser + CLI workflow, plus examples for automation and direct agent execution.',
+        coreLibIntro:
+          'Core library intro: how developers integrate CloudCreate capabilities into products and services.',
       },
       copy: 'Copy full prompt — let your AI help',
       /** 复制整段提示词成功后的按钮文案（与「复制 URL」等短句区分） */
@@ -229,6 +241,10 @@ const translations = {
         'The user is on CloudCreate.ai’s creative demos area ({{currentUrl}}). Explain that these are in-browser visual/UI samples. Ask what they need; describe parameters in plain terms. Do not reproduce the full effect as a “replacement” in chat—encourage using the on-page controls. Reply in the same language as the user.',
       genericMisc:
         'The user is on a CloudCreate.ai page ({{currentUrl}}). Explain the page’s role if known, ask what they need, and how to use the app safely. Do not stand in for the site’s tools. Reply in the same language as the user.',
+      cliIntro:
+        'Page: “CLI Intro” ({{currentUrl}}). Explain that CLI complements browser tools and is suitable for direct agent execution in automation: predictable commands, explicit input/output paths, and reproducible parameters. If the user gives a concrete file task, recommend a relevant CLI command from this page (image compression/conversion, table conversion, CSS minify, archive pack/unpack, or open --print deep links). Keep guidance actionable; do not pretend to execute commands unless asked. Reply in the user’s language.',
+      coreLibIntro:
+        'Page: “Core Library Intro” ({{currentUrl}}). Explain how developers can integrate @cloudcreate/cloudcreate-core into their own apps/services, keep capability parity with web/CLI, and build reusable processing pipelines. Suggest practical integration patterns (upload flow, backend jobs, internal tools) and remind users to align outputs and parameter contracts across environments. Reply in the user’s language.',
       framework:
         'The user is on the developer “framework / shell” test page ({{currentUrl}}). It validates layout (workspace, sidebars, AI column), not an end-user feature. Explain that briefly; do not treat it as a content tool. Reply in the same language as the user.',
       styleGuide:
@@ -890,6 +906,12 @@ const translations = {
       siteBrand: 'CloudCreate.ai',
       defaultDescription:
         '面向人与 AI 的创意工具集：工具、样例与演示，浏览器内开箱即用。图片、PDF、表格、工作流等，处理在本地完成。',
+      cliIntroTitle: 'CLI 介绍：与浏览器互补',
+      cliIntroDesc:
+        '说明 CloudCreate CLI 如何补齐浏览器方案：本地批处理、自动化脚本、以及在浏览器受限时的可替代路径。',
+      coreLibIntroTitle: '核心库介绍：集成 CloudCreate 能力',
+      coreLibIntroDesc:
+        '面向开发者：将 CloudCreate 的核心能力以可复用 API 集成到你的应用、服务或工具链中。',
       workflowAdvancedTitle: '高级工作流编辑器',
       workflowAdvancedDesc:
         '完整画布编排创意流水线：编辑步骤、导入导出 JSON、本地运行图片处理—无需安装，数据留在本机。',
@@ -909,6 +931,8 @@ const translations = {
       workspaceSection: '首页',
       workspaceHome: '首页',
       toolSpec: '工具说明',
+      cliIntro: 'CLI 介绍',
+      coreLibIntro: '核心库介绍',
       categoryOverviewSection: '概览',
       categoryOverview: '概览',
       image: '图片',
@@ -1043,6 +1067,8 @@ const translations = {
         cssIndex: '「CSS 工具入口」：进入压缩或只读美化子页（均本机）。',
         archiveIndex: '「压缩包入口」：进入解压或打包子页（均本机）。',
         aiSpecPageDoc: '「全站工具与 URL 说明」：供 AI 阅读的静态目录（用途、提示词键、URL 参数）。',
+        cliIntro: '「CLI 介绍」：讲清与浏览器互补关系，以及自动化/Agent 直连命令范例。',
+        coreLibIntro: '「核心库介绍」：讲清开发者如何把 CloudCreate 能力接入自有系统。',
       },
       copy: '复制整段提示词让AI帮你',
       /** 复制整段提示词成功后的按钮文案（与「复制 URL」等短句区分） */
@@ -1056,6 +1082,10 @@ const translations = {
         '用户位于创意样例区（{{currentUrl}}）。说明这是浏览器里试效果用的演示，询问其目标，鼓励用页面上控件调节。勿在对话中复刻完整特效代替页面。回复语言与用户一致即可。',
       genericMisc:
         '用户正在浏览 CloudCreate.ai 某页（{{currentUrl}}）。说明该页作用（若可判断）、安全与用法。勿代替站内工具。回复语言与用户一致即可。',
+      cliIntro:
+        '「CLI 介绍」页（{{currentUrl}}）。请说明：CLI 既补充浏览器，也适合 Agent 直接调用（命令稳定、输入输出可控、参数可复现）。若用户给出具体文件任务，优先从本页示例中给出可执行命令（图片压缩/转格式、表格转换、CSS 压缩、压缩包打解包、open --print 链接）。除非用户明确要求，不要假装已经执行命令。回复语言与用户一致即可。',
+      coreLibIntro:
+        '「核心库介绍」页（{{currentUrl}}）。请说明开发者如何把 @cloudcreate/cloudcreate-core 集成到产品/服务，并保持与 web/CLI 的能力一致。可给出上传流程、后台批处理、内部工具集成等落地模式，强调参数契约与产出格式统一。回复语言与用户一致即可。',
       framework:
         '用户位于开发用「框架/壳层」页（{{currentUrl}}），用于验布局。说明非内容工具。回复语言与用户一致即可。',
       styleGuide:

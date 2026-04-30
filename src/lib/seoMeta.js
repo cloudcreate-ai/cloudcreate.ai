@@ -35,6 +35,12 @@ const SEO_EXACT = {
   '/creative': { template: 'brand', titleKey: 'creative.landingTitle', descKey: 'creative.landingDesc' },
   /** 列表用短标题键 aitiListLabel，描述仍用 aitiDesc */
   '/creative/aiti': { template: 'brand', titleKey: 'creative.aitiListLabel', descKey: 'creative.aitiDesc' },
+  '/intro/cli': { template: 'brand', titleKey: 'seo.cliIntroTitle', descKey: 'seo.cliIntroDesc' },
+  '/intro/core-lib': {
+    template: 'brand',
+    titleKey: 'seo.coreLibIntroTitle',
+    descKey: 'seo.coreLibIntroDesc',
+  },
   '/privacy': { template: 'brand', titleKey: 'seo.privacyTitle', descKey: 'seo.privacyDesc' },
   '/terms': { template: 'brand', titleKey: 'seo.termsTitle', descKey: 'seo.termsDesc' },
 };

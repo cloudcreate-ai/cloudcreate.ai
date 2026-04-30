@@ -41,6 +41,8 @@ const PATHS_AFTER_LOCALE = [
   '/ai-spec',
   '/ai-spec/llm',
   '/ai-spec/llm.txt',
+  '/intro/cli',
+  '/intro/core-lib',
   '/privacy',
   '/terms',
 ];
@@ -58,4 +60,3 @@ export const PRERENDER_PATHS = Object.freeze(
     return out;
   })(),
 );
-

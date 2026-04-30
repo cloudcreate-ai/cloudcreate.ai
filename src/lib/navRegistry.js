@@ -10,7 +10,7 @@ import { getLogicalPath } from '$lib/localePath.js';
 import { getSidebarGroupsForCategory, LEGAL_SIDEBAR_GROUP } from '$lib/sidebarConfig.js';
 
 /** 归入首页/工作区顶栏与侧栏的逻辑路径（精确） */
-const WORKSPACE_EXACT_PATHS = new Set(['/privacy', '/terms']);
+const WORKSPACE_EXACT_PATHS = new Set(['/privacy', '/terms', '/intro/cli', '/intro/core-lib']);
 
 /** 归入首页/工作区的前缀（含子路径，如 /ai-spec/llm） */
 const WORKSPACE_PATH_PREFIX = '/ai-spec';

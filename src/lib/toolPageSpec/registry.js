@@ -43,6 +43,8 @@ export const TOOL_PAGE_SPECS = [
   { id: 'watermarkGemini', path: '/remove-watermark/gemini', titleKey: 'home.watermarkGeminiTitle' },
   { id: 'creativeBorderBeam', path: '/creative/border-beam', titleKey: 'creative.borderBeamTitle' },
   { id: 'creativeAiti', path: '/creative/aiti', titleKey: 'creative.aitiTitle' },
+  { id: 'cliIntro', path: '/intro/cli', titleKey: 'sidebar.cliIntro' },
+  { id: 'coreLibIntro', path: '/intro/core-lib', titleKey: 'sidebar.coreLibIntro' },
   { id: 'framework', path: '/framework', titleKey: 'home.frameworkTitle' },
   { id: 'styleGuide', path: '/styleguide', titleKey: 'home.styleGuideTitle' },
   { id: 'aiSpecPageDoc', path: '/ai-spec', titleKey: 'agentPrompt.aiSpecPage.pageTitle' },

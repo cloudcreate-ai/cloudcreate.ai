@@ -2,6 +2,9 @@
 
 本文用于 CloudCreate.ai web 站点的 GEO（Generative Engine Optimization）例行检查。
 
+相关规范：
+- 新增页面上线检查请同时执行 `docs/new-page-spec.md`。
+
 ## 1) P0：抓取与索引
 
 - [x] `robots.txt` 可访问，规则不误伤核心页面

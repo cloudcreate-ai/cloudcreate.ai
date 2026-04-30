@@ -16,6 +16,8 @@ export const WORKSPACE_SIDEBAR_GROUPS = [
     items: [
       { id: 'workspaceHome', titleKey: 'sidebar.workspaceHome', href: '/', icon: '🏠' },
       { id: 'toolSpec', titleKey: 'sidebar.toolSpec', href: '/ai-spec', icon: '📘' },
+      { id: 'cliIntro', titleKey: 'sidebar.cliIntro', href: '/intro/cli', icon: '⌨️' },
+      { id: 'coreLibIntro', titleKey: 'sidebar.coreLibIntro', href: '/intro/core-lib', icon: '🧩' },
     ],
   },
   {
