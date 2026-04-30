@@ -18,6 +18,7 @@ const PATHS_AFTER_LOCALE = [
   '/table',
   '/pdf',
   '/pdf/merge',
+  '/pdf/split',
   '/pdf/extract',
   '/pdf/compress',
   '/remove-watermark/gemini',

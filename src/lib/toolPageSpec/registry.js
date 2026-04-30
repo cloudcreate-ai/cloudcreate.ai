@@ -32,6 +32,7 @@ export const TOOL_PAGE_SPECS = [
   { id: 'table', path: '/table', titleKey: 'home.tableToolsTitle' },
   { id: 'pdf', path: '/pdf', titleKey: 'home.pdfViewerTitle' },
   { id: 'pdfMerge', path: '/pdf/merge', titleKey: 'home.pdfMergeTitle' },
+  { id: 'pdfSplit', path: '/pdf/split', titleKey: 'home.pdfSplitTitle' },
   { id: 'pdfExtract', path: '/pdf/extract', titleKey: 'home.pdfExtractTitle' },
   { id: 'pdfCompress', path: '/pdf/compress', titleKey: 'home.pdfCompressTitle' },
   { id: 'workflow', path: '/workflow', titleKey: 'home.workflowTitle' },
