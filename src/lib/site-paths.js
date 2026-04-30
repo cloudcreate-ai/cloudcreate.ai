@@ -17,6 +17,7 @@ const PATHS_AFTER_LOCALE = [
   '/markdown',
   '/table',
   '/pdf',
+  '/pdf/merge',
   '/pdf/extract',
   '/pdf/compress',
   '/remove-watermark/gemini',

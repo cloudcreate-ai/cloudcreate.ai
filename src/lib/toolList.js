@@ -38,6 +38,7 @@ export const TOOL_GROUPS = [
     labelKey: 'sidebar.pdf',
     items: [
       { id: 'pdfViewer', titleKey: 'home.pdfViewerTitle', href: '/pdf', icon: '📄' },
+      { id: 'pdfMerge', titleKey: 'home.pdfMergeTitle', href: '/pdf/merge', icon: '📚' },
       { id: 'pdfExtract', titleKey: 'home.pdfExtractTitle', href: '/pdf/extract', icon: '🧾' },
       { id: 'pdfCompress', titleKey: 'home.pdfCompressTitle', href: '/pdf/compress', icon: '🗜️' },
     ],
