@@ -1,1 +1,1 @@
-export { beautify, minifyAggressive, minifyBasic } from '@cloudcreate/cloudcreate-core/css';
+export { beautify, minifyAggressive, minifyBasic } from '@cloudcreate/core/css';

@@ -67,7 +67,7 @@
       </li>
     </ol>
 
-    <pre class="intro-page-code"><code>import * as cloudcreateCore from '@cloudcreate/cloudcreate-core'
+    <pre class="intro-page-code"><code>import * as cloudcreateCore from '@cloudcreate/core'
 
 // 1) 接收上传文件
 // 2) 调用 core 能力处理
@@ -77,7 +77,7 @@
       {isZh ? '相关链接：' : 'Useful links:'}
       <a href="https://github.com/cloudcreate-ai/cloudcreate-lib" target="_blank" rel="noopener noreferrer">GitHub</a>
       {' · '}
-      <a href="https://www.npmjs.com/package/@cloudcreate/cloudcreate-core" target="_blank" rel="noopener noreferrer">npm</a>
+      <a href="https://www.npmjs.com/package/@cloudcreate/core" target="_blank" rel="noopener noreferrer">npm</a>
     </p>
   </article>
 </WorkspacePageShell>

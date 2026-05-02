@@ -15,7 +15,7 @@ export {
   getFormatFromFile,
   getImageFormatFromNameAndMime,
   normalizeImageFormat,
-} from '@cloudcreate/cloudcreate-core/image';
+} from '@cloudcreate/core/image';
 
 export async function getImageDimensions(file) {
   const bitmap = await createImageBitmap(file);

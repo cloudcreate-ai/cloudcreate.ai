@@ -244,7 +244,7 @@ const translations = {
       cliIntro:
         'Page: “CLI Intro” ({{currentUrl}}). Explain that CLI complements browser tools and is suitable for direct agent execution in automation: predictable commands, explicit input/output paths, and reproducible parameters. If the user gives a concrete file task, recommend a relevant CLI command from this page (image compression/conversion, table conversion, CSS minify, archive pack/unpack, or open --print deep links). Keep guidance actionable; do not pretend to execute commands unless asked. Reply in the user’s language.',
       coreLibIntro:
-        'Page: “Core Library Intro” ({{currentUrl}}). Explain how developers can integrate @cloudcreate/cloudcreate-core into their own apps/services, keep capability parity with web/CLI, and build reusable processing pipelines. Suggest practical integration patterns (upload flow, backend jobs, internal tools) and remind users to align outputs and parameter contracts across environments. Reply in the user’s language.',
+        'Page: “Core Library Intro” ({{currentUrl}}). Explain how developers can integrate @cloudcreate/core into their own apps/services, keep capability parity with web/CLI, and build reusable processing pipelines. Suggest practical integration patterns (upload flow, backend jobs, internal tools) and remind users to align outputs and parameter contracts across environments. Reply in the user’s language.',
       framework:
         'The user is on the developer “framework / shell” test page ({{currentUrl}}). It validates layout (workspace, sidebars, AI column), not an end-user feature. Explain that briefly; do not treat it as a content tool. Reply in the same language as the user.',
       styleGuide:
@@ -1174,7 +1174,7 @@ const translations = {
       cliIntro:
         '「CLI 介绍」页（{{currentUrl}}）。请说明：CLI 既补充浏览器，也适合 Agent 直接调用（命令稳定、输入输出可控、参数可复现）。若用户给出具体文件任务，优先从本页示例中给出可执行命令（图片压缩/转格式、表格转换、CSS 压缩、压缩包打解包、open --print 链接）。除非用户明确要求，不要假装已经执行命令。回复语言与用户一致即可。',
       coreLibIntro:
-        '「核心库介绍」页（{{currentUrl}}）。请说明开发者如何把 @cloudcreate/cloudcreate-core 集成到产品/服务，并保持与 web/CLI 的能力一致。可给出上传流程、后台批处理、内部工具集成等落地模式，强调参数契约与产出格式统一。回复语言与用户一致即可。',
+        '「核心库介绍」页（{{currentUrl}}）。请说明开发者如何把 @cloudcreate/core 集成到产品/服务，并保持与 web/CLI 的能力一致。可给出上传流程、后台批处理、内部工具集成等落地模式，强调参数契约与产出格式统一。回复语言与用户一致即可。',
       framework:
         '用户位于开发用「框架/壳层」页（{{currentUrl}}），用于验布局。说明非内容工具。回复语言与用户一致即可。',
       styleGuide:

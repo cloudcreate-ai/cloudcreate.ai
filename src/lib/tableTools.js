@@ -4,4 +4,4 @@ export {
   parseTableSource,
   tableToBlob,
   tableToOutput,
-} from '@cloudcreate/cloudcreate-core/table';
+} from '@cloudcreate/core/table';

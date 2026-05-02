@@ -19,7 +19,7 @@ export {
   decompressZipEntries,
   detectFormat,
   parseTarEntries,
-} from '@cloudcreate/cloudcreate-core/archive';
+} from '@cloudcreate/core/archive';
 
 export async function readFilesFromDataTransfer(dataTransfer) {
   const items = dataTransfer?.items;
