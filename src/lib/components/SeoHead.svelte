@@ -10,6 +10,17 @@
   import { getRouteStructuredData } from '$lib/seoStructuredData.js';
   import { siteOrigin } from '$lib/siteConfig.js';
 
+  function sanitizeJsonLd(json) {
+    return String(json)
+      .replace(/</g, '\\u003c')
+      .replace(/-->/g, '--\\u003e')
+      .replace(/<\/script/gi, '<\\/script');
+  }
+
+  function buildJsonLdTag(payload) {
+    return '<script type="application/ld+json">' + sanitizeJsonLd(payload) + '<' + '/script>';
+  }
+
   const lang = $derived($page.params.locale === 'zh' ? 'zh' : 'en');
 
   const texts = $derived.by(() => {
@@ -33,18 +44,18 @@
   const ogImage = $derived(`${siteOrigin}/cloudcreate-rounded-bg.png`);
   const logicalPath = $derived(getLogicalPath($page.url.pathname));
 
-  const orgSchema = $derived.by(() =>
-    JSON.stringify({
+  const orgSchemaTag = $derived.by(() =>
+    buildJsonLdTag(JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: siteBrand,
       url: siteOrigin,
       logo: `${siteOrigin}/android-chrome-512x512.png`,
-    })
+    }))
   );
 
-  const websiteSchema = $derived.by(() =>
-    JSON.stringify({
+  const websiteSchemaTag = $derived.by(() =>
+    buildJsonLdTag(JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: siteBrand,
@@ -55,10 +66,10 @@
         target: `${siteOrigin}/${lang}?q={search_term_string}`,
         'query-input': 'required name=search_term_string',
       },
-    })
+    }))
   );
 
-  const pageSchemas = $derived.by(() => {
+  const pageSchemaTags = $derived.by(() => {
     const pageUrl = canonicalUrl;
     const pageLang = lang === 'zh' ? 'zh-CN' : 'en';
     const title = texts.title;
@@ -130,7 +141,7 @@
 
     schemas.push(...getRouteStructuredData(p, lang));
 
-    return schemas.map((s) => JSON.stringify(s));
+    return schemas.map((s) => buildJsonLdTag(JSON.stringify(s)));
   });
 </script>
 
@@ -156,9 +167,9 @@
   <meta name="twitter:title" content={texts.title} />
   <meta name="twitter:description" content={texts.description} />
   <meta name="twitter:image" content={ogImage} />
-  <script type="application/ld+json">{orgSchema}</script>
-  <script type="application/ld+json">{websiteSchema}</script>
-  {#each pageSchemas as schema}
-    <script type="application/ld+json">{schema}</script>
+  {@html orgSchemaTag}
+  {@html websiteSchemaTag}
+  {#each pageSchemaTags as schemaTag}
+    {@html schemaTag}
   {/each}
 </svelte:head>
