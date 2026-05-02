@@ -1,5 +1,5 @@
-const MIN = 0.5;
-const MAX = 2;
+const MIN = 0.25;
+const MAX = 4;
 
 export function parsePdfViewerQuery(sp) {
   const out = /** @type {{ page?: number, scale?: number }} */ ({});

@@ -11,6 +11,7 @@
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
+  import PdfPagePicker from '$lib/components/pdf/PdfPagePicker.svelte';
   import {
     URL_SYNC_DEBOUNCE_MS,
     hasUrlSearchParams,
@@ -18,6 +19,11 @@
     searchStringToParams,
   } from '$lib/urlToolSync.js';
   import { buildPdfExtractQuery, parsePdfExtractQuery } from '$lib/urlParams/pdfExtractQuery.js';
+  import {
+    PAGE_RANGE_ERROR_INVALID,
+    pageRangeFromPages,
+    parsePageRangeSpec,
+  } from '$lib/pdfPageSelection.js';
 
   let sourceFile = $state(/** @type {File | null} */ (null));
   let sourceBuffer = $state(/** @type {ArrayBuffer | null} */ (null));
@@ -26,65 +32,15 @@
   let splitPages = $state(/** @type {number[]} */ ([]));
   let outputBlob = $state(/** @type {Blob | null} */ (null));
   let outputName = $state('split-pages.zip');
+  let pdfReady = $state(false);
   let processing = $state(false);
   let error = $state('');
   let progressLabel = $state('');
   let PDFDocumentRef = null;
 
-  function parsePageRangeSpec(spec, pageCount) {
-    const raw = String(spec || '').trim();
-    if (!raw) {
-      return Array.from({ length: pageCount }, (_, idx) => idx + 1);
-    }
-
-    const out = [];
-    const seen = new Set();
-    for (const rawPart of raw.split(',')) {
-      const part = rawPart.trim();
-      if (!part) continue;
-
-      const rangeMatch = /^(\d+)\s*-\s*(\d+)$/.exec(part);
-      if (rangeMatch) {
-        const start = Number(rangeMatch[1]);
-        const end = Number(rangeMatch[2]);
-        if (start < 1 || end < 1 || start > end || end > pageCount) {
-          throw new Error(t('pdfSplit.invalidRange'));
-        }
-        for (let pageNumber = start; pageNumber <= end; pageNumber += 1) {
-          if (!seen.has(pageNumber)) {
-            seen.add(pageNumber);
-            out.push(pageNumber);
-          }
-        }
-        continue;
-      }
-
-      if (!/^\d+$/.test(part)) {
-        throw new Error(t('pdfSplit.invalidRange'));
-      }
-      const pageNumber = Number(part);
-      if (pageNumber < 1 || pageNumber > pageCount) {
-        throw new Error(t('pdfSplit.invalidRange'));
-      }
-      if (!seen.has(pageNumber)) {
-        seen.add(pageNumber);
-        out.push(pageNumber);
-      }
-    }
-
-    if (!out.length) {
-      throw new Error(t('pdfSplit.invalidRange'));
-    }
-    return out;
-  }
-
-  async function resolveSplitPages(buffer, pages) {
-    const pdfDoc = await PDFDocumentRef.load(buffer, { updateMetadata: false });
-    const total = pdfDoc.getPageCount();
-    return {
-      totalPages: total,
-      splitPages: parsePageRangeSpec(pages, total),
-    };
+  function mapRangeError(err) {
+    if (err?.message === PAGE_RANGE_ERROR_INVALID) return t('pdfSplit.invalidRange');
+    return t('pdfSplit.invalidRange');
   }
 
   $effect(() => {
@@ -107,6 +63,7 @@
   onMount(async () => {
     const mod = await import('pdf-lib');
     PDFDocumentRef = mod.PDFDocument;
+    pdfReady = true;
   });
 
   $effect(() => {
@@ -120,17 +77,24 @@
     let active = true;
     (async () => {
       try {
-        const next = await resolveSplitPages(buffer, pages);
+        const pdfDoc = await PDFDocumentRef.load(buffer.slice(0), { updateMetadata: false });
+        const count = pdfDoc.getPageCount();
+        const nextPages = parsePageRangeSpec(pages, count, { empty: 'all' });
         if (!active) return;
-        totalPages = next.totalPages;
-        splitPages = next.splitPages;
+        totalPages = count;
+        splitPages = nextPages;
         error = '';
       } catch (err) {
         if (!active) return;
         splitPages = [];
-        totalPages = 0;
+        try {
+          const pdfDoc = await PDFDocumentRef.load(buffer.slice(0), { updateMetadata: false });
+          totalPages = pdfDoc.getPageCount();
+        } catch {
+          totalPages = 0;
+        }
         if (String(pages || '').trim()) {
-          error = err?.message || t('pdfSplit.invalidRange');
+          error = mapRangeError(err);
         }
       }
     })();
@@ -143,6 +107,7 @@
     sourceFile = null;
     sourceBuffer = null;
     totalPages = 0;
+    pageRange = '';
     splitPages = [];
     outputBlob = null;
     outputName = 'split-pages.zip';
@@ -164,8 +129,26 @@
     progressLabel = '';
     sourceFile = f;
     sourceBuffer = await f.arrayBuffer();
+    const pdfDoc = await PDFDocumentRef.load(sourceBuffer, { updateMetadata: false });
+    totalPages = pdfDoc.getPageCount();
+
+    const initialRange = String(pageRange || '').trim();
+    if (initialRange) {
+      try {
+        parsePageRangeSpec(initialRange, totalPages, { empty: 'all' });
+      } catch {
+        pageRange = '';
+      }
+    }
+
     const base = f.name.replace(/\.pdf$/i, '') || 'document';
     outputName = `${base}-split.zip`;
+  }
+
+  function handleSelectionChange(nextPages) {
+    pageRange = nextPages.length >= totalPages ? '' : pageRangeFromPages(nextPages);
+    outputBlob = null;
+    error = '';
   }
 
   async function runSplit() {
@@ -182,7 +165,7 @@
     try {
       const base = (sourceFile?.name || 'document').replace(/\.pdf$/i, '') || 'document';
       const sourceDoc = await PDFDocumentRef.load(sourceBuffer.slice(0), { updateMetadata: false });
-      const selectedPages = parsePageRangeSpec(String(pageRange || '').trim(), sourceDoc.getPageCount());
+      const selectedPages = parsePageRangeSpec(String(pageRange || '').trim(), sourceDoc.getPageCount(), { empty: 'all' });
       const zip = new JSZip();
       for (const pageNumber of selectedPages) {
         const outDoc = await PDFDocumentRef.create();
@@ -217,7 +200,8 @@
       accept={ACCEPT_PDF}
       multiple={false}
       onFilesAdd={handleFiles}
-      hintKey="pdfSplit.uploadHint"
+      disabled={!pdfReady}
+      hintKey={pdfReady ? 'pdfSplit.uploadHint' : 'pdfViewer.loadingDocument'}
       formatsKey=""
       selectedName={sourceFile?.name ?? ''}
       onClear={clearFile}
@@ -227,24 +211,70 @@
   </section>
 
   <section class="card preset-outlined-surface-200-800 p-4 mb-4">
-    <div class="split-toolbar">
-      <label class="range-field" for="pdf-split-pages">
-        <span class="range-label">{t('pdfSplit.pageRange')}</span>
-        <input
-          id="pdf-split-pages"
-          class="input preset-outlined-surface-200-800"
-          type="text"
-          bind:value={pageRange}
-          placeholder={t('pdfSplit.pageRangePlaceholder')}
-          disabled={!sourceBuffer || processing}
-        />
-      </label>
+    {#if sourceBuffer}
+      <PdfPagePicker
+        fileBuffer={sourceBuffer}
+        totalPages={totalPages}
+        selectedPages={splitPages}
+        disabled={processing}
+        onSelectionChange={handleSelectionChange}
+      />
+
+      <details class="advanced-panel">
+        <summary>{t('pdfPagePicker.advanced')}</summary>
+        <label class="range-field" for="pdf-split-pages">
+          <span class="range-label">{t('pdfSplit.pageRange')}</span>
+          <input
+            id="pdf-split-pages"
+            class="input preset-outlined-surface-200-800"
+            type="text"
+            bind:value={pageRange}
+            placeholder={t('pdfSplit.pageRangePlaceholder')}
+            disabled={!sourceBuffer || processing}
+          />
+        </label>
+        <p class="range-hint text-xs text-surface-500-500 m-0">{t('pdfSplit.pageRangeHint')}</p>
+      </details>
+    {:else}
+      <p class="placeholder text-sm">{t('pdfPagePicker.empty')}</p>
+    {/if}
+
+    <div class="split-footer">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">{t('pdfViewer.currentFile')}</span>
+          <span class="summary-value">{sourceFile?.name || '—'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">{t('pdfSplit.totalPages')}</span>
+          <span class="summary-value">{totalPages || '—'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">{t('pdfSplit.splitPages')}</span>
+          <span class="summary-value">{splitPages.length >= totalPages && totalPages ? t('pdfSplit.allPages') : splitPages.length ? splitPages.join(', ') : '—'}</span>
+        </div>
+        {#if outputBlob}
+          <div class="summary-item">
+            <span class="summary-label">{t('pdfSplit.outputFiles')}</span>
+            <span class="summary-value">{splitPages.length}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">{t('pdfSplit.outputArchive')}</span>
+            <span class="summary-value">{outputName}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">{t('pdfSplit.outputSize')}</span>
+            <span class="summary-value">{formatFileSize(outputBlob.size)}</span>
+          </div>
+        {/if}
+      </div>
+
       <div class="split-actions">
         <button
           type="button"
           class="btn btn-sm preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
           onclick={runSplit}
-          disabled={!sourceBuffer || processing}
+          disabled={!sourceBuffer || processing || !splitPages.length}
         >
           {processing ? t('common.processing') : t('pdfSplit.run')}
         </button>
@@ -257,36 +287,6 @@
           {t('common.download')}
         </button>
       </div>
-    </div>
-    <p class="range-hint text-xs text-surface-500-500 m-0">{t('pdfSplit.pageRangeHint')}</p>
-
-    <div class="summary-grid">
-      <div class="summary-item">
-        <span class="summary-label">{t('pdfViewer.currentFile')}</span>
-        <span class="summary-value">{sourceFile?.name || '—'}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">{t('pdfSplit.totalPages')}</span>
-        <span class="summary-value">{totalPages || '—'}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">{t('pdfSplit.splitPages')}</span>
-        <span class="summary-value">{splitPages.length ? splitPages.join(', ') : '—'}</span>
-      </div>
-      {#if outputBlob}
-        <div class="summary-item">
-          <span class="summary-label">{t('pdfSplit.outputFiles')}</span>
-          <span class="summary-value">{splitPages.length}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">{t('pdfSplit.outputArchive')}</span>
-          <span class="summary-value">{outputName}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">{t('pdfSplit.outputSize')}</span>
-          <span class="summary-value">{formatFileSize(outputBlob.size)}</span>
-        </div>
-      {/if}
     </div>
   </section>
 
@@ -302,19 +302,25 @@
 </div>
 
 <style>
-  .split-toolbar {
-    display: flex;
-    gap: 1rem;
-    align-items: end;
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
+  .advanced-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ccw-border-soft);
+  }
+  .advanced-panel summary {
+    cursor: pointer;
+    color: var(--ccw-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .advanced-panel[open] summary {
+    margin-bottom: 0.75rem;
   }
   .range-field {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
     min-width: min(100%, 360px);
-    flex: 1;
   }
   .range-label,
   .summary-label {
@@ -322,18 +328,28 @@
     color: var(--ccw-text-muted);
     text-transform: uppercase;
   }
+  .range-hint {
+    margin-top: 0.5rem;
+  }
+  .split-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: start;
+    margin-top: 1rem;
+  }
   .split-actions {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
   }
-  .range-hint {
-    margin-bottom: 1rem;
-  }
   .summary-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 0.75rem;
+    flex: 1;
+    min-width: min(100%, 420px);
   }
   .summary-item {
     display: flex;
@@ -348,5 +364,9 @@
   .summary-value {
     color: var(--ccw-text-primary);
     overflow-wrap: anywhere;
+  }
+  .placeholder {
+    margin: 0;
+    color: var(--ccw-text-muted);
   }
 </style>

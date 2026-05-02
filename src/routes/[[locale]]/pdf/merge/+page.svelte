@@ -14,6 +14,8 @@
   let progressLabel = $state('');
   let outputBlob = $state(/** @type {Blob | null} */ (null));
   let outputName = $state('merged.pdf');
+  let dragIndex = $state(-1);
+  let dragOverIndex = $state(-1);
 
   /** @type {any} */
   let PDFDocumentRef = null;
@@ -66,16 +68,8 @@
     progressLabel = '';
     outputBlob = null;
     outputName = 'merged.pdf';
-  }
-
-  function moveItem(index, direction) {
-    const nextIndex = index + direction;
-    if (nextIndex < 0 || nextIndex >= items.length) return;
-    const next = items.slice();
-    const [item] = next.splice(index, 1);
-    next.splice(nextIndex, 0, item);
-    items = next;
-    outputBlob = null;
+    dragIndex = -1;
+    dragOverIndex = -1;
   }
 
   function removeItem(index) {
@@ -83,6 +77,47 @@
     next.splice(index, 1);
     items = next;
     outputBlob = null;
+  }
+
+  function moveItem(fromIndex, toIndex) {
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= items.length || toIndex >= items.length) {
+      return;
+    }
+    const next = items.slice();
+    const [item] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, item);
+    items = next;
+    outputBlob = null;
+  }
+
+  function handleDragStart(index, event) {
+    dragIndex = index;
+    dragOverIndex = index;
+    event.dataTransfer?.setData('text/plain', String(index));
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+  }
+
+  function handleDragOver(index, event) {
+    event.preventDefault();
+    dragOverIndex = index;
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  function handleDrop(index, event) {
+    event.preventDefault();
+    if (dragIndex < 0) return;
+    moveItem(dragIndex, index);
+    dragIndex = -1;
+    dragOverIndex = -1;
+  }
+
+  function handleDragEnd() {
+    dragIndex = -1;
+    dragOverIndex = -1;
   }
 
   async function runMerge() {
@@ -138,7 +173,7 @@
       disabled={!pdfReady}
       hintKey={pdfReady ? 'pdfMerge.uploadHint' : 'pdfViewer.loadingDocument'}
       formatsKey=""
-      selectedName={items.length === 1 ? items[0]?.name : items.length > 1 ? `${items.length} files` : ''}
+      selectedName={items.length ? `${items.length} PDF` : ''}
       onClear={clearAll}
       showClear={items.length > 0}
       idPrefix="pdf-merge"
@@ -189,9 +224,19 @@
     <p class="text-xs text-surface-500-500 mt-0 mb-4">{t('pdfMerge.orderHint')}</p>
 
     {#if items.length}
-      <div class="merge-list">
+      <div class="merge-list" role="list">
         {#each items as item, index}
-          <div class="merge-item">
+          <div
+            class="merge-item {dragIndex === index ? 'is-dragging' : ''} {dragOverIndex === index ? 'is-target' : ''}"
+            role="listitem"
+            aria-grabbed={dragIndex === index}
+            draggable={!processing}
+            ondragstart={(event) => handleDragStart(index, event)}
+            ondragover={(event) => handleDragOver(index, event)}
+            ondrop={(event) => handleDrop(index, event)}
+            ondragend={handleDragEnd}
+          >
+            <div class="merge-item-handle" aria-hidden="true">⋮⋮</div>
             <div class="merge-item-main">
               <div class="merge-item-name">{item.name}</div>
               <div class="merge-item-meta text-xs text-surface-500-500">
@@ -199,26 +244,6 @@
               </div>
             </div>
             <div class="merge-item-actions">
-              <button
-                type="button"
-                class="control-btn"
-                onclick={() => moveItem(index, -1)}
-                disabled={index === 0 || processing}
-                title={t('pdfMerge.moveUp')}
-                aria-label={t('pdfMerge.moveUp')}
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                class="control-btn"
-                onclick={() => moveItem(index, 1)}
-                disabled={index === items.length - 1 || processing}
-                title={t('pdfMerge.moveDown')}
-                aria-label={t('pdfMerge.moveDown')}
-              >
-                ↓
-              </button>
               <button
                 type="button"
                 class="control-btn"
@@ -302,6 +327,21 @@
     border: 1px solid var(--ccw-border-soft);
     border-radius: var(--ccw-radius-card);
     background: rgba(255, 255, 255, 0.02);
+    transition: border-color 150ms ease, background-color 150ms ease, opacity 150ms ease;
+  }
+  .merge-item.is-dragging {
+    opacity: 0.55;
+  }
+  .merge-item.is-target {
+    border-color: color-mix(in srgb, var(--ccw-accent) 78%, white);
+    background: rgba(10, 132, 255, 0.12);
+  }
+  .merge-item-handle {
+    flex-shrink: 0;
+    font-size: 1.05rem;
+    color: var(--ccw-text-muted);
+    cursor: grab;
+    user-select: none;
   }
   .merge-item-main {
     min-width: 0;

@@ -8,9 +8,12 @@
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
   import ZoomControls from '$lib/components/common/ZoomControls.svelte';
   import SliderWithInput from '$lib/components/common/SliderWithInput.svelte';
+  import PdfPagePicker from '$lib/components/pdf/PdfPagePicker.svelte';
+  import PdfThumbnailSidebar from '$lib/components/pdf/PdfThumbnailSidebar.svelte';
 
   let controlZoom = $state(1);
   let sliderDemoValue = $state(50);
+  let pdfDemoSelection = $state([1, 3, 4]);
 
   $effect(() => {
     return registerAgentPrompt({
@@ -85,6 +88,20 @@
           <p class="hint">{t('styleGuide.dropZoneHint')}</p>
         </div>
       </div>
+      <div class="card pdf-picker-demo">
+        <p class="label">{t('styleGuide.pdfPickerTitle')}</p>
+        <PdfPagePicker
+          totalPages={6}
+          selectedPages={pdfDemoSelection}
+          onSelectionChange={(nextPages) => (pdfDemoSelection = nextPages)}
+        />
+      </div>
+      <div class="card pdf-picker-demo">
+        <p class="label">{t('styleGuide.pdfThumbTitle')}</p>
+        <div class="thumb-demo">
+          <PdfThumbnailSidebar totalPages={6} currentPage={2} />
+        </div>
+      </div>
     </div>
   </section>
 
@@ -140,6 +157,16 @@
   }
   .drop-zone-demo {
     padding: 1rem;
+  }
+  .pdf-picker-demo {
+    padding: 1rem;
+  }
+  .thumb-demo {
+    height: 320px;
+    border: 1px solid var(--ccw-border-soft);
+    border-radius: var(--ccw-radius-card);
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
   }
   .drop-zone {
     border: 1px dashed var(--ccw-border-contrast);

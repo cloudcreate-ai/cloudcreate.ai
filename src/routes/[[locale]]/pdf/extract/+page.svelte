@@ -10,6 +10,7 @@
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
   import ProgressBar from '$lib/components/common/ProgressBar.svelte';
+  import PdfPagePicker from '$lib/components/pdf/PdfPagePicker.svelte';
   import {
     URL_SYNC_DEBOUNCE_MS,
     hasUrlSearchParams,
@@ -17,6 +18,12 @@
     searchStringToParams,
   } from '$lib/urlToolSync.js';
   import { buildPdfExtractQuery, parsePdfExtractQuery } from '$lib/urlParams/pdfExtractQuery.js';
+  import {
+    PAGE_RANGE_ERROR_EMPTY,
+    PAGE_RANGE_ERROR_INVALID,
+    pageRangeFromPages,
+    parsePageRangeSpec,
+  } from '$lib/pdfPageSelection.js';
 
   let pdfReady = $state(false);
   let sourceFile = $state(/** @type {File | null} */ (null));
@@ -32,54 +39,9 @@
 
   let PDFDocumentRef = null;
 
-  function parsePageRangeSpec(spec, pageCount) {
-    const text = String(spec || '').trim();
-    if (!text) {
-      throw new Error(t('pdfExtract.needPages'));
-    }
-
-    const out = [];
-    const seen = new Set();
-    for (const rawPart of text.split(',')) {
-      const part = rawPart.trim();
-      if (!part) continue;
-
-      const rangeMatch = /^(\d+)\s*-\s*(\d+)$/.exec(part);
-      if (rangeMatch) {
-        const start = Number(rangeMatch[1]);
-        const end = Number(rangeMatch[2]);
-        if (start < 1 || end < 1 || start > end) {
-          throw new Error(t('pdfExtract.invalidRange'));
-        }
-        if (end > pageCount) {
-          throw new Error(`${t('pdfExtract.invalidRange')} (${end} > ${pageCount})`);
-        }
-        for (let pageNumber = start; pageNumber <= end; pageNumber += 1) {
-          if (!seen.has(pageNumber)) {
-            seen.add(pageNumber);
-            out.push(pageNumber);
-          }
-        }
-        continue;
-      }
-
-      if (!/^\d+$/.test(part)) {
-        throw new Error(t('pdfExtract.invalidRange'));
-      }
-      const pageNumber = Number(part);
-      if (pageNumber < 1 || pageNumber > pageCount) {
-        throw new Error(`${t('pdfExtract.invalidRange')} (${pageNumber} > ${pageCount})`);
-      }
-      if (!seen.has(pageNumber)) {
-        seen.add(pageNumber);
-        out.push(pageNumber);
-      }
-    }
-
-    if (!out.length) {
-      throw new Error(t('pdfExtract.needPages'));
-    }
-    return out;
+  function mapRangeError(err) {
+    if (err?.message === PAGE_RANGE_ERROR_EMPTY) return t('pdfExtract.needPages');
+    return t('pdfExtract.invalidRange');
   }
 
   $effect(() => {
@@ -110,7 +72,7 @@
     } catch (err) {
       selectedPages = [];
       if (String(pageRange || '').trim()) {
-        error = err?.message || t('pdfExtract.invalidRange');
+        error = mapRangeError(err);
       }
     }
   });
@@ -125,6 +87,7 @@
     sourceFile = null;
     sourceBuffer = null;
     totalPages = 0;
+    pageRange = '';
     outputBlob = null;
     outputName = 'extracted-pages.pdf';
     selectedPages = [];
@@ -148,9 +111,26 @@
     sourceBuffer = await f.arrayBuffer();
     const pdfDoc = await PDFDocumentRef.load(sourceBuffer, { updateMetadata: false });
     totalPages = pdfDoc.getPageCount();
-    pageRange = pageRange.trim() ? pageRange : '1';
+
+    const initialRange = String(pageRange || '').trim();
+    if (initialRange) {
+      try {
+        parsePageRangeSpec(initialRange, totalPages);
+      } catch {
+        pageRange = '1';
+      }
+    } else {
+      pageRange = '1';
+    }
+
     const base = f.name.replace(/\.pdf$/i, '') || 'document';
     outputName = `${base}-extract.pdf`;
+  }
+
+  function handleSelectionChange(nextPages) {
+    pageRange = pageRangeFromPages(nextPages);
+    outputBlob = null;
+    error = '';
   }
 
   async function runExtract() {
@@ -163,7 +143,7 @@
     try {
       pageNumbers = parsePageRangeSpec(pageRange, totalPages);
     } catch (err) {
-      error = err?.message || t('pdfExtract.invalidRange');
+      error = mapRangeError(err);
       return;
     }
 
@@ -218,24 +198,66 @@
   </section>
 
   <section class="card preset-outlined-surface-200-800 p-4 mb-4">
-    <div class="extract-toolbar">
-      <label class="range-field" for="pdf-extract-pages">
-        <span class="range-label">{t('pdfExtract.pageRange')}</span>
-        <input
-          id="pdf-extract-pages"
-          class="input preset-outlined-surface-200-800"
-          type="text"
-          bind:value={pageRange}
-          placeholder={t('pdfExtract.pageRangePlaceholder')}
-          disabled={!sourceBuffer || processing}
-        />
-      </label>
+    {#if sourceBuffer}
+      <PdfPagePicker
+        fileBuffer={sourceBuffer}
+        totalPages={totalPages}
+        selectedPages={selectedPages}
+        disabled={processing}
+        onSelectionChange={handleSelectionChange}
+      />
+
+      <details class="advanced-panel">
+        <summary>{t('pdfPagePicker.advanced')}</summary>
+        <label class="range-field" for="pdf-extract-pages">
+          <span class="range-label">{t('pdfExtract.pageRange')}</span>
+          <input
+            id="pdf-extract-pages"
+            class="input preset-outlined-surface-200-800"
+            type="text"
+            bind:value={pageRange}
+            placeholder={t('pdfExtract.pageRangePlaceholder')}
+            disabled={!sourceBuffer || processing}
+          />
+        </label>
+        <p class="range-hint text-xs text-surface-500-500 m-0">{t('pdfExtract.pageRangeHint')}</p>
+      </details>
+    {:else}
+      <p class="placeholder text-sm">{t('pdfPagePicker.empty')}</p>
+    {/if}
+
+    <div class="extract-footer">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">{t('pdfViewer.currentFile')}</span>
+          <span class="summary-value">{sourceFile?.name || '—'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">{t('pdfExtract.totalPages')}</span>
+          <span class="summary-value">{totalPages || '—'}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">{t('pdfExtract.selectedPages')}</span>
+          <span class="summary-value">{selectedPages.length ? selectedPages.join(', ') : '—'}</span>
+        </div>
+        {#if outputBlob}
+          <div class="summary-item">
+            <span class="summary-label">{t('pdfExtract.outputPages')}</span>
+            <span class="summary-value">{selectedPages.length}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">{t('pdfExtract.outputSize')}</span>
+            <span class="summary-value">{formatFileSize(outputBlob.size)}</span>
+          </div>
+        {/if}
+      </div>
+
       <div class="extract-actions">
         <button
           type="button"
           class="btn btn-sm preset-filled-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
           onclick={runExtract}
-          disabled={!sourceBuffer || processing}
+          disabled={!sourceBuffer || processing || !selectedPages.length}
         >
           {processing ? t('common.processing') : t('pdfExtract.run')}
         </button>
@@ -248,32 +270,6 @@
           {t('common.download')}
         </button>
       </div>
-    </div>
-    <p class="range-hint text-xs text-surface-500-500 m-0">{t('pdfExtract.pageRangeHint')}</p>
-
-    <div class="summary-grid">
-      <div class="summary-item">
-        <span class="summary-label">{t('pdfViewer.currentFile')}</span>
-        <span class="summary-value">{sourceFile?.name || '—'}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">{t('pdfExtract.totalPages')}</span>
-        <span class="summary-value">{totalPages || '—'}</span>
-      </div>
-      <div class="summary-item">
-        <span class="summary-label">{t('pdfExtract.selectedPages')}</span>
-        <span class="summary-value">{selectedPages.length ? selectedPages.join(', ') : '—'}</span>
-      </div>
-      {#if outputBlob}
-        <div class="summary-item">
-          <span class="summary-label">{t('pdfExtract.outputPages')}</span>
-          <span class="summary-value">{selectedPages.length}</span>
-        </div>
-        <div class="summary-item">
-          <span class="summary-label">{t('pdfExtract.outputSize')}</span>
-          <span class="summary-value">{formatFileSize(outputBlob.size)}</span>
-        </div>
-      {/if}
     </div>
   </section>
 
@@ -289,19 +285,25 @@
 </div>
 
 <style>
-  .extract-toolbar {
-    display: flex;
-    gap: 1rem;
-    align-items: end;
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
+  .advanced-panel {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--ccw-border-soft);
+  }
+  .advanced-panel summary {
+    cursor: pointer;
+    color: var(--ccw-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .advanced-panel[open] summary {
+    margin-bottom: 0.75rem;
   }
   .range-field {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
     min-width: min(100%, 360px);
-    flex: 1;
   }
   .range-label,
   .summary-label {
@@ -309,18 +311,28 @@
     color: var(--ccw-text-muted);
     text-transform: uppercase;
   }
+  .range-hint {
+    margin-top: 0.5rem;
+  }
+  .extract-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: start;
+    margin-top: 1rem;
+  }
   .extract-actions {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
   }
-  .range-hint {
-    margin-bottom: 1rem;
-  }
   .summary-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 0.75rem;
+    flex: 1;
+    min-width: min(100%, 420px);
   }
   .summary-item {
     display: flex;
@@ -335,5 +347,9 @@
   .summary-value {
     color: var(--ccw-text-primary);
     overflow-wrap: anywhere;
+  }
+  .placeholder {
+    margin: 0;
+    color: var(--ccw-text-muted);
   }
 </style>
