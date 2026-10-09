@@ -64,6 +64,12 @@ const translations = {
       coreLibIntroTitle: 'Core library: integrate CloudCreate capabilities',
       coreLibIntroDesc:
         'For developers: integrate CloudCreate core features into your own apps and workflows with reusable APIs.',
+      simpleSnipTitle: 'Simple Snip: screenshots only, no network',
+      simpleSnipDesc:
+        'A free menu-bar screenshot app for Apple silicon Macs. Capture a region, window, or display, annotate, then save to the clipboard or a file. No network.',
+      simpleSnipPrivacyTitle: 'Simple Snip privacy policy',
+      simpleSnipPrivacyDesc:
+        'Simple Snip does not collect, store, or transmit personal data, and it does not connect to the network. Screenshots stay on your Mac.',
       workflowAdvancedTitle: 'Advanced workflow editor',
       workflowAdvancedDesc:
         'Full canvas for custom creative pipelines: edit steps, import/export JSON, run image workflows locally—no install, private to your device.',
@@ -85,6 +91,7 @@ const translations = {
       toolSpec: 'Tool spec',
       cliIntro: 'CLI intro',
       coreLibIntro: 'Core lib intro',
+      simpleSnip: 'Simple Snip',
       categoryOverviewSection: 'Overview',
       categoryOverview: 'Overview',
       image: 'Image',
@@ -228,6 +235,10 @@ const translations = {
           'CLI intro: browser + CLI workflow, plus examples for automation and direct agent execution.',
         coreLibIntro:
           'Core library intro: how developers integrate CloudCreate capabilities into products and services.',
+        simpleSnip:
+          'Simple Snip: a Mac menu-bar screenshot app. Screenshots only, no network. Annotate, then clipboard or file.',
+        simpleSnipPrivacy:
+          'Simple Snip privacy: the Mac app does not collect data. Screenshots stay on the device.',
       },
       copy: 'Copy full prompt — let your AI help',
       /** 复制整段提示词成功后的按钮文案（与「复制 URL」等短句区分） */
@@ -245,6 +256,10 @@ const translations = {
         'Page: “CLI Intro” ({{currentUrl}}). Explain that CLI complements browser tools and is suitable for direct agent execution in automation: predictable commands, explicit input/output paths, and reproducible parameters. If the user gives a concrete file task, recommend a relevant CLI command from this page (image compression/conversion, table conversion, CSS minify, archive pack/unpack, or open --print deep links). Keep guidance actionable; do not pretend to execute commands unless asked. Reply in the user’s language.',
       coreLibIntro:
         'Page: “Core Library Intro” ({{currentUrl}}). Explain how developers can integrate @cloudcreate/core into their own apps/services, keep capability parity with web/CLI, and build reusable processing pipelines. Suggest practical integration patterns (upload flow, backend jobs, internal tools) and remind users to align outputs and parameter contracts across environments. Reply in the user’s language.',
+      simpleSnip:
+        'Page: “Simple Snip” ({{currentUrl}}). This is a product page for a free macOS menu-bar screenshot app, not an in-browser tool. Explain that it only takes screenshots, runs natively on Apple silicon, needs Screen Recording permission, and saves to the clipboard and/or a local file. It does not use the network. Do not invent an App Store URL. Point to the privacy policy at /simple-snip/privacy. Reply in the user’s language.',
+      simpleSnipPrivacy:
+        'Page: “Simple Snip privacy policy” ({{currentUrl}}). This policy describes only the macOS app Simple Snip. It does not collect, store, or transmit personal data, has no account, analytics, or ads, and does not connect to the network. Screenshots stay on the Mac and are saved only to a folder the user selects. Screen Recording is used only for capture; captured images are not sent anywhere. Support is at /simple-snip. Do not apply this policy to other products. Reply in the user’s language.',
       framework:
         'The user is on the developer “framework / shell” test page ({{currentUrl}}). It validates layout (workspace, sidebars, AI column), not an end-user feature. Explain that briefly; do not treat it as a content tool. Reply in the same language as the user.',
       styleGuide:
@@ -1001,6 +1016,12 @@ const translations = {
       coreLibIntroTitle: '核心库介绍：集成 CloudCreate 能力',
       coreLibIntroDesc:
         '面向开发者：将 CloudCreate 的核心能力以可复用 API 集成到你的应用、服务或工具链中。',
+      simpleSnipTitle: 'Simple Snip：只做截图，不联网',
+      simpleSnipDesc:
+        '面向 Apple 芯片 Mac 的免费菜单栏截图应用。区域、窗口或整屏，标注后保存到剪贴板或文件。不联网。',
+      simpleSnipPrivacyTitle: 'Simple Snip 隐私政策',
+      simpleSnipPrivacyDesc:
+        'Simple Snip 不收集、不存储、也不传输个人数据，也不联网。截图留在你的 Mac 上。',
       workflowAdvancedTitle: '高级工作流编辑器',
       workflowAdvancedDesc:
         '完整画布编排创意流水线：编辑步骤、导入导出 JSON、本地运行图片处理—无需安装，数据留在本机。',
@@ -1022,6 +1043,7 @@ const translations = {
       toolSpec: '工具说明',
       cliIntro: 'CLI 介绍',
       coreLibIntro: '核心库介绍',
+      simpleSnip: 'Simple Snip',
       categoryOverviewSection: '概览',
       categoryOverview: '概览',
       image: '图片',
@@ -1158,6 +1180,8 @@ const translations = {
         aiSpecPageDoc: '「全站工具与 URL 说明」：供 AI 阅读的静态目录（用途、提示词键、URL 参数）。',
         cliIntro: '「CLI 介绍」：讲清与浏览器互补关系，以及自动化/Agent 直连命令范例。',
         coreLibIntro: '「核心库介绍」：讲清开发者如何把 CloudCreate 能力接入自有系统。',
+        simpleSnip: '「Simple Snip」：Mac 菜单栏截图应用介绍。只做截图，不联网。',
+        simpleSnipPrivacy: '「Simple Snip 隐私政策」：应用不收集数据，截图留在本机。',
       },
       copy: '复制整段提示词让AI帮你',
       /** 复制整段提示词成功后的按钮文案（与「复制 URL」等短句区分） */
@@ -1175,6 +1199,10 @@ const translations = {
         '「CLI 介绍」页（{{currentUrl}}）。请说明：CLI 既补充浏览器，也适合 Agent 直接调用（命令稳定、输入输出可控、参数可复现）。若用户给出具体文件任务，优先从本页示例中给出可执行命令（图片压缩/转格式、表格转换、CSS 压缩、压缩包打解包、open --print 链接）。除非用户明确要求，不要假装已经执行命令。回复语言与用户一致即可。',
       coreLibIntro:
         '「核心库介绍」页（{{currentUrl}}）。请说明开发者如何把 @cloudcreate/core 集成到产品/服务，并保持与 web/CLI 的能力一致。可给出上传流程、后台批处理、内部工具集成等落地模式，强调参数契约与产出格式统一。回复语言与用户一致即可。',
+      simpleSnip:
+        '「Simple Snip」产品页（{{currentUrl}}）。这是一款免费的 macOS 菜单栏截图应用，不是浏览器工具。请说明：只做截图、为 Apple 芯片原生开发、需要屏幕录制权限、保存到剪贴板和/或本地文件、不联网。不要编造 App Store 链接。隐私政策在 /simple-snip/privacy。回复语言与用户一致即可。',
+      simpleSnipPrivacy:
+        '「Simple Snip 隐私政策」页（{{currentUrl}}）。本政策只说明 macOS 应用 Simple Snip。它不收集、不存储、不传输个人数据，没有账号、统计或广告，也不联网。截图留在 Mac 上，文件只写入用户选定的文件夹。屏幕录制权限只用于截图，不会把图片发送出去。技术支持在 /simple-snip。不要把本政策用到其他产品上。回复语言与用户一致即可。',
       framework:
         '用户位于开发用「框架/壳层」页（{{currentUrl}}），用于验布局。说明非内容工具。回复语言与用户一致即可。',
       styleGuide:

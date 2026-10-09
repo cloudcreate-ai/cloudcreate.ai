@@ -41,6 +41,16 @@ const SEO_EXACT = {
     titleKey: 'seo.coreLibIntroTitle',
     descKey: 'seo.coreLibIntroDesc',
   },
+  '/simple-snip': {
+    template: 'brand',
+    titleKey: 'seo.simpleSnipTitle',
+    descKey: 'seo.simpleSnipDesc',
+  },
+  '/simple-snip/privacy': {
+    template: 'brand',
+    titleKey: 'seo.simpleSnipPrivacyTitle',
+    descKey: 'seo.simpleSnipPrivacyDesc',
+  },
   '/privacy': { template: 'brand', titleKey: 'seo.privacyTitle', descKey: 'seo.privacyDesc' },
   '/terms': { template: 'brand', titleKey: 'seo.termsTitle', descKey: 'seo.termsDesc' },
 };

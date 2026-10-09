@@ -48,6 +48,8 @@ export const TOOL_PAGE_SPECS = [
   { id: 'creativeAiti', path: '/creative/aiti', titleKey: 'creative.aitiTitle' },
   { id: 'cliIntro', path: '/intro/cli', titleKey: 'sidebar.cliIntro' },
   { id: 'coreLibIntro', path: '/intro/core-lib', titleKey: 'sidebar.coreLibIntro' },
+  { id: 'simpleSnip', path: '/simple-snip', titleKey: 'sidebar.simpleSnip' },
+  { id: 'simpleSnipPrivacy', path: '/simple-snip/privacy', titleKey: 'seo.simpleSnipPrivacyTitle' },
   { id: 'framework', path: '/framework', titleKey: 'home.frameworkTitle' },
   { id: 'styleGuide', path: '/styleguide', titleKey: 'home.styleGuideTitle' },
   { id: 'aiSpecPageDoc', path: '/ai-spec', titleKey: 'agentPrompt.aiSpecPage.pageTitle' },

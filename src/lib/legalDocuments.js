@@ -1,6 +1,7 @@
 /**
  * 隐私政策 / 服务条款正文（与 UI 语言一致）。非法律建议，可随业务替换。
- * @typedef {{ type: 'h2' | 'p', text: string }} LegalBlock
+ * @typedef {{ href: string, label: string }} LegalLink
+ * @typedef {{ type: 'h2', text: string } | { type: 'p', text: string, links?: LegalLink[] }} LegalBlock
  */
 import { siteContactEmail } from '$lib/siteConfig.js';
 
@@ -12,6 +13,12 @@ const DOCS = {
         type: 'p',
         text:
           'This policy describes how CloudCreate.ai (this site) handles information when you use our in-browser tools. The site is designed so that most processing runs locally in your browser; we do not run a login system in this public toolkit.',
+      },
+      { type: 'h2', text: 'Simple Snip' },
+      {
+        type: 'p',
+        text: 'This policy does not cover the macOS app Simple Snip. That app has its own privacy policy.',
+        links: [{ href: '/simple-snip/privacy', label: 'Simple Snip privacy policy' }],
       },
       { type: 'h2', text: 'Local processing' },
       {
@@ -48,6 +55,12 @@ const DOCS = {
         type: 'p',
         text:
           '本说明介绍您使用 CloudCreate.ai（本站）浏览器内工具时，本站如何处理信息。本站以在浏览器中本地处理为主；公开展示的工具集不依赖登录即可使用。',
+      },
+      { type: 'h2', text: 'Simple Snip' },
+      {
+        type: 'p',
+        text: '本政策不涵盖 macOS 应用 Simple Snip。该应用有单独的隐私政策。',
+        links: [{ href: '/simple-snip/privacy', label: 'Simple Snip 隐私政策' }],
       },
       { type: 'h2', text: '本地处理' },
       {

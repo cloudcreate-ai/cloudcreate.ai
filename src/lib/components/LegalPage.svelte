@@ -2,7 +2,9 @@
   /**
    * 隐私政策 / 服务条款共用排版
    */
+  import { page } from '$app/stores';
   import { t, locale } from '$lib/i18n.js';
+  import { localePath } from '$lib/localePath.js';
   import WorkspacePageShell from '$lib/components/layout/WorkspacePageShell.svelte';
   import { getLegalBlocks, LEGAL_LAST_UPDATED } from '$lib/legalDocuments.js';
 
@@ -22,7 +24,15 @@
       {#if block.type === 'h2'}
         <h2 class="legal-page-h2">{block.text}</h2>
       {:else}
-        <p class="legal-page-p">{block.text}</p>
+        <p class="legal-page-p">
+          {block.text}
+          {#if block.links}
+            {#each block.links as link}
+              {' '}
+              <a href={localePath($page.url.pathname, link.href)}>{link.label}</a>
+            {/each}
+          {/if}
+        </p>
       {/if}
     {/each}
   </article>
@@ -59,5 +69,8 @@
     font-size: 0.875rem;
     line-height: 1.6;
     color: var(--ccw-text-secondary);
+  }
+  .legal-page-p a {
+    color: var(--ccw-accent);
   }
 </style>

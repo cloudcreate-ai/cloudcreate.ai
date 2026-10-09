@@ -137,6 +137,14 @@ export const AGENT_PROMPT_TOOL_SPEC_DETAIL_EN = {
     interpolate: 'currentUrl.',
     urlQuery: 'No dedicated query keys on this intro page.',
   },
+  simpleSnip: {
+    interpolate: 'currentUrl.',
+    urlQuery: 'None. Product page for the Mac app, not a browser tool.',
+  },
+  simpleSnipPrivacy: {
+    interpolate: 'currentUrl.',
+    urlQuery: 'None. Privacy policy for the Mac app.',
+  },
   framework: {
     interpolate: 'currentUrl (developer shell / layout test).',
     urlQuery: 'None.',
@@ -280,6 +288,14 @@ export const AGENT_PROMPT_TOOL_SPEC_DETAIL_ZH = {
   coreLibIntro: {
     interpolate: 'currentUrl。',
     urlQuery: '本介绍页无专用 query 参数。',
+  },
+  simpleSnip: {
+    interpolate: 'currentUrl。',
+    urlQuery: '无。这是 Mac 应用产品页，不是浏览器工具。',
+  },
+  simpleSnipPrivacy: {
+    interpolate: 'currentUrl。',
+    urlQuery: '无。Mac 应用的隐私政策。',
   },
   framework: {
     interpolate: 'currentUrl（开发者壳层/布局测试）。',

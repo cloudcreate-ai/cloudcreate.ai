@@ -46,6 +46,8 @@ const PATHS_AFTER_LOCALE = [
   '/ai-spec/llm.txt',
   '/intro/cli',
   '/intro/core-lib',
+  '/simple-snip',
+  '/simple-snip/privacy',
   '/privacy',
   '/terms',
 ];
