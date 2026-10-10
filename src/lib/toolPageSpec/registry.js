@@ -43,6 +43,7 @@ export const TOOL_PAGE_SPECS = [
   { id: 'archiveIndex', path: '/archive', titleKey: 'archiveIndex.title' },
   { id: 'archiveCompress', path: '/archive/compress', titleKey: 'home.archiveCompressTitle' },
   { id: 'archiveDecompress', path: '/archive/decompress', titleKey: 'home.archiveDecompressTitle' },
+  { id: 'archiveRar', path: '/archive/rar', titleKey: 'home.archiveRarTitle' },
   { id: 'watermarkGemini', path: '/remove-watermark/gemini', titleKey: 'home.watermarkGeminiTitle' },
   { id: 'creativeBorderBeam', path: '/creative/border-beam', titleKey: 'creative.borderBeamTitle' },
   { id: 'creativeAiti', path: '/creative/aiti', titleKey: 'creative.aitiTitle' },

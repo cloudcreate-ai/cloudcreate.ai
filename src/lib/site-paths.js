@@ -38,6 +38,7 @@ const PATHS_AFTER_LOCALE = [
   '/css/beautify',
   '/archive',
   '/archive/decompress',
+  '/archive/rar',
   '/archive/compress',
   '/workflow',
   '/workflow/advanced',

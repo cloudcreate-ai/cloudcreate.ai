@@ -59,6 +59,7 @@ export const TOOL_GROUPS = [
       { id: 'cssMinify', titleKey: 'home.cssMinifyTitle', href: '/css/minify', icon: '🗜️' },
       { id: 'cssBeautify', titleKey: 'home.cssBeautifyTitle', href: '/css/beautify', icon: '📐' },
       { id: 'archiveDecompress', titleKey: 'home.archiveDecompressTitle', href: '/archive/decompress', icon: '📂' },
+      { id: 'archiveRar', titleKey: 'home.archiveRarTitle', href: '/archive/rar', icon: '🗃️' },
       { id: 'archiveCompress', titleKey: 'home.archiveCompressTitle', href: '/archive/compress', icon: '📦' },
       { id: 'styleGuide', titleKey: 'home.styleGuideTitle', href: '/styleguide', icon: '🎨' },
       { id: 'markdownPreview', titleKey: 'home.markdownPreviewTitle', href: '/markdown', icon: '📝' },

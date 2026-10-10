@@ -117,6 +117,10 @@ export const AGENT_PROMPT_TOOL_SPEC_DETAIL_EN = {
     interpolate: 'currentUrl; fileName.',
     urlQuery: 'No prefill query.',
   },
+  archiveRar: {
+    interpolate: 'currentUrl; fileName.',
+    urlQuery: 'No prefill query.',
+  },
   watermarkGemini: {
     interpolate: 'currentUrl; fileName.',
     urlQuery: 'No prefill query.',
@@ -266,6 +270,10 @@ export const AGENT_PROMPT_TOOL_SPEC_DETAIL_ZH = {
     urlQuery: 'fmt|f = zip|gzip|targz|brotli。',
   },
   archiveDecompress: {
+    interpolate: 'currentUrl、fileName。',
+    urlQuery: '无预填 query。',
+  },
+  archiveRar: {
     interpolate: 'currentUrl、fileName。',
     urlQuery: '无预填 query。',
   },

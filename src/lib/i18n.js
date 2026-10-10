@@ -222,6 +222,7 @@ const translations = {
         cssBeautify: 'CSS beautify: reformat minified CSS for reading.',
         archiveCompress: 'Create archive: pack files into a supported format in the browser.',
         archiveDecompress: 'Extract archive: unpack supported archive types in the browser.',
+        archiveRar: 'RAR extract: unpack one unencrypted .rar file in the browser.',
         watermarkGemini: 'Remove the standard visible Gemini corner mark from images, locally.',
         creativeBorderBeam: 'Border beam: a marketing-card border effect; adjust on the page.',
         creativeAiti:
@@ -309,7 +310,9 @@ const translations = {
       archiveCompress:
         'Page: “Create archive” ({{currentUrl}}). Purpose: pack files in the browser. Format now {{format}}, files queued {{fileCount}}. Ask what bundle they need; do not pack files in chat. Link: `fmt`/`f` = zip|gzip|targz|brotli. Reply in the user’s language.',
       archiveDecompress:
-        'Page: “Extract archive” ({{currentUrl}}). Purpose: unpack supported formats locally. File {{fileName}}. Explain what they will get; no query prefill. Do not unpack in chat. Reply in the user’s language.',
+        'Page: “Extract archive” ({{currentUrl}}). Purpose: unpack ZIP, GZIP, TAR.GZ, BROTLI, and unencrypted RAR locally. File {{fileName}}. Explain what they will get; no query prefill. Do not unpack in chat. Reply in the user’s language.',
+      archiveRar:
+        'Page: “RAR extract” ({{currentUrl}}). Purpose: unpack one unencrypted .rar locally. File {{fileName}}. Password-protected RAR and split volumes are not supported. No query prefill. Do not unpack in chat. Reply in the user’s language.',
       watermarkGemini:
         'Page: “Gemini watermark remover” ({{currentUrl}}). Purpose: remove the standard visible Gemini corner mark in-browser. File {{fileName}}. Ethics/limitations on-page. No query prefill. Do not claim to process their image in chat. Reply in the user’s language.',
       creativeBorderBeam:
@@ -370,7 +373,10 @@ const translations = {
         'Make minified CSS readable again—great for debugging, teaching, and quick edits.',
       archiveDecompressTitle: 'Archive Decompress',
       archiveDecompressDesc:
-        'Unpack ZIP, GZIP, TAR.GZ, BROTLI locally—grab files without extra desktop apps.',
+        'Unpack ZIP, GZIP, TAR.GZ, BROTLI, and RAR locally—grab files without extra desktop apps.',
+      archiveRarTitle: 'RAR Extract',
+      archiveRarDesc:
+        'Extract one unencrypted RAR in the browser. Password-protected archives and split volumes are not supported.',
       archiveCompressTitle: 'Archive Compress',
       archiveCompressDesc:
         'Bundle files into common archive formats in the browser—handy for sharing and backups.',
@@ -674,22 +680,39 @@ const translations = {
     },
     archiveIndex: {
       title: 'Archive Tools',
-      desc: 'Package or unpack archives—ZIP, GZIP, TAR.GZ, BROTLI—right in the browser.',
+      desc: 'Package ZIP, GZIP, TAR.GZ, and BROTLI, or unpack those plus RAR, right in the browser.',
       decompress: 'Decompress',
       decompressDesc: 'Extract common archives locally.',
+      rar: 'RAR extract',
+      rarDesc: 'Extract one unencrypted .rar file.',
       compress: 'Compress',
       compressDesc: 'Build archives from your files without desktop utilities.',
     },
     archiveDecompress: {
       title: 'Archive Decompress',
-      desc: 'Extract ZIP, GZIP, TAR.GZ, BROTLI—upload, unpack, download; data stays on-device.',
+      desc: 'Extract ZIP, GZIP, TAR.GZ, BROTLI, and RAR—upload, unpack, download; data stays on-device.',
       input: 'Input',
       uploadHint: 'Click or drag archive file here',
-      formats: 'ZIP, GZIP (.gz), TAR.GZ (.tgz), BROTLI (.br)',
+      formats: 'ZIP, GZIP (.gz), TAR.GZ (.tgz), BROTLI (.br), RAR (.rar)',
       decompress: 'Decompress',
       results: 'Extracted files',
       errEmptyInput: 'Please upload an archive file.',
-      errUnsupportedFormat: 'Unsupported format. Use ZIP, GZIP, TAR.GZ or BROTLI.',
+      errUnsupportedFormat: 'Unsupported format. Use ZIP, GZIP, TAR.GZ, BROTLI, or RAR.',
+      rarPageLink: 'RAR only',
+    },
+    archiveRar: {
+      title: 'RAR Extract',
+      desc: 'Drop one unencrypted .rar file, extract it, and download the files. Everything stays in the browser.',
+      uploadHint: 'Click or drag a .rar file here',
+      formats: 'RAR (.rar)',
+      limits: 'Password-protected RAR and split volumes (.part1.rar) are not supported.',
+      decompress: 'Extract',
+      results: 'Extracted files',
+      errEmptyInput: 'Please upload a .rar file.',
+      errNotRar: 'This page only accepts .rar files.',
+      errEncrypted: 'Password-protected RAR is not supported.',
+      errSplit: 'Split RAR volumes are not supported. Use a single .rar file.',
+      errFailed: 'Could not extract this RAR.',
     },
     archiveCompress: {
       title: 'Archive Compress',
@@ -1169,6 +1192,7 @@ const translations = {
         cssBeautify: '「CSS 美化」：把压缩后的 CSS 排成可读格式（本机）。',
         archiveCompress: '「打压缩包」：在浏览器里把文件打成压缩包。',
         archiveDecompress: '「解压缩包」：在浏览器里解压支持的格式。',
+        archiveRar: '「RAR 解压」：在浏览器里解压单个未加密的 .rar。',
         watermarkGemini: '「角标去水印」：本机去除标准可见的 Gemini 角标样式。',
         creativeBorderBeam: '「Border Beam」：营销卡片流光边框演示，在页上调节观感。',
         creativeAiti:
@@ -1252,7 +1276,9 @@ const translations = {
       archiveCompress:
         '「打压缩包」页（{{currentUrl}}）。用途：在浏览器中打包。当前格式 {{format}}，待打包 {{fileCount}}。问目标格式与用途。参数：`fmt` = zip|gzip|targz|brotli。回复语言与用户一致即可。',
       archiveDecompress:
-        '「解压缩包」页（{{currentUrl}}）。用途：在浏览器中解压。文件 {{fileName}}。说清会产出什么。无 URL 预填。回复语言与用户一致即可。',
+        '「解压缩包」页（{{currentUrl}}）。用途：在浏览器中解压 ZIP、GZIP、TAR.GZ、BROTLI 和未加密 RAR。文件 {{fileName}}。说清会产出什么。无 URL 预填。回复语言与用户一致即可。',
+      archiveRar:
+        '「RAR 解压」页（{{currentUrl}}）。用途：在浏览器中解压单个未加密 .rar。文件 {{fileName}}。不支持密码和分卷。无 URL 预填。不要在聊天里解压。回复语言与用户一致即可。',
       watermarkGemini:
         '「角标去水印」页（{{currentUrl}}）。用途：在浏览器中处理。文件 {{fileName}}。提醒合规/局限。无 URL 预填。勿在对话中声称已处理其图。回复语言与用户一致即可。',
       creativeBorderBeam:
@@ -1300,7 +1326,9 @@ const translations = {
       cssBeautifyTitle: 'CSS 解压',
       cssBeautifyDesc: '把压缩 CSS 格式化，便于阅读、对比与教学演示。',
       archiveDecompressTitle: '压缩包解压',
-      archiveDecompressDesc: '本地解压 ZIP、GZIP、TAR.GZ、BROTLI，上传即取回文件，无需额外客户端。',
+      archiveDecompressDesc: '本地解压 ZIP、GZIP、TAR.GZ、BROTLI、RAR，上传即取回文件，无需额外客户端。',
+      archiveRarTitle: 'RAR 解压',
+      archiveRarDesc: '在浏览器里解压单个未加密 RAR。不支持带密码的压缩包和分卷。',
       archiveCompressTitle: '压缩包压缩',
       archiveCompressDesc: '在浏览器内将文件打成常见压缩包，便于分享与临时归档。',
       markdownPreviewTitle: 'Markdown 预览',
@@ -1590,22 +1618,39 @@ const translations = {
     },
     archiveIndex: {
       title: '压缩包工具',
-      desc: '在浏览器内打包或解压 ZIP、GZIP、TAR.GZ、BROTLI。',
+      desc: '在浏览器内打包 ZIP、GZIP、TAR.GZ、BROTLI，或解压这些格式以及 RAR。',
       decompress: '解压',
       decompressDesc: '本地解压常见压缩包格式。',
+      rar: 'RAR 解压',
+      rarDesc: '解压单个未加密的 .rar。',
       compress: '压缩',
       compressDesc: '从文件生成压缩包，无需额外客户端。',
     },
     archiveDecompress: {
       title: '压缩包解压',
-      desc: '解压 ZIP、GZIP、TAR.GZ、BROTLI—上传、解压、下载，数据留在本机。',
+      desc: '解压 ZIP、GZIP、TAR.GZ、BROTLI、RAR—上传、解压、下载，数据留在本机。',
       input: '输入',
       uploadHint: '点击或拖拽压缩包到此处',
-      formats: 'ZIP、GZIP (.gz)、TAR.GZ (.tgz)、BROTLI (.br)',
+      formats: 'ZIP、GZIP (.gz)、TAR.GZ (.tgz)、BROTLI (.br)、RAR (.rar)',
       decompress: '解压',
       results: '解压结果',
       errEmptyInput: '请上传压缩包文件。',
-      errUnsupportedFormat: '不支持此格式。请使用 ZIP、GZIP、TAR.GZ 或 BROTLI。',
+      errUnsupportedFormat: '不支持此格式。请使用 ZIP、GZIP、TAR.GZ、BROTLI 或 RAR。',
+      rarPageLink: '只解 RAR',
+    },
+    archiveRar: {
+      title: 'RAR 解压',
+      desc: '拖入一个未加密的 .rar，解压后下载文件。处理留在浏览器里。',
+      uploadHint: '点击或拖拽 .rar 文件到此处',
+      formats: 'RAR (.rar)',
+      limits: '不支持带密码的 RAR，也不支持分卷（.part1.rar）。',
+      decompress: '解压',
+      results: '解压结果',
+      errEmptyInput: '请上传 .rar 文件。',
+      errNotRar: '此页只接受 .rar 文件。',
+      errEncrypted: '不支持带密码的 RAR。',
+      errSplit: '不支持 RAR 分卷。请使用单个 .rar 文件。',
+      errFailed: '无法解压此 RAR。',
     },
     archiveCompress: {
       title: '压缩包压缩',

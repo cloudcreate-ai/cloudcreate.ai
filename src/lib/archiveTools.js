@@ -11,6 +11,8 @@ export {
   createTarBytes,
   decompressBrotli,
   decompressBrotliEntries,
+  decompressRar,
+  decompressRarEntries,
   decompressGzip,
   decompressGzipEntries,
   decompressTarGz,

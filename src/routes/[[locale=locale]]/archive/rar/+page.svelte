@@ -1,6 +1,6 @@
 <script>
   /**
-   * 压缩包解压 - ZIP, GZIP, TAR.GZ, BROTLI, RAR
+   * 只解压单个未加密 RAR。
    */
   import { t } from '$lib/i18n.js';
   import { page } from '$app/stores';
@@ -9,23 +9,15 @@
   import { downloadBlob } from '$lib/batchHelpers.js';
   import ToolPageHeader from '$lib/components/ToolPageHeader.svelte';
   import FileDropZone from '$lib/components/FileDropZone.svelte';
-  import { localePath } from '$lib/localePath.js';
   import { formatFileSize } from '$lib/imageProcessor.js';
-  import {
-    decompressZip,
-    decompressGzip,
-    decompressTarGz,
-    decompressBrotli,
-    decompressRar,
-    detectFormat,
-  } from '$lib/archiveTools.js';
+  import { compressZip, decompressRar, detectFormat } from '$lib/archiveTools.js';
 
   let archiveFile = $state(null);
   let extractedFiles = $state([]);
   let processing = $state(false);
   let error = $state('');
 
-  const ACCEPT = '.zip,.gz,.tgz,.br,.rar,application/zip,application/gzip,application/x-brotli,application/vnd.rar,application/x-rar-compressed';
+  const ACCEPT = '.rar,application/vnd.rar,application/x-rar-compressed';
 
   function handleFile(file) {
     if (!file) return;
@@ -41,7 +33,7 @@
   $effect(() => {
     void archiveFile;
     return registerAgentPrompt({
-      templateKey: 'agentPrompt.archiveDecompress',
+      templateKey: 'agentPrompt.archiveRar',
       getParams: () => ({
         currentUrl: get(page).url.href,
         fileName: archiveFile?.name || '—',
@@ -49,30 +41,30 @@
     });
   });
 
+  function rarMessage(err) {
+    const msg = err?.message || '';
+    if (msg === 'Encrypted RAR is not supported') return t('archiveRar.errEncrypted');
+    if (msg === 'Split RAR volumes are not supported') return t('archiveRar.errSplit');
+    return msg || t('archiveRar.errFailed');
+  }
+
   async function decompress() {
     if (!archiveFile) {
-      error = t('archive.errEmptyInput');
+      error = t('archiveRar.errEmptyInput');
       return;
     }
     error = '';
     extractedFiles = [];
     processing = true;
     try {
-      const fmt = detectFormat(archiveFile.name);
-      if (!fmt) {
-        error = t('archive.errUnsupportedFormat');
+      if (detectFormat(archiveFile.name) !== 'rar') {
+        error = t('archiveRar.errNotRar');
         return;
       }
       const buffer = await archiveFile.arrayBuffer();
-      let files = [];
-      if (fmt === 'zip') files = decompressZip(buffer);
-      else if (fmt === 'gzip') files = decompressGzip(buffer);
-      else if (fmt === 'targz') files = decompressTarGz(buffer);
-      else if (fmt === 'brotli') files = await decompressBrotli(buffer);
-      else if (fmt === 'rar') files = await decompressRar(buffer);
-      extractedFiles = files;
+      extractedFiles = await decompressRar(buffer);
     } catch (e) {
-      error = e.message || 'Decompress failed';
+      error = rarMessage(e);
     } finally {
       processing = false;
     }
@@ -88,10 +80,9 @@
       downloadSingle(extractedFiles[0]);
       return;
     }
-    const { compressZip } = await import('$lib/archiveTools.js');
     const items = extractedFiles.map((f) => ({ name: f.name, data: f.data, file: null }));
     const blob = await compressZip(items);
-    const base = archiveFile.name.replace(/\.[^.]+$/, '').replace(/\.tar$/, '') || 'extracted';
+    const base = archiveFile.name.replace(/\.rar$/i, '') || 'extracted';
     downloadBlob(blob, `${base}-extracted.zip`);
   }
 
@@ -103,26 +94,22 @@
 </script>
 
 <div class="workspace-layout-operation">
-  <ToolPageHeader titleKey="archiveDecompress.title" descKey="archiveDecompress.desc" />
+  <ToolPageHeader titleKey="archiveRar.title" descKey="archiveRar.desc" />
 
   <section class="workspace-content-block">
     <FileDropZone
       accept={ACCEPT}
       multiple={false}
       onFilesAdd={handleFiles}
-      hintKey="archiveDecompress.uploadHint"
+      hintKey="archiveRar.uploadHint"
       formatsKey=""
       selectedName={archiveFile?.name}
       onClear={clear}
       showClear={!!archiveFile}
-      idPrefix="decompress"
+      idPrefix="rar"
     />
-    <p class="text-xs text-surface-500-500 mt-2 m-0">
-      {t('archiveDecompress.formats')}
-      <a class="ml-2 text-primary-500" href={localePath($page.url.pathname, '/archive/rar')}>
-        {t('archiveDecompress.rarPageLink')}
-      </a>
-    </p>
+    <p class="text-xs text-surface-500-500 mt-2 m-0">{t('archiveRar.formats')}</p>
+    <p class="text-xs text-surface-500-500 mt-1 m-0">{t('archiveRar.limits')}</p>
   </section>
 
   <section class="workspace-primary-actions">
@@ -131,7 +118,7 @@
       onclick={decompress}
       disabled={processing || !archiveFile}
     >
-      {processing ? t('common.processing') : t('archiveDecompress.decompress')}
+      {processing ? t('common.processing') : t('archiveRar.decompress')}
     </button>
     <button class="btn preset-outlined-surface-200-800" onclick={clear}>{t('common.clearAll')}</button>
   </section>
@@ -143,7 +130,7 @@
   {#if extractedFiles.length > 0}
     <section class="card preset-outlined-surface-200-800 overflow-hidden">
       <div class="p-4 border-b border-surface-200-800 flex justify-between items-center">
-        <h2 class="text-base font-medium m-0">{t('archiveDecompress.results')} ({extractedFiles.length})</h2>
+        <h2 class="text-base font-medium m-0">{t('archiveRar.results')} ({extractedFiles.length})</h2>
         <button class="btn btn-sm preset-filled-primary-500" onclick={downloadAll}>
           {t('common.downloadAll')}
         </button>

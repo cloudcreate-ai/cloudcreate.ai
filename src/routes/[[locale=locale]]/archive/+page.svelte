@@ -32,6 +32,14 @@
       <p class="text-sm text-surface-600-400 m-0">{t('archiveIndex.decompressDesc')}</p>
     </a>
     <a
+      href={localePath($page.url.pathname, '/archive/rar')}
+      class="card preset-outlined-surface-200-800 block p-5 no-underline text-inherit"
+    >
+      <span class="text-2xl block mb-2">🗃️</span>
+      <h2 class="text-base font-semibold mb-1">{t('archiveIndex.rar')}</h2>
+      <p class="text-sm text-surface-600-400 m-0">{t('archiveIndex.rarDesc')}</p>
+    </a>
+    <a
       href={localePath($page.url.pathname, '/archive/compress')}
       class="card preset-outlined-surface-200-800 block p-5 no-underline text-inherit"
     >
