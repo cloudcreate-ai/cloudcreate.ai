@@ -5,21 +5,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import tailwindcss from '@tailwindcss/vite';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const localCoreSrc = path.resolve(root, '../cloudcreate-lib/src');
-const useLocalCore = fs.existsSync(path.join(localCoreSrc, 'archive.js'));
+const localArchive = path.resolve(root, '../cloudcreate-lib/src/archive.js');
+const useLocalArchive = fs.existsSync(localArchive);
 
-/** 本机有兄弟仓库时用源码，这样未发布的核心能力能进站点构建。 */
-const coreAlias = useLocalCore
-  ? [
-      { find: /^@cloudcreate\/core\/archive$/, replacement: path.join(localCoreSrc, 'archive.js') },
-      { find: /^@cloudcreate\/core\/browser$/, replacement: path.join(localCoreSrc, 'browser.js') },
-      { find: /^@cloudcreate\/core\/css$/, replacement: path.join(localCoreSrc, 'css.js') },
-      { find: /^@cloudcreate\/core\/image$/, replacement: path.join(localCoreSrc, 'image.js') },
-      { find: /^@cloudcreate\/core\/markdown$/, replacement: path.join(localCoreSrc, 'markdown.js') },
-      { find: /^@cloudcreate\/core\/pdf$/, replacement: path.join(localCoreSrc, 'pdf.js') },
-      { find: /^@cloudcreate\/core\/table$/, replacement: path.join(localCoreSrc, 'table.js') },
-      { find: /^@cloudcreate\/core$/, replacement: path.join(localCoreSrc, 'index.js') },
-    ]
+/**
+ * 只把 archive 指到旁边的核心库。
+ * 整包别名会把图片 WASM worker 卷进生产构建并失败。
+ */
+const coreAlias = useLocalArchive
+  ? [{ find: /^@cloudcreate\/core\/archive$/, replacement: localArchive }]
   : [];
 
 /** @type {import('vite').UserConfig} */
